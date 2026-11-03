@@ -90,39 +90,44 @@
 <body class="min-h-screen flex flex-col bg-slate-50/80 pb-10">
 
   <!-- ==========================================
-       상단 헤더 (슬레이트·화이트 톤 통일)
+       상단 헤더 (슬레이트·화이트 톤 통일 & 모바일 가로 넘침 방지)
        ========================================== -->
   <header class="bg-white/95 backdrop-blur border-b border-slate-200/90 sticky top-0 z-40 shadow-2xs shrink-0">
     <div class="layout-container py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-      <!-- 1단(모바일): 타이틀 -->
-      <div class="flex items-center justify-between sm:justify-start gap-2.5 w-full sm:w-auto min-w-0">
-        <div class="flex items-center gap-2 min-w-0">
-          <span id="header-duration-badge" class="bg-slate-900 text-white text-[10px] sm:text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">24박 25일</span>
-          <h1 class="text-xs sm:text-base font-extrabold text-slate-900 tracking-tight truncate">2027년 1월 세계일주 플래너</h1>
+      <!-- 1단(모바일): 타이틀 + 우측에 상태배지 & 초기화 버튼 배치 -->
+      <div class="flex items-center justify-between gap-2 w-full sm:w-auto min-w-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span id="header-duration-badge" class="bg-slate-900 text-white text-xs font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">24박 25일</span>
+          <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate">2027년 1월 세계일주 플래너</h1>
+        </div>
+        <div class="flex sm:hidden items-center gap-1.5 shrink-0">
+          <button onclick="resetAllData()" class="text-xs font-bold text-slate-500 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-2.5 py-1 rounded-lg transition whitespace-nowrap">
+            초기화
+          </button>
         </div>
       </div>
 
       <!-- 2단(모바일): 메인 메뉴 탭 (일정·지도 / 가계부 / 준비물) & 총예산 배지 -->
-      <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0">
-        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200/80 gap-0.5 flex-1 sm:flex-initial">
-          <button id="tab-btn-planner" onclick="switchMainTab('planner')" class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-2xs text-center">
+      <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto min-w-0">
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80 gap-0.5 flex-1 sm:flex-initial min-w-0">
+          <button id="tab-btn-planner" onclick="switchMainTab('planner')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 sm:py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-2xs text-center">
             📅 일정·지도
           </button>
-          <button id="tab-btn-budget" onclick="switchMainTab('budget')" class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
+          <button id="tab-btn-budget" onclick="switchMainTab('budget')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 sm:py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
             💰 가계부
           </button>
-          <button id="tab-btn-packing" onclick="switchMainTab('packing')" class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
+          <button id="tab-btn-packing" onclick="switchMainTab('packing')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 sm:py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
             🎒 준비물
           </button>
         </div>
 
-        <div onclick="switchMainTab('budget')" class="cursor-pointer text-[11px] sm:text-xs font-extrabold text-slate-700 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/90 whitespace-nowrap transition shrink-0" title="클릭 시 가계부 메뉴로 이동">
+        <div onclick="switchMainTab('budget')" class="cursor-pointer text-xs font-extrabold text-slate-700 bg-slate-50 hover:bg-slate-100 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/90 whitespace-nowrap transition shrink-0" title="클릭 시 가계부 메뉴로 이동">
           총예산 <span id="grand-total-display" class="text-emerald-600 ml-0.5">₩0</span>
         </div>
-        <span id="auto-save-badge" class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-500 bg-slate-100 border border-slate-200/80 px-2 sm:px-2.5 py-1.5 rounded-xl shrink-0" title="클라우드 실시간 동기화 상태">
+        <span id="auto-save-badge" class="hidden md:inline-flex items-center gap-1 text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200/80 px-2.5 py-1.5 rounded-xl shrink-0" title="클라우드 실시간 동기화 상태">
           ☁️ 연결 중...
         </span>
-        <button onclick="resetAllData()" class="text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-2.5 py-1.5 rounded-xl transition whitespace-nowrap shrink-0">
+        <button onclick="resetAllData()" class="hidden sm:inline-block text-xs font-semibold text-slate-500 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-2.5 py-1.5 rounded-xl transition whitespace-nowrap shrink-0">
           초기화
         </button>
       </div>
@@ -141,16 +146,16 @@
 
       <!-- 1. 상단 전체 폭: 주차별 화이트 카드로 분리된 달력 뷰 -->
       <section id="calendar-section" class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3 sm:p-4 flex flex-col shrink-0 min-w-0">
-        <div class="flex flex-wrap justify-between items-center mb-2.5 gap-1.5">
+        <div class="flex flex-wrap justify-between items-center mb-2.5 gap-2">
           <div class="flex items-center gap-2 min-w-0">
-            <h2 class="text-xs sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정</h2>
-            <span id="cal-mode-badge" class="text-[10px] font-bold px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full whitespace-nowrap shrink-0">날짜 · 막대 클릭 시 이동</span>
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정</h2>
+            <span id="cal-mode-badge" class="text-xs font-bold px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full whitespace-nowrap shrink-0">날짜 · 막대 터치 이동</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick="openAddBarModal()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+            <button onclick="openAddBarModal()" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
               + 막대 추가
             </button>
-            <button id="cal-edit-btn" onclick="toggleCalendarEditMode()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+            <button id="cal-edit-btn" onclick="toggleCalendarEditMode()" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
               ⚙️ 달력 편집
             </button>
           </div>
@@ -162,46 +167,46 @@
         </div>
       </section>
 
-      <!-- 2. 하단 영역: [좌측 5/12] 지도 뷰 + [중앙 4/12] 타임라인 일정 뷰 + [우측 3/12] 당일 브리핑 & 스마트 툴 -->
+      <!-- 2. 하단 영역: 모바일에서는 [1] 타임라인 일정 뷰 ➔ [2] 지도 뷰 ➔ [3] 브리핑 순서, PC에서는 [좌 5] 지도 + [중 4] 일정 + [우 3] 브리핑 -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 flex-1 min-h-0">
 
-        <!-- [하단 좌측 5/12] 이동 루트 및 당일 코스 지도 뷰 -->
-        <section class="lg:col-span-5 bg-white p-3.5 sm:p-4 rounded-2xl shadow-2xs border border-slate-200/80 flex flex-col min-h-0 min-w-0">
+        <!-- [PC 좌측 5/12 · 모바일 2번째] 이동 루트 및 당일 코스 지도 뷰 -->
+        <section class="order-2 lg:order-1 lg:col-span-5 bg-white p-3.5 sm:p-4 rounded-2xl shadow-2xs border border-slate-200/80 flex flex-col min-h-0 min-w-0">
           <div class="flex flex-wrap justify-between items-center gap-2 mb-2.5 shrink-0">
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
                 <h2 id="map-section-title" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">🗺️ 세계일주 이동 루트 맵</h2>
-                <span id="map-mode-badge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-900 text-white whitespace-nowrap">🌐 전체 루트 뷰</span>
+                <span id="map-mode-badge" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-slate-900 text-white whitespace-nowrap">🌐 전체 루트 뷰</span>
               </div>
-              <p id="map-section-subtitle" class="text-[11px] text-slate-400 mt-0.5 truncate">날짜 클릭 시 당일 세부 코스가 순서대로 표시됩니다</p>
+              <p id="map-section-subtitle" class="text-xs text-slate-500 mt-0.5 truncate">날짜 클릭 시 당일 세부 코스가 순서대로 표시됩니다</p>
             </div>
-            <div class="flex gap-1 shrink-0">
-              <button onclick="showOverviewMap()" class="px-2.5 py-1 bg-slate-900 text-white rounded-xl text-[11px] font-bold hover:bg-slate-700 whitespace-nowrap transition">🌐 전체</button>
-              <button onclick="focusMap('europe')" class="px-2.5 py-1 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-xl text-[11px] font-bold hover:bg-slate-200 whitespace-nowrap transition">🇪🇺 유럽</button>
-              <button onclick="focusMap('usa')" class="px-2.5 py-1 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-xl text-[11px] font-bold hover:bg-slate-200 whitespace-nowrap transition">🇺🇸 미국</button>
+            <div class="flex gap-1.5 shrink-0">
+              <button onclick="showOverviewMap()" class="px-2.5 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-700 whitespace-nowrap transition">🌐 전체</button>
+              <button onclick="focusMap('europe')" class="px-2.5 py-1.5 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-bold hover:bg-slate-200 whitespace-nowrap transition">🇪🇺 유럽</button>
+              <button onclick="focusMap('usa')" class="px-2.5 py-1.5 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-bold hover:bg-slate-200 whitespace-nowrap transition">🇺🇸 미국</button>
             </div>
           </div>
           <div class="flex-1 min-h-0 relative">
             <div id="map" class="border border-slate-200/80"></div>
           </div>
-          <div id="map-legend-bar" class="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap justify-between items-center text-[11px] text-slate-500 gap-2 shrink-0">
+          <div id="map-legend-bar" class="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2 shrink-0">
             <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-emerald-600 inline-block rounded"></span> 유럽 구간</span>
             <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 워싱턴 · 뉴욕</span>
             <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 마이애미 · 올랜도</span>
           </div>
         </section>
 
-        <!-- [하단 중앙 4/12] 타임라인 일정 뷰 (미니멀 화이트 카드) -->
-        <section class="lg:col-span-4 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col min-h-0 min-w-0">
+        <!-- [PC 중앙 4/12 · 모바일 1번째(최상단)] 타임라인 일정 뷰 -->
+        <section class="order-1 lg:order-2 lg:col-span-4 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col min-h-0 min-w-0">
           <!-- 선택된 날짜 헤더 -->
           <div class="flex justify-between items-start gap-2 pb-2.5 border-b border-slate-100 shrink-0">
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span id="tl-day-badge" class="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shrink-0 whitespace-nowrap">DAY 1</span>
-                <h3 id="tl-date-title" class="text-sm sm:text-base font-extrabold text-slate-900 whitespace-nowrap">12월 29일 (화)</h3>
-                <span id="tl-day-cost" class="text-[11px] font-extrabold text-emerald-700 bg-emerald-50/80 px-2 py-0.5 rounded-lg border border-emerald-200/80 whitespace-nowrap">당일 ₩0</span>
+                <span id="tl-day-badge" class="bg-slate-900 text-white text-xs font-extrabold px-2.5 py-0.5 rounded-md shrink-0 whitespace-nowrap">DAY 1</span>
+                <h3 id="tl-date-title" class="text-base font-extrabold text-slate-900 whitespace-nowrap">12월 29일 (화)</h3>
+                <span id="tl-day-cost" class="text-xs font-extrabold text-emerald-700 bg-emerald-50/80 px-2 py-0.5 rounded-lg border border-emerald-200/80 whitespace-nowrap">당일 ₩0</span>
               </div>
-              <p id="tl-city-subtitle" class="text-xs font-semibold text-slate-500 mt-1 truncate">🇰🇷 인천 ➔ 🇦🇪 아부다비 · 두바이</p>
+              <p id="tl-city-subtitle" class="text-xs sm:text-sm font-semibold text-slate-500 mt-1 truncate">🇰🇷 인천 ➔ 🇦🇪 아부다비 · 두바이</p>
             </div>
             <button onclick="openPlaceModal(null)" class="bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-2xs transition shrink-0 whitespace-nowrap">
               + 일정 추가
@@ -209,75 +214,75 @@
           </div>
 
           <!-- 날짜 빠른 이동 가로 칩 -->
-          <div class="flex items-center gap-1 border-b border-slate-100 mb-2.5 py-1.5 shrink-0">
-            <button onclick="scrollQuickDaySelector(-180)" title="이전 날짜들로 스크롤" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[10px] flex items-center justify-center shrink-0 transition">◀</button>
+          <div class="flex items-center gap-1.5 border-b border-slate-100 mb-2.5 py-2 shrink-0">
+            <button onclick="scrollQuickDaySelector(-180)" title="이전 날짜들로 스크롤" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs flex items-center justify-center shrink-0 transition">◀</button>
             <div id="quick-day-selector" class="relative flex-1 flex gap-1.5 overflow-x-auto pb-1 pt-0.5 custom-scroll text-xs"></div>
-            <button onclick="scrollQuickDaySelector(180)" title="다음 날짜들로 스크롤" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[10px] flex items-center justify-center shrink-0 transition">▶</button>
+            <button onclick="scrollQuickDaySelector(180)" title="다음 날짜들로 스크롤" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs flex items-center justify-center shrink-0 transition">▶</button>
           </div>
 
           <!-- 타임라인 블록 리스트 -->
-          <div id="timeline-list" class="flex-1 lg:max-h-[440px] overflow-y-auto custom-scroll pr-1 space-y-1.5"></div>
+          <div id="timeline-list" class="flex-1 lg:max-h-[440px] overflow-y-auto custom-scroll pr-1 space-y-2"></div>
 
-          <div class="text-[11px] text-slate-400 text-center mt-2.5 pt-2 border-t border-slate-100 shrink-0">
-            💡 <b>일정 카드</b> 클릭 시 상세 수정 · 시간순 자동 정렬
+          <div class="text-xs text-slate-400 text-center mt-2.5 pt-2 border-t border-slate-100 shrink-0">
+            💡 <b>일정 카드</b> 터치 시 상세 수정 · 시간순 자동 정렬
           </div>
         </section>
 
-        <!-- [하단 우측 3/12] 당일 시티 브리핑 & 스마트 툴 (슬레이트·화이트 톤 통일) -->
-        <section class="lg:col-span-3 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col justify-between min-w-0 space-y-3">
+        <!-- [PC 우측 3/12 · 모바일 3번째] 당일 시티 브리핑 & 스마트 툴 -->
+        <section class="order-3 lg:col-span-3 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col justify-between min-w-0 space-y-3">
           <div class="space-y-3">
             <!-- 헤더 -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 gap-1">
               <div class="flex items-center gap-1.5 min-w-0">
-                <span id="brief-flag" class="text-base shrink-0">🇦🇪</span>
-                <h3 id="brief-city-name" class="text-sm font-extrabold text-slate-900 truncate">아부다비 · 두바이 브리핑</h3>
+                <span id="brief-flag" class="text-lg shrink-0">🇦🇪</span>
+                <h3 id="brief-city-name" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">아부다비 · 두바이 브리핑</h3>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <span id="brief-time-diff" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">시차 -5시간</span>
-                <button onclick="openBriefEditModal()" class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition whitespace-nowrap" title="브리핑 직접 수정">✎ 수정</button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span id="brief-time-diff" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">시차 -5시간</span>
+                <button onclick="openBriefEditModal()" class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition whitespace-nowrap" title="브리핑 직접 수정">✎ 수정</button>
               </div>
             </div>
 
             <!-- 1. 당일 숙소 & 핵심 이동 요약 카드 (차분한 슬레이트 톤) -->
             <div onclick="openBriefEditModal()" class="bg-slate-50/80 hover:bg-slate-100/70 border border-slate-200/80 hover:border-slate-300 rounded-2xl p-3.5 space-y-1.5 cursor-pointer transition" title="클릭하여 숙소/팁 직접 수정">
               <div class="flex items-center justify-between gap-1">
-                <span class="text-[11px] font-extrabold text-slate-700">🏨 당일 숙박 · 체류 정보 <span class="text-[10px] font-medium text-slate-400">(자동연동)</span></span>
-                <span id="brief-hotel-vendor" class="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200/80 truncate max-w-[130px]">경유/기내</span>
+                <span class="text-xs font-extrabold text-slate-700">🏨 당일 숙박 · 체류 정보 <span class="text-[11px] font-medium text-slate-400">(자동연동)</span></span>
+                <span id="brief-hotel-vendor" class="text-xs font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200/80 truncate max-w-[140px]">경유/기내</span>
               </div>
-              <div id="brief-hotel-name" class="text-xs font-extrabold text-slate-900 leading-snug">심야 환승 출국 (기내박)</div>
-              <p id="brief-hotel-tip" class="text-[11px] text-slate-500 leading-relaxed">위탁 수하물은 최종 목적지까지 자동 연결되며 기내용 가방만 지참합니다.</p>
+              <div id="brief-hotel-name" class="text-sm font-extrabold text-slate-900 leading-snug">심야 환승 출국 (기내박)</div>
+              <p id="brief-hotel-tip" class="text-xs text-slate-600 leading-relaxed">위탁 수하물은 최종 목적지까지 자동 연결되며 기내용 가방만 지참합니다.</p>
             </div>
 
             <!-- 2. 현지 날씨 · 전압 · 결제 3열 미니 그리드 -->
             <div class="grid grid-cols-3 gap-1.5 text-center">
               <div class="bg-slate-50/70 border border-slate-200/70 rounded-xl p-2.5">
-                <div class="text-[10px] font-bold text-slate-400">🌡️ 1월 기온</div>
-                <div id="brief-weather" class="text-[11px] font-extrabold text-slate-800 mt-0.5">18~24°C</div>
+                <div class="text-xs font-bold text-slate-400">🌡️ 1월 기온</div>
+                <div id="brief-weather" class="text-xs font-extrabold text-slate-800 mt-1">18~24°C</div>
               </div>
               <div class="bg-slate-50/70 border border-slate-200/70 rounded-xl p-2.5">
-                <div class="text-[10px] font-bold text-slate-400">🔌 콘센트</div>
-                <div id="brief-plug" class="text-[11px] font-extrabold text-slate-800 mt-0.5">230V (G타입)</div>
+                <div class="text-xs font-bold text-slate-400">🔌 콘센트</div>
+                <div id="brief-plug" class="text-xs font-extrabold text-slate-800 mt-1">230V (G타입)</div>
               </div>
               <div class="bg-slate-50/70 border border-slate-200/70 rounded-xl p-2.5">
-                <div class="text-[10px] font-bold text-slate-400">💳 주요 결제</div>
-                <div id="brief-pay" class="text-[11px] font-extrabold text-slate-800 mt-0.5">트래블카드</div>
+                <div class="text-xs font-bold text-slate-400">💳 주요 결제</div>
+                <div id="brief-pay" class="text-xs font-extrabold text-slate-800 mt-1">트래블카드</div>
               </div>
             </div>
 
             <!-- 3. 당일 방문국 실시간 환율 계산기 (슬레이트·화이트 통일) -->
             <div class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-3.5 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-extrabold text-slate-700">💱 현지 통화 ➔ 원화 계산기</span>
-                <span id="fx-rate-badge" class="text-[10px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200/80">1 USD ≈ 1,380원</span>
+                <span class="text-xs font-extrabold text-slate-700">💱 현지 통화 ➔ 원화 계산기</span>
+                <span id="fx-rate-badge" class="text-xs font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200/80">1 USD ≈ 1,380원</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <select id="fx-currency-select" onchange="onCurrencySelectChange()" class="border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-extrabold text-slate-800 bg-white focus:outline-none focus:border-slate-400">
+                <select id="fx-currency-select" onchange="onCurrencySelectChange()" class="border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-extrabold text-slate-800 bg-white focus:outline-none focus:border-slate-400">
                   <option value="EUR">🇪🇺 EUR (€)</option>
                   <option value="CHF">🇨🇭 CHF (프랑)</option>
                   <option value="USD">🇺🇸 USD ($)</option>
                   <option value="AED">🇦🇪 AED (디르함)</option>
                 </select>
-                <input id="fx-input-amount" type="number" step="any" oninput="updateFxResult()" value="10" class="w-full border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-extrabold text-slate-900 bg-white focus:outline-none focus:border-slate-400" placeholder="현지 금액">
+                <input id="fx-input-amount" type="number" step="any" oninput="updateFxResult()" value="10" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-extrabold text-slate-900 bg-white focus:outline-none focus:border-slate-400" placeholder="현지 금액">
               </div>
               <div class="flex justify-between items-center pt-1.5 border-t border-slate-200/70 text-xs">
                 <span class="font-bold text-slate-500">예상 원화 환산액</span>
@@ -288,14 +293,14 @@
             <!-- 4. 날짜별 바우처 / 예약번호 퀵 메모장 (자동 저장) -->
             <div class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-3.5 space-y-1.5">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-extrabold text-slate-700">📝 당일 예약번호 · 체크 메모</span>
-                <span class="text-[10px] font-bold text-slate-400">자동저장</span>
+                <span class="text-xs font-extrabold text-slate-700">📝 당일 예약번호 · 체크 메모</span>
+                <span class="text-xs font-bold text-slate-400">자동저장</span>
               </div>
               <textarea id="brief-day-memo" rows="3" oninput="saveDayQuickMemo()" class="w-full bg-white border border-slate-200/90 rounded-xl p-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-slate-400 resize-none" placeholder="이 날짜에 필요한 바우처 번호, 기차 좌석, 만날 장소 등을 적어두세요."></textarea>
             </div>
           </div>
 
-          <div class="text-[10px] text-slate-400 text-center pt-2 border-t border-slate-100">
+          <div class="text-xs text-slate-400 text-center pt-2 border-t border-slate-100">
             ✨ 달력 날짜를 바꾸면 숙소·기후·통화가 자동 전환됩니다
           </div>
         </section>
@@ -309,26 +314,26 @@
       <!-- 상단 총예산 & 4대 지출 요약 바 -->
       <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 shrink-0">
         <div class="col-span-2 lg:col-span-1 bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xs flex flex-col justify-between">
-          <div class="flex justify-between items-center text-[11px] font-bold text-slate-300">
+          <div class="flex justify-between items-center text-xs font-bold text-slate-300">
             <span>💰 전체 총예산</span>
             <span>1인 <b id="per-person-cost" class="text-emerald-400">₩0</b></span>
           </div>
           <div id="bottom-grand-total" class="text-lg sm:text-xl font-extrabold mt-1">₩0</div>
         </div>
         <div class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col justify-between">
-          <div class="text-[11px] font-bold text-slate-500">✈️ 1. 교통비</div>
+          <div class="text-xs font-bold text-slate-500">✈️ 1. 교통비</div>
           <div id="sum-transport" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">₩0</div>
         </div>
         <div class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col justify-between">
-          <div class="text-[11px] font-bold text-slate-500">🏨 2. 숙박비</div>
+          <div class="text-xs font-bold text-slate-500">🏨 2. 숙박비</div>
           <div id="sum-base" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">₩0</div>
         </div>
         <div class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col justify-between">
-          <div class="text-[11px] font-bold text-slate-500">🎟️ 3. 투어·티켓 (사전예매)</div>
+          <div class="text-xs font-bold text-slate-500">🎟️ 3. 투어·티켓 (사전예매)</div>
           <div id="sum-schedule" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">₩0</div>
         </div>
         <div class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col justify-between">
-          <div class="text-[11px] font-bold text-slate-500">🍽️ 4. 식비·현장지출</div>
+          <div class="text-xs font-bold text-slate-500">🍽️ 4. 식비·현장지출</div>
           <div id="sum-onsite" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">₩0</div>
         </div>
       </div>
@@ -341,13 +346,13 @@
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
-                <h2 class="text-sm font-extrabold text-slate-900">✈️ 교통비</h2>
-                <span id="count-transport" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
+                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">✈️ 교통비</h2>
+                <span id="count-transport" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
               </div>
-              <p class="text-[10px] text-slate-400 mt-0.5">항공 · 고속열차 · 시내교통 (클릭 시 수정)</p>
+              <p class="text-xs text-slate-400 mt-0.5">항공 · 고속열차 · 시내교통 (클릭 시 수정)</p>
             </div>
           </div>
-          <div id="budget-transport-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-1.5 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-transport-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 2: 숙박비 -->
@@ -355,14 +360,14 @@
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
-                <h2 class="text-sm font-extrabold text-slate-900">🏨 숙박비</h2>
-                <span id="count-lodging" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
+                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">🏨 숙박비</h2>
+                <span id="count-lodging" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
               </div>
-              <p class="text-[10px] text-slate-400 mt-0.5">도시별 호텔 · 리조트 (클릭 시 수정)</p>
+              <p class="text-xs text-slate-400 mt-0.5">도시별 호텔 · 리조트 (클릭 시 수정)</p>
             </div>
-            <button onclick="openBaseModal(null)" class="text-[11px] font-bold px-2.5 py-1 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
+            <button onclick="openBaseModal(null)" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="base-expense-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-1.5 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="base-expense-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 3: 투어·티켓 (사전예매) -->
@@ -370,14 +375,14 @@
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
-                <h2 class="text-sm font-extrabold text-slate-900">🎟️ 투어 · 티켓</h2>
-                <span id="count-tour" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
+                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">🎟️ 투어 · 티켓</h2>
+                <span id="count-tour" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
               </div>
-              <p class="text-[10px] text-slate-400 mt-0.5">전망대 · 미술관 · 테마파크 (클릭 시 수정)</p>
+              <p class="text-xs text-slate-400 mt-0.5">전망대 · 미술관 · 테마파크 (클릭 시 수정)</p>
             </div>
-            <button onclick="openPlaceModalForBudget('클룩')" class="text-[11px] font-bold px-2.5 py-1 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
+            <button onclick="openPlaceModalForBudget('클룩')" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="budget-tour-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-1.5 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-tour-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 4: 식비·현장지출 -->
@@ -385,14 +390,14 @@
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
-                <h2 class="text-sm font-extrabold text-slate-900">🍽️ 식비 · 현장지출</h2>
-                <span id="count-onsite" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
+                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">🍽️ 식비 · 현장지출</h2>
+                <span id="count-onsite" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0건</span>
               </div>
-              <p class="text-[10px] text-slate-400 mt-0.5">맛집 · 카페 · 현지교통/락커 (클릭 시 수정)</p>
+              <p class="text-xs text-slate-400 mt-0.5">맛집 · 카페 · 현지교통/락커 (클릭 시 수정)</p>
             </div>
-            <button onclick="openPlaceModalForBudget('현장결제')" class="text-[11px] font-bold px-2.5 py-1 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
+            <button onclick="openPlaceModalForBudget('현장결제')" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="budget-onsite-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-1.5 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-onsite-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
       </div>
@@ -1445,7 +1450,8 @@
         const rowStartOffset = rIdx === 0 ? 0 : row1Len;
         const rowEndOffset = rowStartOffset + rowDays.length;
         const cols = rowDays.length;
-        const minRowPx = cols * (isMobileView ? 76 : 68);
+        // 모바일에서는 칸당 너비를 96px로 넓혀 도시 막대와 교통 시간 캡슐이 제자리에 정확히 배치되도록 개선
+        const minRowPx = cols * (isMobileView ? 96 : 72);
 
         const rowBars = [];
         globalEvents.forEach(gev => {
@@ -1498,14 +1504,13 @@
               anchorPct = ((prevBar.leftPct + prevBar.widthPct) + bar.leftPct) / 2;
               prevBar.mergedRightOut = true;
             } else if (!prevBar && depTime) {
-              // 첫 출발 구간(예: 인천➔아부다비)이나 앞 막대가 없는 경우 캡슐을 왼쪽(앞쪽)으로 당겨 다음 캡슐과 겹침 방지
               const depFrac = parseHourFraction(depTime, 0.05);
               const depDayStart = Math.floor(bar.clippedStart);
               anchorPct = ((depDayStart + depFrac * 0.5) / cols) * 100;
             }
 
             jList.push({
-              anchorPct: Math.max(2.5, Math.min(97.5, anchorPct)),
+              anchorPct: Math.max(1.5, Math.min(98.5, anchorPct)),
               depTime,
               icon: bar.transIcon || '✈️',
               arrTime,
@@ -1516,7 +1521,7 @@
           lane.forEach(bar => {
             if (bar.isRealEnd && !bar.mergedRightOut && bar.outTime) {
               jList.push({
-                anchorPct: Math.min(98, bar.leftPct + bar.widthPct),
+                anchorPct: Math.min(98.5, bar.leftPct + bar.widthPct),
                 depTime: bar.outTime,
                 icon: '🛫',
                 arrTime: '',
@@ -1525,26 +1530,31 @@
             }
           });
 
-          // 인접한 시간 캡슐끼리 간격이 좁아 겹칠 경우 앞쪽 캡슐을 왼쪽으로, 뒤쪽 캡슐을 오른쪽으로 자동 정렬
-          const minGapPct = isMobileView ? 12.5 : 10.5;
+          // 픽셀 기반으로 인접한 캡슐이 겹칠 때만 살짝 밀어주어 모바일(28일 전체 줄)에서도 도시 막대와 교통 캡슐 위치가 어긋나지 않도록 보정
+          const minGapPct = (84 / minRowPx) * 100;
           for (let i = 1; i < jList.length; i++) {
             const diff = jList[i].anchorPct - jList[i - 1].anchorPct;
             if (diff < minGapPct) {
-              const pushLeft = Math.min(jList[i - 1].anchorPct - 2.0, (minGapPct - diff) * 0.75);
-              jList[i - 1].anchorPct -= pushLeft;
-              jList[i].anchorPct = Math.min(97.5, jList[i - 1].anchorPct + minGapPct);
+              const overlap = minGapPct - diff;
+              if (i === 1) {
+                jList[0].anchorPct = Math.max(1.2, jList[0].anchorPct - overlap * 0.85);
+                jList[1].anchorPct = jList[0].anchorPct + minGapPct * 0.9;
+              } else {
+                jList[i - 1].anchorPct -= overlap * 0.4;
+                jList[i].anchorPct += overlap * 0.6;
+              }
             }
           }
 
           return jList;
         });
 
-        const weekBadgeLabel = isMobileView ? '전체 여정 (좌우 스크롤)' : (rIdx === 0 ? '1주차 · 유럽 여정 (12/29 ~ 1/9)' : '2주차 · 미국 여정 (1/10 ~ 1/23)');
+        const weekBadgeLabel = isMobileView ? '전체 여정 (좌우 스크롤 · 터치)' : (rIdx === 0 ? '1주차 · 유럽 여정 (12/29 ~ 1/9)' : '2주차 · 미국 여정 (1/10 ~ 1/23)');
 
         return `
           <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-2.5 sm:p-3">
             <div class="flex items-center justify-between mb-1.5 px-1">
-              <span class="text-[11px] font-extrabold text-slate-500">${weekBadgeLabel}</span>
+              <span class="text-xs font-extrabold text-slate-600">${weekBadgeLabel}</span>
             </div>
             <div class="overflow-x-auto custom-scroll rounded-xl border border-slate-200/80 bg-white pb-1.5 shadow-2xs">
               <div style="min-width: ${minRowPx}px;" class="px-2 pt-1.5 pb-1">
@@ -1567,13 +1577,13 @@
                     else if (d.isBlue || isSat) numColor = "text-blue-500";
 
                     const monthPrefix = ((rIdx === 0 && idx === 0) || d.key === '1/1')
-                      ? `<span class="text-[10px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
+                      ? `<span class="text-[11px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
                       : '';
 
                     return `
                       <div id="cal-col-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100 transition ${idx > 0 ? 'border-l border-slate-200/60' : ''} ${isSelected ? 'bg-slate-100' : ''}">
-                        <span class="day-num-btn text-xs font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
-                          ${monthPrefix}${d.label}<span class="text-[10px] font-bold ${wColor} ml-0.5">(${d.w})</span>
+                        <span class="day-num-btn text-xs sm:text-sm font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
+                          ${monthPrefix}${d.label}<span class="text-[11px] font-bold ${wColor} ml-0.5">(${d.w})</span>
                         </span>
                       </div>
                     `;
@@ -1591,7 +1601,7 @@
 
                   <div class="relative space-y-2">
                     ${cleanLanes.map((lane, lIdx) => `
-                      <div class="relative h-[56px] w-full">
+                      <div class="relative h-[58px] w-full">
                         <!-- 1층: 도시 체류 막대 -->
                         ${lane.map(bar => `
                           <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
@@ -1608,10 +1618,10 @@
                         ${(laneJunctions[lIdx] || []).map(j => `
                           <div style="left: ${j.anchorPct.toFixed(3)}%;"
                                title="${j.title}"
-                               class="absolute top-[31px] -translate-x-1/2 z-20 pointer-events-none inline-flex items-center gap-1 bg-white/95 px-2 py-0.5 rounded-full border border-slate-200/90 shadow-2xs text-[10px] font-bold text-slate-600 whitespace-nowrap">
+                               class="absolute top-[31px] -translate-x-1/2 z-20 pointer-events-none inline-flex items-center gap-1 bg-white/95 px-2 py-0.5 rounded-full border border-slate-200/90 shadow-2xs text-[11px] font-bold text-slate-600 whitespace-nowrap">
                             ${j.depTime ? `<span class="text-slate-400">${j.depTime}</span>` : ''}
-                            <span class="text-[10px] leading-none">${j.icon}</span>
-                            ${j.arrTime ? `<span class="text-slate-700 font-extrabold">${j.arrTime}</span>` : ''}
+                            <span class="text-[11px] leading-none">${j.icon}</span>
+                            ${j.arrTime ? `<span class="text-slate-800 font-extrabold">${j.arrTime}</span>` : ''}
                           </div>
                         `).join('')}
                       </div>
@@ -1780,7 +1790,7 @@
       listEl.innerHTML = data.blocks.map((b, idx) => {
         const hasInfo = b.vendor || (b.cost && b.cost > 0);
         const infoTag = hasInfo
-          ? `<span class="text-[11px] font-bold text-slate-500 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-lg shrink-0 whitespace-nowrap">
+          ? `<span class="text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200/80 px-2.5 py-0.5 rounded-lg shrink-0 whitespace-nowrap">
                ${b.vendor ? b.vendor : ''}${b.vendor && b.cost > 0 ? ' · ' : ''}${b.cost > 0 ? `<b class="text-emerald-600">${Number(b.cost).toLocaleString()}원</b>` : ''}
              </span>`
           : '';
@@ -1791,14 +1801,14 @@
 
         if (!isLast || trans) {
           connectorHtml = `
-            <div class="flex items-center my-1">
-              <div class="w-12 shrink-0"></div>
+            <div class="flex items-center my-1.5">
+              <div class="w-13 shrink-0"></div>
               <div class="flex-1 flex items-center pl-4">
                 <div class="relative flex items-center py-0.5">
                   <div class="absolute left-3 top-0 bottom-0 w-px bg-slate-200"></div>
                   ${trans ? `
                     <button onclick="openTransModal(${idx})"
-                            class="relative z-10 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 border border-slate-200/90 px-2.5 py-1 rounded-full text-[11px] font-bold transition whitespace-nowrap">
+                            class="relative z-10 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 border border-slate-200/90 px-3 py-1 rounded-full text-xs font-bold transition whitespace-nowrap">
                       <span>${trans.icon}</span>
                       <span>${trans.label}</span>
                       ${trans.cost > 0 ? `<span class="text-slate-900 font-extrabold">· ${Number(trans.cost).toLocaleString()}원</span>` : ''}
@@ -1819,26 +1829,26 @@
         return `
           <div>
             <div class="flex items-start sm:items-center gap-2.5">
-              <div class="w-12 text-right shrink-0 pt-1 sm:pt-0">
-                <span class="text-[11px] font-extrabold text-slate-600 bg-slate-100/80 border border-slate-200/60 px-1.5 py-1 rounded-lg inline-block w-full text-center">${b.time}</span>
+              <div class="w-13 text-right shrink-0 pt-1 sm:pt-0">
+                <span class="text-xs font-extrabold text-slate-700 bg-slate-100/80 border border-slate-200/60 px-2 py-1 rounded-lg inline-block w-full text-center">${b.time}</span>
               </div>
 
               <div onclick="openPlaceModal(${idx})"
-                   class="group flex-1 min-w-0 bg-white hover:bg-slate-50/70 border border-slate-200/90 hover:border-slate-300 rounded-2xl px-3.5 py-2.5 shadow-2xs cursor-pointer transition flex items-center justify-between gap-2">
+                   class="group flex-1 min-w-0 bg-white hover:bg-slate-50/70 border border-slate-200/90 hover:border-slate-300 rounded-2xl px-3.5 py-3 shadow-2xs cursor-pointer transition flex items-center justify-between gap-2">
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start sm:items-center justify-between gap-1.5 flex-col sm:flex-row">
                     <div class="flex items-center gap-2 min-w-0 w-full sm:w-auto">
-                      <span class="w-5 h-5 rounded-md bg-slate-100 border border-slate-200/80 text-slate-700 text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-                      <span class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug break-words">${b.title}</span>
+                      <span class="w-5 h-5 rounded-md bg-slate-100 border border-slate-200/80 text-slate-700 text-xs font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
+                      <span class="text-sm font-extrabold text-slate-900 leading-snug break-words">${b.title}</span>
                     </div>
                     ${infoTag}
                   </div>
-                  ${b.memo ? `<p class="text-[11px] text-slate-400 leading-snug mt-1 pl-7 break-words">${b.memo}</p>` : ''}
+                  ${b.memo ? `<p class="text-xs text-slate-500 leading-snug mt-1 pl-7 break-words">${b.memo}</p>` : ''}
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-center gap-1 shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
-                  <button onclick="moveBlock(${idx}, -1)" class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center" title="위로 이동">▲</button>
-                  <button onclick="moveBlock(${idx}, 1)" class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center" title="아래로 이동">▼</button>
+                  <button onclick="moveBlock(${idx}, -1)" class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 text-xs font-bold flex items-center justify-center" title="위로 이동">▲</button>
+                  <button onclick="moveBlock(${idx}, 1)" class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 text-xs font-bold flex items-center justify-center" title="아래로 이동">▼</button>
                 </div>
               </div>
             </div>
@@ -2228,17 +2238,17 @@
 
       box.innerHTML = baseExpenses.map((item, idx) => `
         <div onclick="openBaseModal(${idx})"
-             class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
+             class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3.5 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
           <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-1.5 mb-0.5">
-              <span class="w-4 h-4 rounded bg-slate-800 text-white text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-              ${item.period ? `<span class="text-[10px] font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${item.period}</span>` : ''}
-              ${item.vendor ? `<span class="text-[10px] text-slate-400 font-semibold truncate">${item.vendor}</span>` : ''}
+            <div class="flex items-center gap-1.5 mb-1">
+              <span class="w-4.5 h-4.5 px-1 rounded bg-slate-800 text-white text-[11px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
+              ${item.period ? `<span class="text-xs font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${item.period}</span>` : ''}
+              ${item.vendor ? `<span class="text-xs text-slate-500 font-semibold truncate">${item.vendor}</span>` : ''}
             </div>
-            <div class="font-extrabold text-slate-900 truncate pl-0.5">${item.title}</div>
+            <div class="text-sm font-extrabold text-slate-900 truncate pl-0.5">${item.title}</div>
           </div>
           <div class="text-right shrink-0 ml-1">
-            <b class="text-xs font-extrabold ${Number(item.cost) > 0 ? 'text-slate-900' : 'text-slate-400'}">${Number(item.cost) > 0 ? formatKRW(item.cost) : '세이브'}</b>
+            <b class="text-sm font-extrabold ${Number(item.cost) > 0 ? 'text-slate-900' : 'text-slate-400'}">${Number(item.cost) > 0 ? formatKRW(item.cost) : '세이브'}</b>
           </div>
         </div>
       `).join('');
@@ -2304,17 +2314,17 @@
       transBox.innerHTML = transportItems.length > 0
         ? transportItems.map((it, idx) => `
             <div onclick="openBudgetTransEdit('${it.dayKey}', ${it.blockIdx})"
-                 class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
+                 class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3.5 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
               <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 mb-0.5">
-                  <span class="w-4 h-4 rounded bg-slate-800 text-white text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-                  <span class="text-[10px] font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
-                  <span class="text-[10px] text-slate-400 font-semibold">${it.icon} ${it.mode}</span>
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="w-4.5 h-4.5 px-1 rounded bg-slate-800 text-white text-[11px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
+                  <span class="text-xs font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
+                  <span class="text-xs text-slate-500 font-semibold">${it.icon} ${it.mode}</span>
                 </div>
-                <div class="font-extrabold text-slate-900 truncate pl-0.5">${it.label}</div>
+                <div class="text-sm font-extrabold text-slate-900 truncate pl-0.5">${it.label}</div>
               </div>
               <div class="text-right shrink-0 ml-1">
-                <b class="text-xs font-extrabold ${it.cost > 0 ? 'text-slate-900' : 'text-slate-400'}">${it.cost > 0 ? formatKRW(it.cost) : '포함'}</b>
+                <b class="text-sm font-extrabold ${it.cost > 0 ? 'text-slate-900' : 'text-slate-400'}">${it.cost > 0 ? formatKRW(it.cost) : '포함'}</b>
               </div>
             </div>
           `).join('')
@@ -2323,17 +2333,17 @@
       tourBox.innerHTML = tourItems.length > 0
         ? tourItems.map((it, idx) => `
             <div onclick="openBudgetPlaceEdit('${it.dayKey}', ${it.blockIdx})"
-                 class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
+                 class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3.5 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
               <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 mb-0.5">
-                  <span class="w-4 h-4 rounded bg-slate-800 text-white text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-                  <span class="text-[10px] font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
-                  ${it.vendor ? `<span class="text-[10px] text-slate-400 font-semibold truncate">${it.vendor}</span>` : ''}
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="w-4.5 h-4.5 px-1 rounded bg-slate-800 text-white text-[11px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
+                  <span class="text-xs font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
+                  ${it.vendor ? `<span class="text-xs text-slate-500 font-semibold truncate">${it.vendor}</span>` : ''}
                 </div>
-                <div class="font-extrabold text-slate-900 truncate pl-0.5">${it.title}</div>
+                <div class="text-sm font-extrabold text-slate-900 truncate pl-0.5">${it.title}</div>
               </div>
               <div class="text-right shrink-0 ml-1">
-                <b class="text-xs font-extrabold text-slate-900">${formatKRW(it.cost)}</b>
+                <b class="text-sm font-extrabold text-slate-900">${formatKRW(it.cost)}</b>
               </div>
             </div>
           `).join('')
@@ -2343,17 +2353,17 @@
         onsiteBox.innerHTML = onsiteItems.length > 0
           ? onsiteItems.map((it, idx) => `
               <div onclick="openBudgetPlaceEdit('${it.dayKey}', ${it.blockIdx})"
-                   class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
+                   class="group flex items-center justify-between gap-2 bg-slate-50/70 hover:bg-slate-100/80 px-3.5 py-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 cursor-pointer transition text-xs">
                 <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 mb-0.5">
-                    <span class="w-4 h-4 rounded bg-slate-800 text-white text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-                    <span class="text-[10px] font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
-                    ${it.vendor ? `<span class="text-[10px] text-slate-400 font-semibold truncate">${it.vendor}</span>` : ''}
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="w-4.5 h-4.5 px-1 rounded bg-slate-800 text-white text-[11px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
+                    <span class="text-xs font-extrabold text-slate-600 bg-white border border-slate-200/80 px-1.5 py-0.5 rounded">${it.dayKey}</span>
+                    ${it.vendor ? `<span class="text-xs text-slate-500 font-semibold truncate">${it.vendor}</span>` : ''}
                   </div>
-                  <div class="font-extrabold text-slate-900 truncate pl-0.5">${it.title}</div>
+                  <div class="text-sm font-extrabold text-slate-900 truncate pl-0.5">${it.title}</div>
                 </div>
                 <div class="text-right shrink-0 ml-1">
-                  <b class="text-xs font-extrabold text-emerald-700">${formatKRW(it.cost)}</b>
+                  <b class="text-sm font-extrabold text-emerald-700">${formatKRW(it.cost)}</b>
                 </div>
               </div>
             `).join('')

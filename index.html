@@ -1630,7 +1630,8 @@
       const actualRow2Days = ALL_CALENDAR_DAYS.slice(jan9Idx + 1, jan9Idx + 1 + actualRow1Days.length);
 
       const allStripDays = [...actualRow1Days, ...actualRow2Days];
-      const rowChunks = [actualRow1Days, actualRow2Days];
+      const isMobileView = window.innerWidth < 1024;
+      const rowChunks = isMobileView ? [allStripDays] : [actualRow1Days, actualRow2Days];
       const row1Len = actualRow1Days.length;
 
       function parseHourFraction(tStr, fallbackFrac) {
@@ -1681,13 +1682,13 @@
         });
       });
 
-      // 각 줄(1줄차: ~1/9(토) / 2줄차: 1/10(일)~) 렌더링 HTML 생성
+      // 각 줄(PC: 2줄 분할 / 모바일: 전체 기간 1줄 연속) 렌더링 HTML 생성
       const rowsHtml = rowChunks.map((rowDays, rIdx) => {
         const rowStartOffset = rIdx === 0 ? 0 : row1Len;
         const rowEndOffset = rowStartOffset + rowDays.length;
         const cols = rowDays.length;
-        const minRowPx = cols * 68;
-        const gridStyle = `display: grid; grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width: 100%; min-width: ${minRowPx}px;`;
+        const cellMinPx = isMobileView ? 76 : 68;
+        const minRowPx = cols * cellMinPx;
 
         // 현재 줄에 걸치는 막대 조각 추출
         const rowBars = [];
@@ -1878,14 +1879,6 @@
       if (!scrollBox) return;
       const targetLeft = col.offsetLeft - (scrollBox.clientWidth / 2) + (col.clientWidth / 2);
       scrollBox.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-    }
-
-    function scrollCalendarToDay(key) {
-      const wrap = document.getElementById('calendar-scroll-wrap');
-      const col = document.getElementById(`cal-col-${key.replace('/', '-')}`);
-      if (!wrap || !col) return;
-      const targetLeft = col.offsetLeft - (wrap.clientWidth / 2) + (col.clientWidth / 2);
-      wrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
     }
 
     function populateDateSelects() {
@@ -2879,7 +2872,15 @@
     });
 
     const mapLayerGroup = L.layerGroup().addTo(map);
-    window.addEventListener('resize', () => map.invalidateSize());
+    let lastIsMobileView = window.innerWidth < 1024;
+    window.addEventListener('resize', () => {
+      map.invalidateSize();
+      const nowIsMobile = window.innerWidth < 1024;
+      if (nowIsMobile !== lastIsMobileView) {
+        lastIsMobileView = nowIsMobile;
+        renderSpanCalendar();
+      }
+    });
 
     function isValidLatLngPair(c) {
       return Array.isArray(c) && c.length === 2 && Number.isFinite(Number(c[0])) && Number.isFinite(Number(c[1]));

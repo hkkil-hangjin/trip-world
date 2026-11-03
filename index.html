@@ -2,15 +2,1608 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>내 웹사이트</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2026-2027 세계일주 마스터 플래너</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      overflow-x: hidden;
+      word-break: keep-all;
+    }
+    .layout-container {
+      width: 100%;
+      max-width: 1152px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    #map { height: 330px; width: 100%; border-radius: 1rem; z-index: 10; }
+    .num-marker {
+      display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 9999px;
+      font-weight: 800; font-size: 11px; color: white;
+      border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    }
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      width: 100%;
+    }
+    .day-num-btn {
+      width: 24px; height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 9999px; transition: all 0.15s;
+    }
+    .day-num-btn.active-day {
+      background-color: #1e293b; color: #ffffff !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .span-bar {
+      min-width: 0;
+      height: 19px;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center;
+      padding: 0 5px;
+      border-radius: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    @media (min-width: 640px) {
+      .span-bar { height: 21px; font-size: 10.5px; padding: 0 7px; }
+    }
+    .span-bar:hover { filter: brightness(0.95); }
+    .cal-edit-active .span-bar { outline: 1.5px dashed #f43f5e; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-6">
-  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
-    <span class="text-4xl">🚀</span>
-    <h1 class="text-2xl font-bold mt-4">배포 파이프라인 연결 성공!</h1>
-    <p class="text-slate-400 mt-2 text-sm">이제 제미나이랑 채팅해서 이 화면을 마음대로 바꿀 수 있습니다.</p>
+<body class="pb-20">
+
+  <!-- ==========================================
+       상단 헤더
+       ========================================== -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="layout-container py-3 flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-2 min-w-0 flex-wrap">
+        <span id="header-duration-badge" class="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">20박 21일</span>
+        <h1 class="text-sm sm:text-lg font-extrabold text-slate-900 truncate">2027년 1월 세계일주 플래너</h1>
+        <!-- 1, 2, 3 안건 선택 버튼 그룹 -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80 gap-1 shrink-0">
+          <button id="plan-btn-1" onclick="switchPlan(1)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap">1안 풀코스</button>
+          <button id="plan-btn-2" onclick="switchPlan(2)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap">2안 스·스·미</button>
+          <button id="plan-btn-3" onclick="switchPlan(3)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap">3안 미국</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
+        <div class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 whitespace-nowrap">
+          총예산 <span id="grand-total-display">₩0</span>
+        </div>
+        <button onclick="resetAllData()" class="text-xs font-semibold text-slate-500 hover:text-rose-600 bg-slate-100 px-2.5 py-1.5 rounded-xl transition whitespace-nowrap">
+          초기화
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       메인 본문
+       ========================================== -->
+  <main class="layout-container mt-4 space-y-5">
+
+    <!-- 1단: [좌] 스마트 월간 캘린더 + [우] 심플 타임라인 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+      <!-- [좌측] 연속 구간 바 월간 달력 (시작일~종료일 자동 줄 배치) -->
+      <section id="calendar-section" class="lg:col-span-6 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-4 sm:p-5 flex flex-col justify-start min-w-0">
+        <div>
+          <div class="flex justify-between items-center mb-2.5 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <h2 class="text-base sm:text-lg font-extrabold text-slate-900 whitespace-nowrap">📅 2027년 1월</h2>
+              <span id="cal-mode-badge" class="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-600 rounded-full whitespace-nowrap">연속 일정 뷰</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button onclick="openAddBarModal()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+                + 막대
+              </button>
+              <button id="cal-edit-btn" onclick="toggleCalendarEditMode()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+                ⚙️ 달력 편집
+              </button>
+            </div>
+          </div>
+
+          <!-- 요일 헤더 -->
+          <div class="week-grid text-center text-[11px] font-bold text-slate-400 pb-1.5 border-b border-slate-100">
+            <div class="text-rose-400">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-400">토</div>
+          </div>
+
+          <!-- 주간(Week) 렌더링 영역 -->
+          <div id="span-calendar-body" class="divide-y divide-slate-100"></div>
+        </div>
+      </section>
+
+      <!-- [우측] 심플 타임라인 (좌측 시간 + 우측 장소 카드 + 연결선 중앙 + 교통편) -->
+      <section class="lg:col-span-6 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-4 sm:p-5 flex flex-col justify-between min-w-0">
+        <div>
+          <!-- 선택된 날짜 헤더 -->
+          <div class="flex justify-between items-start gap-2 pb-3 border-b border-slate-100">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="tl-day-badge" class="bg-blue-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shrink-0 whitespace-nowrap">DAY 1</span>
+                <h3 id="tl-date-title" class="text-base sm:text-lg font-extrabold text-slate-900 whitespace-nowrap">12월 29일 (화)</h3>
+                <span id="tl-day-cost" class="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200 whitespace-nowrap">당일 ₩0</span>
+              </div>
+              <p id="tl-city-subtitle" class="text-xs font-bold text-slate-500 mt-1 truncate">🇰🇷 인천 ➔ 🇦🇪 아부다비 · 두바이</p>
+            </div>
+            <button onclick="openPlaceModal(null)" class="bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 shadow-sm transition shrink-0 whitespace-nowrap">
+              + 일정 추가
+            </button>
+          </div>
+
+          <!-- 날짜 빠른 이동 가로 칩 -->
+          <div id="quick-day-selector" class="flex gap-1.5 overflow-x-auto py-2 no-scrollbar border-b border-slate-100 mb-3 text-xs"></div>
+
+          <!-- 타임라인 블록 리스트 -->
+          <div id="timeline-list" class="lg:max-h-[360px] lg:overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="text-[11px] text-slate-400 text-center mt-3 pt-2.5 border-t border-slate-100">
+          💡 <b>일정 카드</b>를 누르면 시간/비용 수정 팝업이 열리고, 시간순으로 자동 정렬됩니다.
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 2단: [좌] 세계일주 루트 지도 + [우] 예산 상세 카드 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+      <!-- [좌측] 세계일주 루트 맵 -->
+      <section class="lg:col-span-6 bg-white p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200/90 flex flex-col justify-between min-w-0">
+        <div>
+          <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+            <div>
+              <h2 id="map-section-title" class="text-base font-extrabold text-slate-900">🗺️ 세계일주 이동 루트 맵</h2>
+              <p class="text-[11px] text-slate-400">마커를 누르면 해당 날짜의 타임라인이 열립니다</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="focusMap('world')" class="px-2.5 py-1.5 bg-slate-800 text-white rounded-xl text-[11px] font-bold hover:bg-slate-700 whitespace-nowrap">🌐 전체</button>
+              <button onclick="focusMap('europe')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-xl text-[11px] font-bold hover:bg-emerald-500 whitespace-nowrap">🇪🇺 유럽</button>
+              <button onclick="focusMap('usa')" class="px-2.5 py-1.5 bg-amber-500 text-white rounded-xl text-[11px] font-bold hover:bg-amber-600 whitespace-nowrap">🇺🇸 미국</button>
+            </div>
+          </div>
+          <div id="map" class="border border-slate-200"></div>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap justify-between items-center text-[11px] text-slate-500 gap-2">
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 2인 동반 루트</span>
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-orange-500 inline-block rounded"></span> 본인 플로리다</span>
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-purple-600 inline-block rounded"></span> 동행 워싱턴</span>
+        </div>
+      </section>
+
+      <!-- [우측] 자동 합산 예산 & 숙박/공통 경비 카드 -->
+      <section class="lg:col-span-6 bg-white p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200/90 flex flex-col justify-between min-w-0">
+        <div>
+          <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100 gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-900">💰 예산 자동 합산 & 숙박/공통비</h2>
+              <p class="text-[11px] text-slate-400">타임라인에 입력한 비용과 아래 고정비가 실시간 합산됩니다</p>
+            </div>
+            <button onclick="openBaseModal(null)" class="text-xs font-bold px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition whitespace-nowrap shrink-0">
+              + 고정비 추가
+            </button>
+          </div>
+
+          <!-- 3대 항목 요약 칩 -->
+          <div class="grid grid-cols-3 gap-2.5 mb-3.5 text-center">
+            <div class="bg-slate-50 border border-slate-200/80 p-2.5 rounded-2xl">
+              <div class="text-[11px] font-bold text-blue-600 whitespace-nowrap">✈️ 교통편 합계</div>
+              <div id="sum-transport" class="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">₩0</div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200/80 p-2.5 rounded-2xl">
+              <div class="text-[11px] font-bold text-amber-600 whitespace-nowrap">📍 일정/입장권</div>
+              <div id="sum-schedule" class="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">₩0</div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200/80 p-2.5 rounded-2xl">
+              <div class="text-[11px] font-bold text-emerald-600 whitespace-nowrap">🏨 숙박/식비/기타</div>
+              <div id="sum-base" class="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">₩0</div>
+            </div>
+          </div>
+
+          <!-- 숙박·식비·공통비 리스트 (클릭 시 팝업 수정) -->
+          <div id="base-expense-list" class="space-y-1.5 max-h-[215px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-500">1인당 약 <b id="per-person-cost" class="text-slate-800">₩0</b></span>
+          <span class="font-extrabold text-slate-900">전체 합계 <b id="bottom-grand-total" class="text-emerald-600 text-sm sm:text-base ml-1">₩0</b></span>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ==========================================
+       모달 1: 일정(장소) 상세 입력/수정 팝업 (시간 선택기 & 자동정렬 적용)
+       ========================================== -->
+  <div id="place-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5 text-xs">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+        <h3 id="place-modal-header" class="text-sm font-extrabold text-slate-900">📍 일정 상세 정보</h3>
+        <button onclick="closePlaceModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">시간 선택 (시간순 자동 정렬)</label>
+          <input id="pm-time" type="time" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-extrabold text-slate-900 bg-slate-50 focus:bg-white focus:outline-blue-500 cursor-pointer" value="09:00">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">관광지 / 장소 이름</label>
+          <input id="pm-title" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-slate-900 focus:outline-blue-500" placeholder="예: 인천공항 제1터미널">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">예약처 / 구분</label>
+          <input id="pm-vendor" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-800 focus:outline-blue-500" placeholder="예: 클룩 / 현장결제">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">비용 (원, 숫자만)</label>
+          <input id="pm-cost" type="number" step="1000" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-emerald-700 focus:outline-blue-500" placeholder="0">
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">메모 (선택)</label>
+        <input id="pm-memo" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-blue-500" placeholder="상세 팁이나 예약번호 메모">
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button id="pm-delete-btn" onclick="deletePlaceItem()" class="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold hover:bg-rose-100">삭제</button>
+        <div class="flex gap-2 ml-auto">
+          <button onclick="closePlaceModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold">취소</button>
+          <button onclick="savePlaceModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800">저장 (자동정렬)</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- ==========================================
+       모달 2: 연결선 중간 [+] 교통편 입력 팝업 (5종 선택)
+       ========================================== -->
+  <div id="trans-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5 text-xs">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+        <h3 class="text-sm font-extrabold text-slate-900">✈️ 구간 이동 교통편 설정</h3>
+        <button onclick="closeTransModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-600 mb-1.5">교통수단 선택 (5종)</label>
+        <div id="tm-mode-btns" class="grid grid-cols-5 gap-1.5 text-center"></div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">노선명 / 항공사 / 예약처</label>
+        <input id="tm-label" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-slate-900 focus:outline-blue-500" placeholder="예: 에티하드 항공 EY827">
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">교통 비용 (원, 총예산 자동 합산)</label>
+        <input id="tm-cost" type="number" step="1000" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-blue-600 focus:outline-blue-500" placeholder="0">
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button id="tm-delete-btn" onclick="deleteTransItem()" class="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold hover:bg-rose-100">교통편 삭제</button>
+        <div class="flex gap-2 ml-auto">
+          <button onclick="closeTransModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold">취소</button>
+          <button onclick="saveTransModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       모달 3: 달력 막대(Span Bar) 편집 팝업 (날짜 범위 선택형)
+       ========================================== -->
+  <div id="bar-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5 text-xs">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+        <h3 id="modal-title" class="text-sm font-extrabold text-slate-900">📅 달력 일정 기간 설정</h3>
+        <button onclick="closeBarModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+      </div>
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">표시할 이름 (국기·도시)</label>
+        <input id="modal-bar-title" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-900" placeholder="예: 🇵🇹 리스본 (2박)">
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">시작일</label>
+          <select id="modal-bar-start" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 font-bold text-slate-900"></select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">종료일</label>
+          <select id="modal-bar-end" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 font-bold text-slate-900"></select>
+        </div>
+      </div>
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">막대 색상</label>
+        <select id="modal-bar-color" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 font-semibold">
+          <option value="bg-amber-100 text-amber-900 border border-amber-200">노랑</option>
+          <option value="bg-emerald-100 text-emerald-900 border border-emerald-200">초록</option>
+          <option value="bg-teal-100 text-teal-900 border border-teal-200">민트</option>
+          <option value="bg-rose-100 text-rose-900 border border-rose-200">핑크</option>
+          <option value="bg-red-100 text-red-900 border border-red-200">빨강</option>
+          <option value="bg-indigo-100 text-indigo-900 border border-indigo-200">보라</option>
+          <option value="bg-orange-100 text-orange-900 border border-orange-200">주황</option>
+          <option value="bg-blue-100 text-blue-900 border border-blue-200">파랑</option>
+          <option value="bg-slate-200 text-slate-800 border border-slate-300">회색</option>
+        </select>
+      </div>
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button id="modal-delete-btn" onclick="deleteModalBar()" class="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold">삭제</button>
+        <div class="flex gap-2 ml-auto">
+          <button onclick="closeBarModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold">취소</button>
+          <button onclick="saveModalBar()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       모달 4: 숙박/공통 고정비 편집 팝업
+       ========================================== -->
+  <div id="base-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5 text-xs">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+        <h3 class="text-sm font-extrabold text-slate-900">🏨 숙박 / 공통 경비 편집</h3>
+        <button onclick="closeBaseModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+      </div>
+      <div>
+        <label class="block font-bold text-slate-600 mb-1">항목명</label>
+        <input id="bm-title" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-900" placeholder="예: 🇵🇹 리스본 호텔 (2박)">
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">예약처</label>
+          <input id="bm-vendor" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-800" placeholder="예: 아고다">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">금액 (원)</label>
+          <input id="bm-cost" type="number" step="10000" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-emerald-700" placeholder="0">
+        </div>
+      </div>
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button id="bm-delete-btn" onclick="deleteBaseModalItem()" class="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold">삭제</button>
+        <div class="flex gap-2 ml-auto">
+          <button onclick="closeBaseModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold">취소</button>
+          <button onclick="saveBaseModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       모달 5: 전체 초기화 확인 모달
+       ========================================== -->
+  <div id="reset-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl space-y-4 text-xs text-center">
+      <div class="text-base font-extrabold text-slate-900">🔄 데이터 초기화</div>
+      <p class="text-slate-600 leading-relaxed">모든 달력 막대, 일정, 비용을 초기 상태로 되돌릴까요?</p>
+      <div class="flex gap-2 justify-center pt-1">
+        <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition">취소</button>
+        <button onclick="confirmResetData()" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition">초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 교통수단 5종 정의
+    const TRANSPORT_MODES = [
+      { key: "항공", icon: "✈️", label: "항공" },
+      { key: "기차", icon: "🚄", label: "기차" },
+      { key: "버스", icon: "🚌", label: "버스" },
+      { key: "택시", icon: "🚕", label: "택시" },
+      { key: "도보", icon: "🚶", label: "도보" }
+    ];
+
+    // 1. 달력 전체 날짜 마스터 배열 (28일)
+    const ALL_CALENDAR_DAYS = [
+      { label: "27", key: "12/27", w: "일", muted: true },
+      { label: "28", key: "12/28", w: "월", muted: true },
+      { label: "29", key: "12/29", w: "화" },
+      { label: "30", key: "12/30", w: "수" },
+      { label: "31", key: "12/31", w: "목" },
+      { label: "1", key: "1/1", w: "금", isRed: true },
+      { label: "2", key: "1/2", w: "토", isBlue: true },
+
+      { label: "3", key: "1/3", w: "일", isRed: true },
+      { label: "4", key: "1/4", w: "월" },
+      { label: "5", key: "1/5", w: "화" },
+      { label: "6", key: "1/6", w: "수" },
+      { label: "7", key: "1/7", w: "목" },
+      { label: "8", key: "1/8", w: "금" },
+      { label: "9", key: "1/9", w: "토", isBlue: true },
+
+      { label: "10", key: "1/10", w: "일", isRed: true },
+      { label: "11", key: "1/11", w: "월" },
+      { label: "12", key: "1/12", w: "화" },
+      { label: "13", key: "1/13", w: "수" },
+      { label: "14", key: "1/14", w: "목" },
+      { label: "15", key: "1/15", w: "금" },
+      { label: "16", key: "1/16", w: "토", isBlue: true },
+
+      { label: "17", key: "1/17", w: "일", isRed: true },
+      { label: "18", key: "1/18", w: "월" },
+      { label: "19", key: "1/19", w: "화", muted: true },
+      { label: "20", key: "1/20", w: "수", muted: true },
+      { label: "21", key: "1/21", w: "목", muted: true },
+      { label: "22", key: "1/22", w: "금", muted: true },
+      { label: "23", key: "1/23", w: "토", muted: true }
+    ];
+
+    // ==========================================
+    // [1안] 풀코스 (중동+포르투갈+스페인+스위스+미국, 20박 21일)
+    // ==========================================
+    const PLAN1_EVENTS = [
+      { id: "e1", title: "🇦🇪 아부다비·두바이", start: "12/29", end: "12/29", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
+      { id: "e2", title: "🇵🇹 리스본 (2박)", start: "12/30", end: "1/1", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
+      { id: "e3", title: "🇵🇹 포르투(1박)➔🚌야간버스", start: "1/1", end: "1/2", cls: "bg-teal-100 text-teal-900 border border-teal-200" },
+      { id: "e4", title: "🇪🇸 마드리드 (1박)", start: "1/3", end: "1/4", cls: "bg-rose-100 text-rose-900 border border-rose-200" },
+      { id: "e5", title: "🇪🇸 바르셀로나 (2박)", start: "1/4", end: "1/6", cls: "bg-rose-100 text-rose-900 border border-rose-200" },
+      { id: "e6", title: "🇨🇭 그린델발트 (2박)", start: "1/6", end: "1/8", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "e7", title: "🇨🇭 취리히(1)➔🇺🇸JFK(1)", start: "1/8", end: "1/9", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e8", title: "🏛️ 워싱턴 학회 (동행 4박)", start: "1/10", end: "1/14", cls: "bg-indigo-100 text-indigo-900 border border-indigo-200" },
+      { id: "e9", title: "🌴 마이애미 (1박)", start: "1/10", end: "1/11", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "e10", title: "🎢 올랜도 (3박)", start: "1/12", end: "1/14", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
+      { id: "e11", title: "🇺🇸 뉴욕 합류 (3박)", start: "1/14", end: "1/16", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e12", title: "🇺🇸 뉴욕 출발 ➔ 🇰🇷 인천 귀국", start: "1/17", end: "1/18", cls: "bg-slate-200 text-slate-800 border border-slate-300" }
+    ];
+
+    const PLAN1_SCHEDULES = {
+      "12/29": {
+        dayBadge: "DAY 1", title: "12월 29일 (화)", subtitle: "🇰🇷 인천 ➔ 🇦🇪 아부다비 · 두바이",
+        blocks: [
+          {
+            time: "01:15", title: "인천국제공항 제1터미널 출발", vendor: "에티하드항공", cost: 0, memo: "리스본까지 위탁수하물 자동 연결",
+            nextTransport: { mode: "항공", icon: "✈️", label: "에티하드 항공 EY827 (2인)", cost: 1151200 }
+          },
+          {
+            time: "06:50", title: "아부다비 자이드 국제공항 도착", vendor: "", cost: 0, memo: "기내용 가방만 들고 입국 심사",
+            nextTransport: { mode: "택시", icon: "🚕", label: "공항 ➔ 모스크 택시", cost: 20000 }
+          },
+          {
+            time: "09:00", title: "셰이크 자이드 그랜드 모스크", vendor: "무료입장", cost: 0, memo: "순백의 대리석 모스크 관람",
+            nextTransport: { mode: "버스", icon: "🚌", label: "두바이 이동 버스/택시", cost: 40000 }
+          },
+          {
+            time: "13:00", title: "두바이 부르즈 할리파 & 두바이몰", vendor: "현장결제", cost: 40000, memo: "분수쇼 관람 및 저녁 식사 후 공항 복귀",
+            nextTransport: null
+          }
+        ]
+      },
+      "12/30": {
+        dayBadge: "DAY 2", title: "12월 30일 (수)", subtitle: "🇦🇪 아부다비 ➔ 🇵🇹 리스본 도착 및 벨렝 지구",
+        blocks: [
+          {
+            time: "02:20", title: "아부다비 공항 출발", vendor: "", cost: 0, memo: "8시간 35분 비행",
+            nextTransport: { mode: "항공", icon: "✈️", label: "에티하드 항공 EY99 (연결편)", cost: 0 }
+          },
+          {
+            time: "06:55", title: "리스본 포르텔라 공항 도착 & 호텔 짐보관", vendor: "우버/지하철", cost: 15000, memo: "시내 호텔 이동 후 짐 보관",
+            nextTransport: { mode: "기차", icon: "🚄", label: "트램 이동", cost: 15000 }
+          },
+          {
+            time: "10:30", title: "제로니무스 수도원 & 벨렝 탑", vendor: "클룩", cost: 45000, memo: "마누엘 양식 대표 수도원",
+            nextTransport: { mode: "도보", icon: "🚶", label: "도보 5분", cost: 0 }
+          },
+          {
+            time: "12:30", title: "파스테이스 드 벨렝 (원조 에그타르트)", vendor: "현장결제", cost: 20000, memo: "따뜻한 나타 + 시나몬 가루",
+            nextTransport: null
+          },
+          {
+            time: "16:00", title: "바이샤 지구 & 산타 후스타 엘리베이터", vendor: "", cost: 0, memo: "코메르시우 광장 산책",
+            nextTransport: null
+          }
+        ]
+      },
+      "12/31": {
+        dayBadge: "DAY 3", title: "12월 31일 (목)", subtitle: "🇵🇹 리스본 알파마 투어 & 새해 불꽃놀이",
+        blocks: [
+          { time: "10:00", title: "알파마 지구 & 28번 노란 트램", vendor: "교통권", cost: 15000, memo: "포르타스 두 솔 전망대 인생샷", nextTransport: null },
+          { time: "14:00", title: "호시우 광장 & 시아두 카페 투어", vendor: "현장결제", cost: 40000, memo: "여유로운 연말 오후 산책", nextTransport: null },
+          { time: "22:30", title: "코메르시우 광장 새해 카운트다운 불꽃놀이", vendor: "무료관람", cost: 0, memo: "테주강 신년 불꽃축제", nextTransport: null }
+        ]
+      },
+      "1/1": {
+        dayBadge: "DAY 4", title: "1월 1일 (금)", subtitle: "🇵🇹 리스본 ➔ 포르투 이동 & 동 루이스 다리",
+        blocks: [
+          {
+            time: "10:00", title: "리스본 오리엔테역 출발", vendor: "", cost: 0, memo: "기차 탑승",
+            nextTransport: { mode: "기차", icon: "🚄", label: "포르투갈 국영철도 CP (2인)", cost: 56000 }
+          },
+          {
+            time: "12:45", title: "포르투 캄파냥역 도착 & 상벤투역", vendor: "", cost: 0, memo: "아줄레주 벽화 감상 및 호텔 체크인",
+            nextTransport: { mode: "도보", icon: "🚶", label: "도보 10분", cost: 0 }
+          },
+          {
+            time: "17:00", title: "동 루이스 1세 다리 & 모루 정원 일몰", vendor: "와이너리", cost: 50000, memo: "강변 노을 감상 및 포트와인",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/2": {
+        dayBadge: "DAY 5", title: "1월 2일 (토)", subtitle: "🇵🇹 포르투 관광 ➔ 🇪🇸 마드리드 야간버스",
+        blocks: [
+          { time: "10:00", title: "렐루 서점 & 클레리구스 성당", vendor: "렐루공홈", cost: 25000, memo: "오픈 시간대 사전 예약 입장", nextTransport: null },
+          { time: "13:00", title: "볼량 시장 & 프란세지냐 점심", vendor: "현장결제", cost: 40000, memo: "포르투 전통 시장 투어", nextTransport: null },
+          {
+            time: "22:30", title: "포르투 캄파냥 버스터미널 출발", vendor: "", cost: 0, memo: "야간버스 탑승 (숙박비 1박 세이브)",
+            nextTransport: { mode: "버스", icon: "🚌", label: "알사(Alsa) 직통 야간버스 (2인)", cost: 90000 }
+          }
+        ]
+      },
+      "1/3": {
+        dayBadge: "DAY 6", title: "1월 3일 (일)", subtitle: "🇪🇸 마드리드 왕궁 & 프라도 미술관",
+        blocks: [
+          { time: "08:00", title: "마드리드 남부 터미널 도착 & 아토차 호텔", vendor: "산히네스", cost: 15000, memo: "짐 보관 후 츄러스 아침", nextTransport: null },
+          { time: "11:00", title: "마드리드 왕궁 & 솔 광장", vendor: "왕궁공홈", cost: 45000, memo: "유럽 최대 규모 왕궁 관람", nextTransport: null },
+          { time: "17:00", title: "프라도 미술관 (일요일 무료입장)", vendor: "무료예약", cost: 0, memo: "명작 감상 후 타파스 저녁", nextTransport: null }
+        ]
+      },
+      "1/4": {
+        dayBadge: "DAY 7", title: "1월 4일 (월)", subtitle: "🇪🇸 마드리드 ➔ 바르셀로나 & 가우디 투어",
+        blocks: [
+          {
+            time: "07:30", title: "마드리드 아토차역 출발", vendor: "", cost: 0, memo: "고속열차 탑승",
+            nextTransport: { mode: "기차", icon: "🚄", label: "Iryo / AVE 고속열차 (2인)", cost: 80000 }
+          },
+          { time: "10:00", title: "바르셀로나 산츠역 도착 & 구엘 공원", vendor: "마이리얼트립", cost: 110000, memo: "까사 바트요 포함 가우디 투어", nextTransport: null },
+          { time: "15:00", title: "사그라다 파밀리아 성당 입장", vendor: "성당공홈", cost: 110000, memo: "오후 채광 황금 시간대 입장", nextTransport: null }
+        ]
+      },
+      "1/5": {
+        dayBadge: "DAY 8", title: "1월 5일 (화)", subtitle: "🇪🇸 바르셀로나 해변 & 동방박사 퍼레이드",
+        blocks: [
+          { time: "10:00", title: "고딕 지구 & 보케리아 시장", vendor: "현장결제", cost: 30000, memo: "중세 골목길 산책", nextTransport: null },
+          { time: "14:00", title: "바르셀로네타 해변 & 빠에야", vendor: "현장결제", cost: 60000, memo: "지중해 바다 산책", nextTransport: null },
+          { time: "18:00", title: "스페인 동방박사 퍼레이드 관람", vendor: "무료", cost: 0, memo: "시내 중심가 화려한 꽃마차 행진", nextTransport: null }
+        ]
+      },
+      "1/6": {
+        dayBadge: "DAY 9", title: "1월 6일 (수)", subtitle: "🇪🇸 바르셀로나 ➔ 🇨🇭 스위스 그린델발트",
+        blocks: [
+          {
+            time: "07:00", title: "바르셀로나 엘프라트 공항 출발", vendor: "", cost: 0, memo: "위탁 수하물 포함",
+            nextTransport: { mode: "항공", icon: "✈️", label: "부엘링 항공 VY1226 (2인)", cost: 255300 }
+          },
+          {
+            time: "08:55", title: "취리히 공항역 도착", vendor: "", cost: 0, memo: "기차 환승 이동",
+            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 1일차 (2인)", cost: 170000 }
+          },
+          { time: "12:44", title: "그린델발트 도착 & 피르스트 전망대", vendor: "동신항운", cost: 130000, memo: "곤돌라 탑승 및 클리프 워크", nextTransport: null }
+        ]
+      },
+      "1/7": {
+        dayBadge: "DAY 10", title: "1월 7일 (목)", subtitle: "🇨🇭 융프라우요흐 등정 & 라우터브루넨",
+        blocks: [
+          { time: "08:30", title: "아이거 익스프레스 & 융프라우요흐 등정", vendor: "동신항운쿠폰", cost: 420000, memo: "스핑크스 전망대 & 얼음궁전 (2인)", nextTransport: null },
+          { time: "13:30", title: "라우터브루넨 & 뮈렌 통나무 마을", vendor: "패스포함", cost: 0, memo: "절벽 폭포 마을 산책", nextTransport: null }
+        ]
+      },
+      "1/8": {
+        dayBadge: "DAY 11", title: "1월 8일 (금)", subtitle: "🇨🇭 그린델발트 ➔ 루체른 ➔ 취리히",
+        blocks: [
+          {
+            time: "09:30", title: "그린델발트역 출발", vendor: "", cost: 0, memo: "인터라켄 경유 파노라마 열차",
+            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 2일차 (2인)", cost: 170000 }
+          },
+          { time: "12:00", title: "루체른 카펠교 · 빈사의 사자상", vendor: "코인락커", cost: 15000, memo: "반나절 관광 후 저녁 취리히 이동", nextTransport: null }
+        ]
+      },
+      "1/9": {
+        dayBadge: "DAY 12", title: "1월 9일 (토)", subtitle: "🇨🇭 취리히 ➔ 🇺🇸 뉴욕 JFK 동반 입국",
+        blocks: [
+          {
+            time: "13:30", title: "취리히 공항 출발 (두 사람 동반 탑승)", vendor: "", cost: 0, memo: "모닝캄 혜택으로 위탁 수하물 무료!",
+            nextTransport: { mode: "항공", icon: "✈️", label: "델타항공 DL53 + DL1528 (2인 합산)", cost: 1245270 }
+          },
+          { time: "16:55", title: "뉴욕 JFK 공항 도착 & 호텔 체크인", vendor: "", cost: 0, memo: "큰 캐리어는 동행자에게 인계 (14h 기착)", nextTransport: null }
+        ]
+      },
+      "1/10": {
+        dayBadge: "DAY 13 분리", title: "1월 10일 (일)", subtitle: "🌴 본인: 마이애미 / 🏛️ 동행: 워싱턴 학회",
+        blocks: [
+          {
+            time: "07:00", title: "[본인] 뉴욕 JFK 출발 ➔ 마이애미 도착", vendor: "", cost: 0, memo: "10:20 도착 · 기내용 캐리어만 지참",
+            nextTransport: { mode: "항공", icon: "✈️", label: "델타항공 DL1528 (위 요금 포함)", cost: 0 }
+          },
+          {
+            time: "09:30", title: "[동행] 뉴욕 펜스테이션 ➔ 워싱턴 D.C.", vendor: "", cost: 0, memo: "큰 짐 전담 이동 및 학회 체크인",
+            nextTransport: { mode: "기차", icon: "🚄", label: "암트랙(Amtrak) 편도", cost: 45000 }
+          },
+          { time: "13:00", title: "[본인] 마이애미 사우스비치 & 오션드라이브", vendor: "우버/식사", cost: 40000, memo: "해변 산책 및 리틀 아바나", nextTransport: null }
+        ]
+      },
+      "1/11": {
+        dayBadge: "DAY 14 분리", title: "1월 11일 (월)", subtitle: "🌴 본인: 마이애미 ➔ 올랜도 이동",
+        blocks: [
+          {
+            time: "10:00", title: "[본인] 윈우드 월스 벽화거리 투어", vendor: "현장결제", cost: 20000, memo: "그래피티 거리 감상 후 기차역 이동",
+            nextTransport: { mode: "기차", icon: "🚄", label: "브라이트라인 고속열차 (마이애미➔올랜도)", cost: 60000 }
+          },
+          { time: "18:30", title: "[본인] 올랜도 리조트 체크인 & 디즈니 스프링스", vendor: "", cost: 0, memo: "테마파크 전야 산책", nextTransport: null }
+        ]
+      },
+      "1/12": {
+        dayBadge: "DAY 15 분리", title: "1월 12일 (화)", subtitle: "🎢 본인: 올랜도 유니버설 스튜디오",
+        blocks: [
+          { time: "08:00", title: "[본인] 유니버설 스튜디오 2개 파크 종일", vendor: "클룩", cost: 250000, memo: "해리포터 & 벨로시코스터 싱글라이더!", nextTransport: null },
+          { time: "09:00", title: "[동행] 워싱턴 학회 & 스미소니언 박물관", vendor: "학회지원", cost: 0, memo: "숙박·식비 100% 지원", nextTransport: null }
+        ]
+      },
+      "1/13": {
+        dayBadge: "DAY 16 분리", title: "1월 13일 (수)", subtitle: "🏰 본인: 디즈니월드 매직킹덤",
+        blocks: [
+          { time: "09:00", title: "[본인] 디즈니월드 매직킹덤 (또는 아울렛)", vendor: "디즈니공홈", cost: 200000, memo: "밤 신데렐라 성 불꽃놀이 관람", nextTransport: null }
+        ]
+      },
+      "1/14": {
+        dayBadge: "DAY 17 합류", title: "1월 14일 (목)", subtitle: "🇺🇸 올랜도 & 워싱턴 ➔ 뉴욕 오전 재합류!",
+        blocks: [
+          {
+            time: "07:30", title: "[본인] 올랜도 공항(MCO) 출발", vendor: "", cost: 0, memo: "오전 10시 뉴욕 라과디아/JFK 도착",
+            nextTransport: { mode: "항공", icon: "✈️", label: "델타/프론티어 직항 (1인)", cost: 135000 }
+          },
+          {
+            time: "08:00", title: "[동행] 워싱턴 유니언역 출발", vendor: "", cost: 0, memo: "오전 11시 뉴욕 펜스테이션 도착",
+            nextTransport: { mode: "기차", icon: "🚄", label: "암트랙(Amtrak) 편도", cost: 45000 }
+          },
+          { time: "14:00", title: "맨해튼 재합류! 써밋 전망대 & 타임스퀘어", vendor: "마이리얼트립", cost: 120000, memo: "전망대 입장권 (2인)", nextTransport: null }
+        ]
+      },
+      "1/15": {
+        dayBadge: "DAY 18", title: "1월 15일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 & 브루클린 브리지",
+        blocks: [
+          { time: "09:30", title: "자유의 여신상 페리 & 월스트리트", vendor: "클룩", cost: 80000, memo: "9/11 메모리얼 & 첼시마켓", nextTransport: null },
+          { time: "16:30", title: "덤보(DUMBO) & 브루클린 브리지 일몰", vendor: "무료", cost: 0, memo: "맨해튼 스카이라인 노을", nextTransport: null }
+        ]
+      },
+      "1/16": {
+        dayBadge: "DAY 19", title: "1월 16일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 뮤지컬",
+        blocks: [
+          { time: "10:00", title: "센트럴파크 & 메트로폴리탄 미술관", vendor: "더멧공홈", cost: 80000, memo: "미술관 관람 및 5번가 쇼핑", nextTransport: null },
+          { time: "19:30", title: "브로드웨이 뮤지컬 관람", vendor: "투데이틱스", cost: 280000, memo: "라이온킹 / 위키드 (2인)", nextTransport: null }
+        ]
+      },
+      "1/17": {
+        dayBadge: "DAY 20 출국", title: "1월 17일 (일)", subtitle: "🇺🇸 뉴욕 JFK 출발 ➔ 🇰🇷 인천행 직항",
+        blocks: [
+          {
+            time: "10:30", title: "뉴욕 JFK 국제공항 출발", vendor: "", cost: 0, memo: "위탁 수하물 23kg×2개씩 무료",
+            nextTransport: { mode: "항공", icon: "✈️", label: "아시아나항공 OZ221/223 직항 (2인)", cost: 1435820 }
+          }
+        ]
+      },
+      "1/18": {
+        dayBadge: "DAY 21 귀국", title: "1월 18일 (월)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
+        blocks: [
+          { time: "16:15", title: "인천국제공항 도착 및 귀가", vendor: "공항버스", cost: 34000, memo: "20박 21일 세계일주 완주!", nextTransport: null }
+        ]
+      }
+    };
+
+    const PLAN1_BASE_EXPENSES = [
+      { title: "🇵🇹 리스본 호텔 (2박)", vendor: "아고다", cost: 480000 },
+      { title: "🇵🇹 포르투 호텔 (1박)", vendor: "아고다", cost: 160000 },
+      { title: "🇪🇸 마드리드 아토차 호텔 (1박)", vendor: "아고다", cost: 180000 },
+      { title: "🇪🇸 바르셀로나 호텔 (2박)", vendor: "아고다", cost: 500000 },
+      { title: "🇨🇭 그린델발트 호텔 (2박)", vendor: "부킹닷컴", cost: 720000 },
+      { title: "🇨🇭 취리히 호텔 (1박)", vendor: "트립닷컴", cost: 250000 },
+      { title: "🇺🇸 뉴욕 JFK 호텔 (1박)", vendor: "아고다", cost: 240000 },
+      { title: "🌴 마이애미(1)+올랜도(3) [1인]", vendor: "유니버설", cost: 570000 },
+      { title: "🏛️ 워싱턴 학회 호텔 (4박)", vendor: "100% 지원", cost: 0 },
+      { title: "🇺🇸 뉴욕 맨해튼 호텔 (3박)", vendor: "아고다", cost: 780000 },
+      { title: "🍽️ 전 일정 2인 식비 예산", vendor: "현지결제", cost: 1650000 },
+      { title: "🛂 ESTA 비자 + eSIM + 여행보험", vendor: "공식사이트", cost: 230000 }
+    ];
+
+    // ==========================================
+    // [2안] 스페인 ➔ 스위스 ➔ 미국 (1/2 ~ 1/18, 16박 17일)
+    // ==========================================
+    const PLAN2_EVENTS = [
+      { id: "p2_1", title: "🇰🇷 인천 ➔ 🇪🇸 마드리드 (2박)", start: "1/2", end: "1/4", cls: "bg-rose-100 text-rose-900 border border-rose-200" },
+      { id: "p2_2", title: "🇪🇸 바르셀로나 (2박)", start: "1/4", end: "1/6", cls: "bg-rose-100 text-rose-900 border border-rose-200" },
+      { id: "p2_3", title: "🇨🇭 그린델발트 (2박)", start: "1/6", end: "1/8", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "p2_4", title: "🇨🇭 취리히(1)➔🇺🇸JFK(1)", start: "1/8", end: "1/9", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p2_5", title: "🏛️ 워싱턴 학회 (동행 4박)", start: "1/10", end: "1/14", cls: "bg-indigo-100 text-indigo-900 border border-indigo-200" },
+      { id: "p2_6", title: "🌴 마이애미 (1박)", start: "1/10", end: "1/11", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "p2_7", title: "🎢 올랜도 (3박)", start: "1/12", end: "1/14", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
+      { id: "p2_8", title: "🇺🇸 뉴욕 합류 (3박)", start: "1/14", end: "1/16", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p2_9", title: "🇺🇸 뉴욕 출발 ➔ 🇰🇷 인천 귀국", start: "1/17", end: "1/18", cls: "bg-slate-200 text-slate-800 border border-slate-300" }
+    ];
+
+    const PLAN2_SCHEDULES = {
+      "1/2": {
+        dayBadge: "DAY 1 출국", title: "1월 2일 (토)", subtitle: "🇰🇷 인천 출발 ➔ 🇪🇸 마드리드 도착",
+        blocks: [
+          {
+            time: "11:30", title: "인천국제공항 출발 (마드리드행)", vendor: "대한항공/외항사", cost: 0, memo: "마드리드 바라하스 국제공항행 탑승",
+            nextTransport: { mode: "항공", icon: "✈️", label: "인천 ➔ 마드리드 항공권 (2인)", cost: 1380000 }
+          },
+          {
+            time: "18:30", title: "마드리드 바라하스 공항 도착 & 호텔 체크인", vendor: "공항버스/우버", cost: 25000, memo: "아토차역 인근 호텔 체크인 후 휴식",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/3": { ...PLAN1_SCHEDULES["1/3"], dayBadge: "DAY 2" },
+      "1/4": { ...PLAN1_SCHEDULES["1/4"], dayBadge: "DAY 3" },
+      "1/5": { ...PLAN1_SCHEDULES["1/5"], dayBadge: "DAY 4" },
+      "1/6": { ...PLAN1_SCHEDULES["1/6"], dayBadge: "DAY 5" },
+      "1/7": { ...PLAN1_SCHEDULES["1/7"], dayBadge: "DAY 6" },
+      "1/8": { ...PLAN1_SCHEDULES["1/8"], dayBadge: "DAY 7" },
+      "1/9": { ...PLAN1_SCHEDULES["1/9"], dayBadge: "DAY 8" },
+      "1/10": { ...PLAN1_SCHEDULES["1/10"], dayBadge: "DAY 9 분리" },
+      "1/11": { ...PLAN1_SCHEDULES["1/11"], dayBadge: "DAY 10 분리" },
+      "1/12": { ...PLAN1_SCHEDULES["1/12"], dayBadge: "DAY 11 분리" },
+      "1/13": { ...PLAN1_SCHEDULES["1/13"], dayBadge: "DAY 12 분리" },
+      "1/14": { ...PLAN1_SCHEDULES["1/14"], dayBadge: "DAY 13 합류" },
+      "1/15": { ...PLAN1_SCHEDULES["1/15"], dayBadge: "DAY 14" },
+      "1/16": { ...PLAN1_SCHEDULES["1/16"], dayBadge: "DAY 15" },
+      "1/17": { ...PLAN1_SCHEDULES["1/17"], dayBadge: "DAY 16 출국" },
+      "1/18": {
+        dayBadge: "DAY 17 귀국", title: "1월 18일 (월)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
+        blocks: [
+          { time: "16:15", title: "인천국제공항 도착 및 귀가", vendor: "공항버스", cost: 34000, memo: "16박 17일 스페인·스위스·미국 일주 완주!", nextTransport: null }
+        ]
+      }
+    };
+
+    const PLAN2_BASE_EXPENSES = [
+      { title: "🇪🇸 마드리드 아토차 호텔 (2박)", vendor: "아고다", cost: 360000 },
+      { title: "🇪🇸 바르셀로나 호텔 (2박)", vendor: "아고다", cost: 500000 },
+      { title: "🇨🇭 그린델발트 호텔 (2박)", vendor: "부킹닷컴", cost: 720000 },
+      { title: "🇨🇭 취리히 호텔 (1박)", vendor: "트립닷컴", cost: 250000 },
+      { title: "🇺🇸 뉴욕 JFK 호텔 (1박)", vendor: "아고다", cost: 240000 },
+      { title: "🌴 마이애미(1)+올랜도(3) [1인]", vendor: "유니버설", cost: 570000 },
+      { title: "🏛️ 워싱턴 학회 호텔 (4박)", vendor: "100% 지원", cost: 0 },
+      { title: "🇺🇸 뉴욕 맨해튼 호텔 (3박)", vendor: "아고다", cost: 780000 },
+      { title: "🍽️ 전 일정 2인 식비 예산 (17일)", vendor: "현지결제", cost: 1350000 },
+      { title: "🛂 ESTA 비자 + eSIM + 여행보험", vendor: "공식사이트", cost: 200000 }
+    ];
+
+    // ==========================================
+    // [3안] 미국 집중 코스 (1/9 ~ 1/18, 9박 10일)
+    // ==========================================
+    const PLAN3_EVENTS = [
+      { id: "p3_1", title: "🇰🇷 인천 ➔ 🇺🇸 뉴욕 JFK (1박)", start: "1/9", end: "1/9", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p3_2", title: "🏛️ 워싱턴 학회 (동행 4박)", start: "1/10", end: "1/14", cls: "bg-indigo-100 text-indigo-900 border border-indigo-200" },
+      { id: "p3_3", title: "🌴 마이애미 (1박)", start: "1/10", end: "1/11", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "p3_4", title: "🎢 올랜도 (3박)", start: "1/12", end: "1/14", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
+      { id: "p3_5", title: "🇺🇸 뉴욕 합류 (3박)", start: "1/14", end: "1/16", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p3_6", title: "🇺🇸 뉴욕 출발 ➔ 🇰🇷 인천 귀국", start: "1/17", end: "1/18", cls: "bg-slate-200 text-slate-800 border border-slate-300" }
+    ];
+
+    const PLAN3_SCHEDULES = {
+      "1/9": {
+        dayBadge: "DAY 1 출국", title: "1월 9일 (토)", subtitle: "🇰🇷 인천 출발 ➔ 🇺🇸 뉴욕 JFK 동반 입국",
+        blocks: [
+          {
+            time: "10:00", title: "인천국제공항 출발 (뉴욕 JFK 직항)", vendor: "대한항공/아시아나", cost: 0, memo: "두 사람 동반 출국",
+            nextTransport: { mode: "항공", icon: "✈️", label: "인천 ➔ 뉴욕 JFK 직항 항공권 (2인)", cost: 1650000 }
+          },
+          {
+            time: "11:30", title: "뉴욕 JFK 공항 도착 & 호텔 체크인", vendor: "", cost: 0, memo: "큰 캐리어는 동행자에게 인계 및 휴식",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/10": {
+        dayBadge: "DAY 2 분리", title: "1월 10일 (일)", subtitle: "🌴 본인: 마이애미 / 🏛️ 동행: 워싱턴 학회",
+        blocks: [
+          {
+            time: "07:00", title: "[본인] 뉴욕 JFK 출발 ➔ 마이애미 도착", vendor: "", cost: 0, memo: "10:20 도착 · 기내용 캐리어만 지참",
+            nextTransport: { mode: "항공", icon: "✈️", label: "뉴욕 ➔ 마이애미 국내선 (1인)", cost: 140000 }
+          },
+          {
+            time: "09:30", title: "[동행] 뉴욕 펜스테이션 ➔ 워싱턴 D.C.", vendor: "", cost: 0, memo: "큰 짐 전담 이동 및 학회 체크인",
+            nextTransport: { mode: "기차", icon: "🚄", label: "암트랙(Amtrak) 편도", cost: 45000 }
+          },
+          { time: "13:00", title: "[본인] 마이애미 사우스비치 & 오션드라이브", vendor: "우버/식사", cost: 40000, memo: "해변 산책 및 리틀 아바나", nextTransport: null }
+        ]
+      },
+      "1/11": { ...PLAN1_SCHEDULES["1/11"], dayBadge: "DAY 3 분리" },
+      "1/12": { ...PLAN1_SCHEDULES["1/12"], dayBadge: "DAY 4 분리" },
+      "1/13": { ...PLAN1_SCHEDULES["1/13"], dayBadge: "DAY 5 분리" },
+      "1/14": { ...PLAN1_SCHEDULES["1/14"], dayBadge: "DAY 6 합류" },
+      "1/15": { ...PLAN1_SCHEDULES["1/15"], dayBadge: "DAY 7" },
+      "1/16": { ...PLAN1_SCHEDULES["1/16"], dayBadge: "DAY 8" },
+      "1/17": { ...PLAN1_SCHEDULES["1/17"], dayBadge: "DAY 9 출국" },
+      "1/18": {
+        dayBadge: "DAY 10 귀국", title: "1월 18일 (월)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
+        blocks: [
+          { time: "16:15", title: "인천국제공항 도착 및 귀가", vendor: "공항버스", cost: 34000, memo: "9박 10일 미국 동부·플로리다 여행 완주!", nextTransport: null }
+        ]
+      }
+    };
+
+    const PLAN3_BASE_EXPENSES = [
+      { title: "🇺🇸 뉴욕 JFK 호텔 (1박)", vendor: "아고다", cost: 240000 },
+      { title: "🌴 마이애미(1)+올랜도(3) [1인]", vendor: "유니버설", cost: 570000 },
+      { title: "🏛️ 워싱턴 학회 호텔 (4박)", vendor: "100% 지원", cost: 0 },
+      { title: "🇺🇸 뉴욕 맨해튼 호텔 (3박)", vendor: "아고다", cost: 780000 },
+      { title: "🍽️ 전 일정 2인 식비 예산 (10일)", vendor: "현지결제", cost: 900000 },
+      { title: "🛂 ESTA 비자 + 미국 eSIM + 보험", vendor: "공식사이트", cost: 160000 }
+    ];
+
+    // 안건별 메타 & 지도 설정
+    const PLAN_CONFIGS = {
+      1: {
+        name: "1안 풀코스",
+        durationBadge: "20박 21일",
+        defaultDay: "12/29",
+        mapTitle: "🗺️ 1안: 세계일주 풀코스 루트 맵 (1 ➔ 10C)",
+        mapView: { center: [32.0, -5.0], zoom: 2 },
+        events: PLAN1_EVENTS,
+        schedules: PLAN1_SCHEDULES,
+        base: PLAN1_BASE_EXPENSES,
+        stops: [
+          { num: "1", name: "🇰🇷 인천", coords: [37.46, 126.44], color: "#1e293b", key: "12/29" },
+          { num: "2", name: "🇦🇪 아부다비·두바이", coords: [24.45, 54.37], color: "#d97706", key: "12/29" },
+          { num: "3", name: "🇵🇹 리스본", coords: [38.72, -9.13], color: "#059669", key: "12/30" },
+          { num: "4", name: "🇵🇹 포르투", coords: [41.15, -8.62], color: "#059669", key: "1/1" },
+          { num: "5", name: "🇪🇸 마드리드", coords: [40.41, -3.70], color: "#e11d48", key: "1/3" },
+          { num: "6", name: "🇪🇸 바르셀로나", coords: [41.38, 2.17], color: "#e11d48", key: "1/4" },
+          { num: "7", name: "🇨🇭 그린델발트", coords: [46.62, 8.04], color: "#dc2626", key: "1/6" },
+          { num: "8", name: "🇨🇭 루체른·취리히", coords: [47.37, 8.54], color: "#dc2626", key: "1/8" },
+          { num: "9", name: "🇺🇸 뉴욕 JFK", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
+          { num: "10A", name: "🌴 마이애미", coords: [25.76, -80.19], color: "#f97316", key: "1/10" },
+          { num: "10B", name: "🎢 올랜도", coords: [28.53, -81.37], color: "#f97316", key: "1/12" },
+          { num: "10C", name: "🏛️ 워싱턴 D.C.", coords: [38.90, -77.03], color: "#7c3aed", key: "1/10" }
+        ],
+        lines: [
+          { coords: [[37.46, 126.44], [24.45, 54.37], [38.72, -9.13], [41.15, -8.62], [40.41, -3.70], [41.38, 2.17], [46.62, 8.04], [47.37, 8.54], [40.71, -74.00]], opts: { color: '#2563eb', weight: 3 } },
+          { coords: [[40.71, -74.00], [25.76, -80.19], [28.53, -81.37], [40.71, -74.00]], opts: { color: '#f97316', weight: 2.5, dashArray: '5, 5' } },
+          { coords: [[40.71, -74.00], [38.90, -77.03], [40.71, -74.00]], opts: { color: '#7c3aed', weight: 2.5, dashArray: '4, 5' } }
+        ]
+      },
+      2: {
+        name: "2안 스페인·스위스·미국",
+        durationBadge: "16박 17일",
+        defaultDay: "1/2",
+        mapTitle: "🗺️ 2안: 스페인 ➔ 스위스 ➔ 미국 루트 맵",
+        mapView: { center: [35.0, -15.0], zoom: 2 },
+        events: PLAN2_EVENTS,
+        schedules: PLAN2_SCHEDULES,
+        base: PLAN2_BASE_EXPENSES,
+        stops: [
+          { num: "1", name: "🇰🇷 인천", coords: [37.46, 126.44], color: "#1e293b", key: "1/2" },
+          { num: "2", name: "🇪🇸 마드리드", coords: [40.41, -3.70], color: "#e11d48", key: "1/3" },
+          { num: "3", name: "🇪🇸 바르셀로나", coords: [41.38, 2.17], color: "#e11d48", key: "1/4" },
+          { num: "4", name: "🇨🇭 그린델발트", coords: [46.62, 8.04], color: "#dc2626", key: "1/6" },
+          { num: "5", name: "🇨🇭 루체른·취리히", coords: [47.37, 8.54], color: "#dc2626", key: "1/8" },
+          { num: "6", name: "🇺🇸 뉴욕 JFK", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
+          { num: "7A", name: "🌴 마이애미", coords: [25.76, -80.19], color: "#f97316", key: "1/10" },
+          { num: "7B", name: "🎢 올랜도", coords: [28.53, -81.37], color: "#f97316", key: "1/12" },
+          { num: "7C", name: "🏛️ 워싱턴 D.C.", coords: [38.90, -77.03], color: "#7c3aed", key: "1/10" }
+        ],
+        lines: [
+          { coords: [[37.46, 126.44], [40.41, -3.70], [41.38, 2.17], [46.62, 8.04], [47.37, 8.54], [40.71, -74.00]], opts: { color: '#2563eb', weight: 3 } },
+          { coords: [[40.71, -74.00], [25.76, -80.19], [28.53, -81.37], [40.71, -74.00]], opts: { color: '#f97316', weight: 2.5, dashArray: '5, 5' } },
+          { coords: [[40.71, -74.00], [38.90, -77.03], [40.71, -74.00]], opts: { color: '#7c3aed', weight: 2.5, dashArray: '4, 5' } }
+        ]
+      },
+      3: {
+        name: "3안 미국 집중",
+        durationBadge: "9박 10일",
+        defaultDay: "1/9",
+        mapTitle: "🗺️ 3안: 미국 동부 · 플로리다 루트 맵",
+        mapView: { center: [33.5, -77.5], zoom: 4 },
+        events: PLAN3_EVENTS,
+        schedules: PLAN3_SCHEDULES,
+        base: PLAN3_BASE_EXPENSES,
+        stops: [
+          { num: "1", name: "🇰🇷 인천", coords: [37.46, 126.44], color: "#1e293b", key: "1/9" },
+          { num: "2", name: "🇺🇸 뉴욕 JFK", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
+          { num: "3A", name: "🌴 마이애미", coords: [25.76, -80.19], color: "#f97316", key: "1/10" },
+          { num: "3B", name: "🎢 올랜도", coords: [28.53, -81.37], color: "#f97316", key: "1/12" },
+          { num: "3C", name: "🏛️ 워싱턴 D.C.", coords: [38.90, -77.03], color: "#7c3aed", key: "1/10" }
+        ],
+        lines: [
+          { coords: [[37.46, 126.44], [40.71, -74.00]], opts: { color: '#2563eb', weight: 3 } },
+          { coords: [[40.71, -74.00], [25.76, -80.19], [28.53, -81.37], [40.71, -74.00]], opts: { color: '#f97316', weight: 2.5, dashArray: '5, 5' } },
+          { coords: [[40.71, -74.00], [38.90, -77.03], [40.71, -74.00]], opts: { color: '#7c3aed', weight: 2.5, dashArray: '4, 5' } }
+        ]
+      }
+    };
+
+    let currentPlan = Number(localStorage.getItem('wt_active_plan')) || 1;
+    let calendarEvents = [];
+    let schedules = {};
+    let baseExpenses = [];
+
+    let currentDayKey = "12/29";
+    let isCalendarEditMode = false;
+    let editingEventIdx = null;
+    let editingPlaceIdx = null;
+    let editingTransIdx = null;
+    let selectedTransMode = "항공";
+    let editingBaseIdx = null;
+
+    function getStorageKeys(planId) {
+      if (planId === 1) {
+        return { ev: 'wt_v6_events', sc: 'wt_v5_sched', bs: 'wt_v5_base' };
+      }
+      return { ev: `wt_p${planId}_events`, sc: `wt_p${planId}_sched`, bs: `wt_p${planId}_base` };
+    }
+
+    function loadPlanData(planId) {
+      const cfg = PLAN_CONFIGS[planId] || PLAN_CONFIGS[1];
+      const keys = getStorageKeys(planId);
+      calendarEvents = JSON.parse(localStorage.getItem(keys.ev)) || JSON.parse(JSON.stringify(cfg.events));
+      schedules = JSON.parse(localStorage.getItem(keys.sc)) || JSON.parse(JSON.stringify(cfg.schedules));
+      baseExpenses = JSON.parse(localStorage.getItem(keys.bs)) || JSON.parse(JSON.stringify(cfg.base));
+      currentDayKey = cfg.defaultDay;
+    }
+
+    function updateHeaderPlanUI() {
+      const cfg = PLAN_CONFIGS[currentPlan];
+      document.getElementById('header-duration-badge').innerText = cfg.durationBadge;
+      document.getElementById('map-section-title').innerText = cfg.mapTitle;
+
+      [1, 2, 3].forEach(p => {
+        const btn = document.getElementById(`plan-btn-${p}`);
+        if (!btn) return;
+        if (p === currentPlan) {
+          btn.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-200/60";
+        }
+      });
+    }
+
+    function switchPlan(planId) {
+      currentPlan = planId;
+      localStorage.setItem('wt_active_plan', String(planId));
+      loadPlanData(planId);
+      updateHeaderPlanUI();
+      renderSpanCalendar();
+      renderQuickSelector();
+      renderBaseExpenses();
+      renderTimeline();
+      renderMapForPlan();
+    }
+
+    function saveAll() {
+      const keys = getStorageKeys(currentPlan);
+      localStorage.setItem(keys.ev, JSON.stringify(calendarEvents));
+      localStorage.setItem(keys.sc, JSON.stringify(schedules));
+      localStorage.setItem(keys.bs, JSON.stringify(baseExpenses));
+      calculateTotals();
+    }
+
+    function formatKRW(num) {
+      return '₩' + (Number(num) || 0).toLocaleString('ko-KR');
+    }
+
+    // 시간 문자열("09:30")을 분 단위 숫자로 변환해 정확히 오름차순 정렬하는 함수
+    function timeToMinutes(tStr) {
+      if (!tStr || typeof tStr !== 'string') return 9999;
+      const m = tStr.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return 9999;
+      return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+    }
+
+    function sortCurrentDayBlocks() {
+      if (!schedules[currentDayKey] || !schedules[currentDayKey].blocks) return;
+      schedules[currentDayKey].blocks.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+    }
+
+    // 4. 전 일정 비용 자동 합산
+    function calculateTotals() {
+      let transportSum = 0;
+      let scheduleSum = 0;
+
+      Object.values(schedules).forEach(day => {
+        (day.blocks || []).forEach(b => {
+          scheduleSum += (Number(b.cost) || 0);
+          if (b.nextTransport && b.nextTransport.cost) {
+            transportSum += (Number(b.nextTransport.cost) || 0);
+          }
+        });
+      });
+
+      let baseSum = 0;
+      baseExpenses.forEach(item => {
+        baseSum += (Number(item.cost) || 0);
+      });
+
+      const grandTotal = transportSum + scheduleSum + baseSum;
+      const perPerson = Math.round(grandTotal / 2);
+
+      const curDayBlocks = (schedules[currentDayKey] && schedules[currentDayKey].blocks) || [];
+      const curDaySum = curDayBlocks.reduce((acc, b) => {
+        return acc + (Number(b.cost) || 0) + (b.nextTransport ? (Number(b.nextTransport.cost) || 0) : 0);
+      }, 0);
+
+      document.getElementById('sum-transport').innerText = formatKRW(transportSum);
+      document.getElementById('sum-schedule').innerText = formatKRW(scheduleSum);
+      document.getElementById('sum-base').innerText = formatKRW(baseSum);
+      document.getElementById('grand-total-display').innerText = formatKRW(grandTotal);
+      document.getElementById('bottom-grand-total').innerText = formatKRW(grandTotal);
+      document.getElementById('per-person-cost').innerText = formatKRW(perPerson);
+      document.getElementById('tl-day-cost').innerText = `당일 ${formatKRW(curDaySum)}`;
+    }
+
+    // 5. 스마트 자동 줄 배치(Auto-Lane Packing) 달력 렌더링
+    function renderSpanCalendar() {
+      const container = document.getElementById('span-calendar-body');
+      const weeks = [0, 1, 2, 3];
+
+      container.innerHTML = weeks.map(wIdx => {
+        const weekStartIdx = wIdx * 7;
+        const weekEndIdx = weekStartIdx + 6;
+        const weekDays = ALL_CALENDAR_DAYS.slice(weekStartIdx, weekStartIdx + 7);
+
+        const segments = [];
+        calendarEvents.forEach((ev, evIdx) => {
+          const sIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === ev.start);
+          const eIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === ev.end);
+          if (sIdx === -1 || eIdx === -1) return;
+
+          const actualStart = Math.min(sIdx, eIdx);
+          const actualEnd = Math.max(sIdx, eIdx);
+
+          if (actualEnd >= weekStartIdx && actualStart <= weekEndIdx) {
+            const segStart = Math.max(actualStart, weekStartIdx);
+            const segEnd = Math.min(actualEnd, weekEndIdx);
+            segments.push({
+              evIdx,
+              title: ev.title,
+              cls: ev.cls,
+              clickKey: ev.start,
+              colStart: (segStart - weekStartIdx) + 1,
+              span: (segEnd - segStart) + 1
+            });
+          }
+        });
+
+        segments.sort((a, b) => a.colStart - b.colStart || b.span - a.span);
+        const lanes = [];
+        segments.forEach(seg => {
+          let placed = false;
+          for (let l = 0; l < lanes.length; l++) {
+            const lane = lanes[l];
+            const conflict = lane.some(item => {
+              const itemEnd = item.colStart + item.span - 1;
+              const segEnd = seg.colStart + seg.span - 1;
+              return !(segEnd < item.colStart || seg.colStart > itemEnd);
+            });
+            if (!conflict) {
+              lane.push(seg);
+              placed = true;
+              break;
+            }
+          }
+          if (!placed) lanes.push([seg]);
+        });
+
+        return `
+          <div class="py-1.5">
+            <div class="week-grid text-center mb-1">
+              ${weekDays.map(d => {
+                const isSelected = d.key === currentDayKey;
+                let textColor = "text-slate-800";
+                if (d.muted) textColor = "text-slate-300";
+                else if (d.isRed) textColor = "text-rose-500";
+                else if (d.isBlue) textColor = "text-blue-500";
+                return `
+                  <div onclick="selectDate('${d.key}')" class="cursor-pointer flex justify-center">
+                    <span class="day-num-btn text-xs font-extrabold ${textColor} ${isSelected ? 'active-day' : ''}">
+                      ${d.label}
+                    </span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <div class="space-y-1">
+              ${lanes.map(lane => `
+                <div class="week-grid gap-x-1">
+                  ${lane.map(bar => `
+                    <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
+                         style="grid-column: ${bar.colStart} / span ${bar.span};"
+                         class="span-bar ${bar.cls}"
+                         title="${bar.title}">
+                      <span class="truncate">${bar.title}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function populateDateSelects() {
+      const opts = ALL_CALENDAR_DAYS.map(d => `<option value="${d.key}">${d.key} (${d.w})</option>`).join('');
+      document.getElementById('modal-bar-start').innerHTML = opts;
+      document.getElementById('modal-bar-end').innerHTML = opts;
+    }
+
+    function toggleCalendarEditMode() {
+      isCalendarEditMode = !isCalendarEditMode;
+      const sec = document.getElementById('calendar-section');
+      const btn = document.getElementById('cal-edit-btn');
+      const badge = document.getElementById('cal-mode-badge');
+
+      if (isCalendarEditMode) {
+        sec.classList.add('cal-edit-active', 'ring-2', 'ring-rose-400');
+        btn.innerText = '✅ 편집 완료';
+        btn.className = 'text-[11px] font-bold px-2.5 py-1 rounded-xl bg-rose-600 text-white whitespace-nowrap';
+        badge.innerText = '막대 터치 ➔ 날짜 수정';
+      } else {
+        sec.classList.remove('cal-edit-active', 'ring-2', 'ring-rose-400');
+        btn.innerText = '⚙️ 달력 편집';
+        btn.className = 'text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap';
+        badge.innerText = '연속 일정 뷰';
+      }
+    }
+
+    function handleBarClick(evIdx, clickKey) {
+      if (isCalendarEditMode) openEditBarModal(evIdx);
+      else selectDate(clickKey);
+    }
+
+    function openEditBarModal(evIdx) {
+      populateDateSelects();
+      editingEventIdx = evIdx;
+      const ev = calendarEvents[evIdx];
+      document.getElementById('modal-title').innerText = '📅 일정 기간 수정';
+      document.getElementById('modal-bar-title').value = ev.title;
+      document.getElementById('modal-bar-start').value = ev.start;
+      document.getElementById('modal-bar-end').value = ev.end;
+      document.getElementById('modal-bar-color').value = ev.cls;
+      document.getElementById('modal-delete-btn').style.display = 'inline-block';
+      document.getElementById('bar-modal').classList.replace('hidden', 'flex');
+    }
+
+    function openAddBarModal() {
+      populateDateSelects();
+      editingEventIdx = null;
+      document.getElementById('modal-title').innerText = '➕ 새 달력 일정 추가';
+      document.getElementById('modal-bar-title').value = '';
+      document.getElementById('modal-bar-start').value = currentDayKey;
+      document.getElementById('modal-bar-end').value = currentDayKey;
+      document.getElementById('modal-delete-btn').style.display = 'none';
+      document.getElementById('bar-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeBarModal() {
+      document.getElementById('bar-modal').classList.replace('flex', 'hidden');
+    }
+
+    function saveModalBar() {
+      const title = document.getElementById('modal-bar-title').value.trim() || '새 일정';
+      let start = document.getElementById('modal-bar-start').value;
+      let end = document.getElementById('modal-bar-end').value;
+      const cls = document.getElementById('modal-bar-color').value;
+
+      const sIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === start);
+      const eIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === end);
+      if (sIdx > eIdx) {
+        [start, end] = [end, start];
+      }
+
+      if (editingEventIdx === null) {
+        calendarEvents.push({ id: 'ev_' + Date.now(), title, start, end, cls });
+      } else {
+        calendarEvents[editingEventIdx] = { ...calendarEvents[editingEventIdx], title, start, end, cls };
+      }
+
+      saveAll();
+      renderSpanCalendar();
+      closeBarModal();
+    }
+
+    function deleteModalBar() {
+      if (editingEventIdx === null) return;
+      calendarEvents.splice(editingEventIdx, 1);
+      saveAll();
+      renderSpanCalendar();
+      closeBarModal();
+    }
+
+    // 6. 심플 타임라인 렌더링
+    function renderQuickSelector() {
+      const keys = Object.keys(schedules);
+      const box = document.getElementById('quick-day-selector');
+      box.innerHTML = keys.map(k => `
+        <button onclick="selectDate('${k}')"
+                class="px-2.5 py-1 rounded-full font-bold whitespace-nowrap transition ${k === currentDayKey ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+          ${k}
+        </button>
+      `).join('');
+    }
+
+    function renderTimeline() {
+      const data = schedules[currentDayKey] || {
+        dayBadge: "일정", title: `${currentDayKey}`, subtitle: "자유 일정", blocks: []
+      };
+
+      document.getElementById('tl-day-badge').innerText = data.dayBadge;
+      document.getElementById('tl-date-title').innerText = data.title;
+      document.getElementById('tl-city-subtitle').innerText = data.subtitle;
+
+      const listEl = document.getElementById('timeline-list');
+      if (!data.blocks || data.blocks.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-12 text-xs text-slate-400">등록된 일정이 없습니다. 우측 상단 [+ 일정 추가]를 눌러보세요!</div>`;
+        calculateTotals();
+        return;
+      }
+
+      listEl.innerHTML = data.blocks.map((b, idx) => {
+        const hasInfo = b.vendor || (b.cost && b.cost > 0);
+        const infoTag = hasInfo
+          ? `<span class="text-[11px] font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-lg shrink-0 whitespace-nowrap">
+               ${b.vendor ? b.vendor : ''}${b.vendor && b.cost > 0 ? ' · ' : ''}${b.cost > 0 ? `<b class="text-emerald-600">${Number(b.cost).toLocaleString()}원</b>` : ''}
+             </span>`
+          : '';
+
+        const isLast = idx === data.blocks.length - 1;
+        const trans = b.nextTransport;
+        let connectorHtml = '';
+
+        if (!isLast || trans) {
+          connectorHtml = `
+            <div class="flex items-center my-1">
+              <div class="w-12 shrink-0"></div>
+              <div class="flex-1 flex items-center pl-4">
+                <div class="relative flex items-center py-1">
+                  <div class="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200"></div>
+                  ${trans ? `
+                    <button onclick="openTransModal(${idx})"
+                            class="relative z-10 flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm transition whitespace-nowrap">
+                      <span>${trans.icon}</span>
+                      <span>${trans.label}</span>
+                      ${trans.cost > 0 ? `<span class="text-blue-600 font-extrabold">· ${Number(trans.cost).toLocaleString()}원</span>` : ''}
+                    </button>
+                  ` : `
+                    <button onclick="openTransModal(${idx})"
+                            title="교통편 추가"
+                            class="relative z-10 w-6 h-6 rounded-full bg-white hover:bg-blue-50 border border-slate-300 hover:border-blue-400 text-slate-400 hover:text-blue-600 flex items-center justify-center text-xs font-extrabold shadow-sm transition">
+                      +
+                    </button>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-12 text-right shrink-0">
+                <span class="text-xs font-extrabold text-slate-700 bg-slate-100 px-1.5 py-1 rounded-lg inline-block w-full text-center">${b.time}</span>
+              </div>
+
+              <div onclick="openPlaceModal(${idx})"
+                   class="flex-1 min-w-0 bg-slate-50 hover:bg-white border border-slate-200/90 hover:border-blue-300 rounded-2xl px-3.5 py-2.5 shadow-sm cursor-pointer transition flex items-center justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <span class="text-xs sm:text-sm font-extrabold text-slate-900 truncate">${b.title}</span>
+                    ${infoTag}
+                  </div>
+                  ${b.memo ? `<p class="text-[11px] text-slate-400 truncate mt-0.5">${b.memo}</p>` : ''}
+                </div>
+
+                <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
+                  <button onclick="moveBlock(${idx}, -1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center">▲</button>
+                  <button onclick="moveBlock(${idx}, 1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center">▼</button>
+                </div>
+              </div>
+            </div>
+
+            ${connectorHtml}
+          </div>
+        `;
+      }).join('');
+
+      calculateTotals();
+    }
+
+    // 7. 일정(장소) 팝업 모달 제어 (시간 선택기 & 시간순 자동 정렬 적용)
+    function openPlaceModal(idx) {
+      editingPlaceIdx = idx;
+      const isNew = idx === null;
+      document.getElementById('place-modal-header').innerText = isNew ? '➕ 새 일정 추가' : '📍 일정 상세 수정';
+      document.getElementById('pm-delete-btn').style.display = isNew ? 'none' : 'inline-block';
+
+      if (isNew) {
+        document.getElementById('pm-time').value = '12:00';
+        document.getElementById('pm-title').value = '';
+        document.getElementById('pm-vendor').value = '';
+        document.getElementById('pm-cost').value = '';
+        document.getElementById('pm-memo').value = '';
+      } else {
+        const b = schedules[currentDayKey].blocks[idx];
+        // HH:MM 포맷 보정 (예: "9:00" -> "09:00")
+        let formattedTime = b.time || '12:00';
+        if (/^\d:\d{2}$/.test(formattedTime)) formattedTime = '0' + formattedTime;
+        document.getElementById('pm-time').value = formattedTime;
+        document.getElementById('pm-title').value = b.title || '';
+        document.getElementById('pm-vendor').value = b.vendor || '';
+        document.getElementById('pm-cost').value = b.cost || 0;
+        document.getElementById('pm-memo').value = b.memo || '';
+      }
+      document.getElementById('place-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closePlaceModal() {
+      document.getElementById('place-modal').classList.replace('flex', 'hidden');
+    }
+
+    function savePlaceModal() {
+      const time = document.getElementById('pm-time').value || '12:00';
+      const title = document.getElementById('pm-title').value.trim() || '새 장소';
+      const vendor = document.getElementById('pm-vendor').value.trim();
+      const cost = Number(document.getElementById('pm-cost').value) || 0;
+      const memo = document.getElementById('pm-memo').value.trim();
+
+      if (editingPlaceIdx === null) {
+        schedules[currentDayKey].blocks.push({ time, title, vendor, cost, memo, nextTransport: null });
+      } else {
+        const b = schedules[currentDayKey].blocks[editingPlaceIdx];
+        b.time = time; b.title = title; b.vendor = vendor; b.cost = cost; b.memo = memo;
+      }
+
+      // 저장 즉시 시간순으로 자동 정렬!
+      sortCurrentDayBlocks();
+      saveAll();
+      renderTimeline();
+      closePlaceModal();
+    }
+
+    function deletePlaceItem() {
+      if (editingPlaceIdx === null) return;
+      schedules[currentDayKey].blocks.splice(editingPlaceIdx, 1);
+      saveAll();
+      renderTimeline();
+      closePlaceModal();
+    }
+
+    // 8. 연결선 [+] 교통편 모달 제어
+    function renderTransModeButtons() {
+      const box = document.getElementById('tm-mode-btns');
+      box.innerHTML = TRANSPORT_MODES.map(m => {
+        const active = m.key === selectedTransMode;
+        return `
+          <button type="button" onclick="selectTransMode('${m.key}')"
+                  class="py-2 rounded-xl border font-bold flex flex-col items-center gap-0.5 transition ${active ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}">
+            <span class="text-sm">${m.icon}</span>
+            <span class="text-[10px]">${m.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectTransMode(modeKey) {
+      selectedTransMode = modeKey;
+      renderTransModeButtons();
+    }
+
+    function openTransModal(blockIdx) {
+      editingTransIdx = blockIdx;
+      const trans = schedules[currentDayKey].blocks[blockIdx].nextTransport;
+      if (trans) {
+        selectedTransMode = trans.mode || '항공';
+        document.getElementById('tm-label').value = trans.label || '';
+        document.getElementById('tm-cost').value = trans.cost || 0;
+        document.getElementById('tm-delete-btn').style.display = 'inline-block';
+      } else {
+        selectedTransMode = '기차';
+        document.getElementById('tm-label').value = '';
+        document.getElementById('tm-cost').value = '';
+        document.getElementById('tm-delete-btn').style.display = 'none';
+      }
+      renderTransModeButtons();
+      document.getElementById('trans-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeTransModal() {
+      document.getElementById('trans-modal').classList.replace('flex', 'hidden');
+    }
+
+    function saveTransModal() {
+      const modeObj = TRANSPORT_MODES.find(m => m.key === selectedTransMode) || TRANSPORT_MODES[0];
+      const label = document.getElementById('tm-label').value.trim() || modeObj.label;
+      const cost = Number(document.getElementById('tm-cost').value) || 0;
+
+      schedules[currentDayKey].blocks[editingTransIdx].nextTransport = {
+        mode: modeObj.key,
+        icon: modeObj.icon,
+        label: label,
+        cost: cost
+      };
+      saveAll();
+      renderTimeline();
+      closeTransModal();
+    }
+
+    function deleteTransItem() {
+      schedules[currentDayKey].blocks[editingTransIdx].nextTransport = null;
+      saveAll();
+      renderTimeline();
+      closeTransModal();
+    }
+
+    // 9. 숙박/공통 고정비 리스트 및 팝업 제어
+    function renderBaseExpenses() {
+      const box = document.getElementById('base-expense-list');
+      box.innerHTML = baseExpenses.map((item, idx) => `
+        <div onclick="openBaseModal(${idx})"
+             class="flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100/80 px-3 py-2 rounded-xl border border-slate-200/80 cursor-pointer transition text-xs">
+          <span class="font-bold text-slate-800 truncate">${item.title}</span>
+          <div class="flex items-center gap-2 shrink-0 whitespace-nowrap">
+            ${item.vendor ? `<span class="text-[11px] text-slate-400 font-semibold">${item.vendor}</span>` : ''}
+            <b class="text-slate-900 font-extrabold">${Number(item.cost).toLocaleString()}원</b>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openBaseModal(idx) {
+      editingBaseIdx = idx;
+      const isNew = idx === null;
+      document.getElementById('bm-delete-btn').style.display = isNew ? 'none' : 'inline-block';
+      if (isNew) {
+        document.getElementById('bm-title').value = '';
+        document.getElementById('bm-vendor').value = '';
+        document.getElementById('bm-cost').value = '';
+      } else {
+        const item = baseExpenses[idx];
+        document.getElementById('bm-title').value = item.title;
+        document.getElementById('bm-vendor').value = item.vendor || '';
+        document.getElementById('bm-cost').value = item.cost || 0;
+      }
+      document.getElementById('base-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeBaseModal() {
+      document.getElementById('base-modal').classList.replace('flex', 'hidden');
+    }
+
+    function saveBaseModal() {
+      const title = document.getElementById('bm-title').value.trim() || '새 항목';
+      const vendor = document.getElementById('bm-vendor').value.trim();
+      const cost = Number(document.getElementById('bm-cost').value) || 0;
+      if (editingBaseIdx === null) {
+        baseExpenses.push({ title, vendor, cost });
+      } else {
+        baseExpenses[editingBaseIdx] = { title, vendor, cost };
+      }
+      saveAll();
+      renderBaseExpenses();
+      closeBaseModal();
+    }
+
+    function deleteBaseModalItem() {
+      if (editingBaseIdx === null) return;
+      baseExpenses.splice(editingBaseIdx, 1);
+      saveAll();
+      renderBaseExpenses();
+      closeBaseModal();
+    }
+
+    // 10. 날짜 선택 및 블록 순서 이동
+    function selectDate(key) {
+      if (!schedules[key]) {
+        schedules[key] = { dayBadge: "일정", title: `${key} 일정`, subtitle: "자유 일정", blocks: [] };
+      }
+      currentDayKey = key;
+      renderSpanCalendar();
+      renderQuickSelector();
+      renderTimeline();
+    }
+
+    function moveBlock(idx, dir) {
+      const blocks = schedules[currentDayKey].blocks;
+      const target = idx + dir;
+      if (target < 0 || target >= blocks.length) return;
+      [blocks[idx], blocks[target]] = [blocks[target], blocks[idx]];
+      saveAll();
+      renderTimeline();
+    }
+
+    function resetAllData() {
+      document.getElementById('reset-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeResetModal() {
+      document.getElementById('reset-modal').classList.replace('flex', 'hidden');
+    }
+
+    function confirmResetData() {
+      const keys = getStorageKeys(currentPlan);
+      localStorage.removeItem(keys.ev);
+      localStorage.removeItem(keys.sc);
+      localStorage.removeItem(keys.bs);
+      loadPlanData(currentPlan);
+      closeResetModal();
+      renderSpanCalendar();
+      renderQuickSelector();
+      renderBaseExpenses();
+      renderTimeline();
+      renderMapForPlan();
+    }
+
+    // 11. 지도 초기화 및 안건별 동적 렌더링
+    const map = L.map('map', { scrollWheelZoom: false }).setView([32.0, -5.0], 2);
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ko', {
+      attribution: '&copy; Google Maps', maxZoom: 19
+    }).addTo(map);
+
+    const mapLayerGroup = L.layerGroup().addTo(map);
+
+    window.addEventListener('resize', () => map.invalidateSize());
+
+    function createNumIcon(number, bgColor) {
+      return L.divIcon({
+        className: 'custom-icon',
+        html: `<div class="num-marker" style="background-color: ${bgColor};">${number}</div>`,
+        iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12]
+      });
+    }
+
+    function renderMapForPlan() {
+      mapLayerGroup.clearLayers();
+      const cfg = PLAN_CONFIGS[currentPlan];
+
+      cfg.stops.forEach(s => {
+        L.marker(s.coords, { icon: createNumIcon(s.num, s.color) })
+          .addTo(mapLayerGroup)
+          .on('click', () => selectDate(s.key))
+          .bindPopup(`<div class="text-xs font-bold">${s.name}</div>`);
+      });
+
+      cfg.lines.forEach(l => {
+        L.polyline(l.coords, l.opts).addTo(mapLayerGroup);
+      });
+
+      map.flyTo(cfg.mapView.center, cfg.mapView.zoom, { duration: 0.8 });
+    }
+
+    function focusMap(region) {
+      if (region === 'world') map.flyTo([32.0, -5.0], 2, { duration: 1.0 });
+      if (region === 'europe') map.flyTo([42.5, 0.0], 5, { duration: 1.0 });
+      if (region === 'usa') map.flyTo([33.5, -77.5], 5, { duration: 1.0 });
+    }
+
+    // 초기 실행
+    loadPlanData(currentPlan);
+    updateHeaderPlanUI();
+    renderSpanCalendar();
+    renderQuickSelector();
+    renderBaseExpenses();
+    renderTimeline();
+    renderMapForPlan();
+  </script>
 </body>
 </html>

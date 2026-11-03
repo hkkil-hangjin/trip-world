@@ -33,8 +33,8 @@
     }
     @media (min-width: 1024px) {
       #map {
-        height: 100%;
-        min-height: 220px;
+        height: 460px;
+        min-height: 420px;
       }
     }
     .num-marker {
@@ -49,33 +49,43 @@
       width: 100%;
     }
     .day-num-btn {
-      width: 24px; height: 24px;
-      display: inline-flex; align-items: center; justify-content: center;
+      padding: 2px 7px;
+      height: 22px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 2px;
       border-radius: 9999px; transition: all 0.15s;
     }
     .day-num-btn.active-day {
       background-color: #1e293b; color: #ffffff !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .day-num-btn.active-day span {
+      color: #ffffff !important;
     }
     .span-bar {
       min-width: 0;
-      height: 19px;
-      font-size: 10px;
-      font-weight: 700;
-      display: flex; align-items: center;
-      padding: 0 5px;
-      border-radius: 5px;
+      height: 28px;
+      font-size: 12.5px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 8px;
+      border-radius: 8px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow: visible;
       cursor: pointer;
-      transition: filter 0.15s;
+      transition: filter 0.15s, transform 0.15s;
     }
-    @media (min-width: 640px) {
-      .span-bar { height: 20px; font-size: 10.5px; padding: 0 6px; }
+    .span-bar:hover { filter: brightness(0.95); transform: translateY(-1px); }
+    .cal-edit-active .span-bar { outline: 2px dashed #f43f5e; }
+    .v-time-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      font-weight: 800;
+      color: #64748b;
+      user-select: none;
     }
-    .span-bar:hover { filter: brightness(0.95); }
-    .cal-edit-active .span-bar { outline: 1.5px dashed #f43f5e; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -86,7 +96,7 @@
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col bg-slate-100">
+<body class="min-h-screen flex flex-col bg-slate-100 pb-10">
 
   <!-- ==========================================
        상단 헤더 (1·2·3안 선택 + 일정/가계부/준비물 메뉴 탭)
@@ -95,19 +105,16 @@
     <div class="layout-container py-2.5 flex flex-wrap justify-between items-center gap-2">
       <!-- 좌측: 타이틀 & 1·2·3안 선택 스위치 -->
       <div class="flex items-center gap-2 flex-wrap min-w-0">
-        <span id="header-duration-badge" class="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">20박 21일 (1안 풀코스)</span>
+        <span id="header-duration-badge" class="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">24박 25일 (1안 풀코스)</span>
         <h1 class="text-sm sm:text-base font-extrabold text-slate-900 truncate">2027년 1월 세계일주 플래너</h1>
 
-        <!-- 1 / 2 / 3 안건 선택 버튼 그룹 -->
+        <!-- 1 / 2 안건 선택 버튼 그룹 -->
         <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1 shrink-0">
           <button id="plan-btn-1" onclick="switchPlan(1)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-sm" title="1안: 풀코스 (중동·포르투갈·스페인·스위스·미국)">
             1안 풀코스
           </button>
           <button id="plan-btn-2" onclick="switchPlan(2)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900" title="2안: 스페인 ➔ 스위스 ➔ 미국">
             2안 스·스·미
-          </button>
-          <button id="plan-btn-3" onclick="switchPlan(3)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900" title="3안: 미국 집중">
-            3안 미국
           </button>
         </div>
       </div>
@@ -153,7 +160,7 @@
         <div class="flex justify-between items-center mb-2 gap-2">
           <div class="flex items-center gap-2 min-w-0">
             <h2 class="text-sm sm:text-base font-extrabold text-slate-900 whitespace-nowrap">📅 2026.12 ~ 2027.01 전체 여정 한눈에 보기</h2>
-            <span id="cal-mode-badge" class="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-600 rounded-full whitespace-nowrap">전 기간 한 줄 연속 뷰</span>
+            <span id="cal-mode-badge" class="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-600 rounded-full whitespace-nowrap">2줄 분할 · 시간비례 뷰</span>
           </div>
           <div class="flex items-center gap-1 shrink-0">
             <button onclick="openAddBarModal()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
@@ -165,9 +172,9 @@
           </div>
         </div>
 
-        <!-- 가로 한 줄 파노라마 달력 본문 (모바일에서는 좌우 스크롤, PC에서는 한눈에 쫙 펼쳐짐) -->
-        <div class="overflow-x-auto custom-scroll pb-1">
-          <div id="span-calendar-body" class="min-w-[920px]"></div>
+        <!-- 가로 한 줄 파노라마 달력 본문 (여유롭고 큼직한 사이즈 + 부드러운 가로 스크롤) -->
+        <div id="calendar-scroll-wrap" class="overflow-x-auto custom-scroll pb-2">
+          <div id="span-calendar-body"></div>
         </div>
       </section>
 
@@ -217,11 +224,15 @@
             </button>
           </div>
 
-          <!-- 날짜 빠른 이동 가로 칩 -->
-          <div id="quick-day-selector" class="flex gap-1.5 overflow-x-auto py-2 no-scrollbar border-b border-slate-100 mb-2.5 text-xs shrink-0"></div>
+          <!-- 날짜 빠른 이동 가로 칩 (스크롤바 표시 + 좌우 화살표 이동 버튼) -->
+          <div class="flex items-center gap-1 border-b border-slate-100 mb-2.5 py-1.5 shrink-0">
+            <button onclick="scrollQuickDaySelector(-180)" title="이전 날짜들로 스크롤" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[11px] flex items-center justify-center shrink-0 transition">◀</button>
+            <div id="quick-day-selector" class="flex-1 flex gap-1.5 overflow-x-auto pb-1.5 pt-0.5 custom-scroll text-xs"></div>
+            <button onclick="scrollQuickDaySelector(180)" title="다음 날짜들로 스크롤" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[11px] flex items-center justify-center shrink-0 transition">▶</button>
+          </div>
 
           <!-- 타임라인 블록 리스트 -->
-          <div id="timeline-list" class="flex-1 min-h-0 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="timeline-list" class="flex-1 lg:max-h-[440px] overflow-y-auto custom-scroll pr-1"></div>
 
           <div class="text-[11px] text-slate-400 text-center mt-2.5 pt-2 border-t border-slate-100 shrink-0">
             💡 <b>일정 카드</b> 클릭 시 수정 · 시간순 자동 정렬
@@ -229,7 +240,7 @@
         </section>
 
         <!-- [하단 우측 3/12] 당일 시티 브리핑 & 스마트 툴 (숙소 / 기후·시차 / 환율 계산기 / 당일 체크메모) -->
-        <section class="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200/90 p-3.5 sm:p-4 flex flex-col justify-between min-h-0 min-w-0 overflow-y-auto custom-scroll space-y-3">
+        <section class="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200/90 p-3.5 sm:p-4 flex flex-col justify-between min-w-0 space-y-3">
           <div class="space-y-3">
             <!-- 헤더 -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-2 gap-1">
@@ -511,10 +522,24 @@
           <select id="modal-bar-end" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 font-bold text-slate-900"></select>
         </div>
       </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">도착/체류시작</label>
+          <input id="modal-bar-in" type="time" class="w-full border border-slate-200 rounded-xl px-2 py-1.5 font-bold text-slate-900" value="09:00">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">출발/체류종료</label>
+          <input id="modal-bar-out" type="time" class="w-full border border-slate-200 rounded-xl px-2 py-1.5 font-bold text-slate-900" value="20:00">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">이동시간 표기</label>
+          <input id="modal-bar-trans" type="text" class="w-full border border-slate-200 rounded-xl px-2 py-1.5 font-semibold text-slate-700" placeholder="02:20➔06:55">
+        </div>
+      </div>
       <div>
         <label class="block font-bold text-slate-600 mb-1">막대 색상</label>
         <select id="modal-bar-color" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 font-semibold">
-          <option value="bg-amber-100 text-amber-900 border border-amber-200">노랑</option>
+          <option value="bg-yellow-100 text-yellow-900 border border-yellow-300">노랑</option>
           <option value="bg-emerald-100 text-emerald-900 border border-emerald-200">초록</option>
           <option value="bg-teal-100 text-teal-900 border border-teal-200">민트</option>
           <option value="bg-rose-100 text-rose-900 border border-rose-200">핑크</option>
@@ -835,27 +860,20 @@
     }
 
     // =========================================================================
-    // [1안: 풀코스] (수정 반영 완료)
-    // - 아부다비 12/29~12/30 (1박, 회색)
-    // - 포르투 1/1~1/2 (1박, 1/2 밤 야간버스)
-    // - 스페인(마드리드·바르셀로나): 주황색
-    // - 인터라켄 (2박), 취리히 1/8~1/9 (1박)
-    // - 1/9~1/10 뉴욕 제거 -> 워싱턴 1/9~1/14 (5박, 파란색)
-    // - 마이애미 1/9~1/11 (2박, 노란색), 올랜도 1/11~1/14 (3박, 노란색)
-    // - 뉴욕 1/14~1/18 (4박, 파란색), 인천 막대 제거
+    // [1안: 풀코스] (뉴욕 1/14~1/17 3박, 1/17 마이애미 이동, 올랜도 1/19~1/22로 1일씩 앞당김 & 최저가 교통권 반영)
     // =========================================================================
     const DEFAULT_CALENDAR_EVENTS = [
-      { id: "e1", title: "🇦🇪 아부다비 (1박)", start: "12/29", end: "12/30", cls: "bg-slate-200 text-slate-800 border border-slate-300" },
-      { id: "e2", title: "🇵🇹 리스본 (2박)", start: "12/30", end: "1/1", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
-      { id: "e3", title: "🇵🇹 포르투 (1박)", start: "1/1", end: "1/2", cls: "bg-teal-100 text-teal-900 border border-teal-200" },
-      { id: "e4", title: "🇪🇸 마드리드 (1박)", start: "1/3", end: "1/4", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "e5", title: "🇪🇸 바르셀로나 (2박)", start: "1/4", end: "1/6", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "e6", title: "🇨🇭 인터라켄 (2박)", start: "1/6", end: "1/8", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "e7", title: "🇨🇭 취리히 (1박)", start: "1/8", end: "1/9", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "e8", title: "🇺🇸 워싱턴 (5박)", start: "1/9", end: "1/14", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "e9", title: "🇺🇸 마이애미 (2박)", start: "1/9", end: "1/11", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "e10", title: "🇺🇸 올랜도 (3박)", start: "1/11", end: "1/14", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "e11", title: "🇺🇸 뉴욕 (4박)", start: "1/14", end: "1/18", cls: "bg-blue-100 text-blue-900 border border-blue-200" }
+      { id: "e1", title: "🇦🇪 아부다비 (1박)", start: "12/29", end: "12/30", inTime: "06:50", outTime: "02:20", transLabel: "✈️ 01:15➔06:50", cls: "bg-slate-200 text-slate-800 border border-slate-300" },
+      { id: "e2", title: "🇵🇹 리스본 (2박)", start: "12/30", end: "1/1", inTime: "06:55", outTime: "10:00", transLabel: "✈️ 02:20➔06:55", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
+      { id: "e3", title: "🇵🇹 포르투 (1박)", start: "1/1", end: "1/2", inTime: "12:45", outTime: "22:30", transLabel: "🚄 10:00➔12:45", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
+      { id: "e4", title: "🇪🇸 마드리드 (1박)", start: "1/3", end: "1/4", inTime: "08:00", outTime: "07:30", transLabel: "🚌 22:30➔08:00", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "e5", title: "🇪🇸 바르셀로나 (2박)", start: "1/4", end: "1/6", inTime: "10:00", outTime: "07:00", transLabel: "🚄 07:30➔10:00", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "e6", title: "🇨🇭 인터라켄 (2박)", start: "1/6", end: "1/8", inTime: "12:30", outTime: "09:30", transLabel: "✈️🚄 07:00➔12:30", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "e7", title: "🇨🇭 취리히 (1박)", start: "1/8", end: "1/9", inTime: "12:00", outTime: "10:15", transLabel: "🚄 09:30➔12:00", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "e8", title: "🇺🇸 워싱턴 (5박)", start: "1/9", end: "1/14", inTime: "16:40", outTime: "08:30", transLabel: "✈️ 10:15➔16:40", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e11", title: "🇺🇸 뉴욕 (3박)", start: "1/14", end: "1/17", inTime: "11:45", outTime: "08:30", transLabel: "🚄 08:30➔11:45", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e9", title: "🇺🇸 마이애미 (2박)", start: "1/17", end: "1/19", inTime: "11:40", outTime: "14:30", transLabel: "✈️ 08:30➔11:40", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
+      { id: "e10", title: "🇺🇸 올랜도 (3박)", start: "1/19", end: "1/22", inTime: "18:05", outTime: "10:30", transLabel: "🚄 14:30➔18:05", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" }
     ];
 
     const DEFAULT_SCHEDULES = {
@@ -864,15 +882,15 @@
         blocks: [
           {
             time: "01:15", title: "인천국제공항 제1터미널 출발", vendor: "에티하드항공", cost: 0, memo: "리스본까지 위탁수하물 자동 연결 (기내용 백팩만 지참)",
-            nextTransport: { mode: "항공", icon: "✈️", label: "에티하드 항공 EY827 (2인)", cost: 1151200 }
+            nextTransport: { mode: "항공", icon: "✈️", label: "에티하드 항공 EY827/EY99 다구간 최저가 (2인)", cost: 1151200 }
           },
           {
             time: "06:50", title: "아부다비 자이드 국제공항 도착 & 라운지/짐보관", vendor: "공항수하물보관", cost: 0, memo: "기내용 가방만 들고 입국 심사 후 투어 출발",
-            nextTransport: { mode: "택시", icon: "🚕", label: "공항 ➔ 모스크 택시", cost: 20000 }
+            nextTransport: { mode: "택시", icon: "🚕", label: "공항 ➔ 모스크 우버/택시", cost: 18000 }
           },
           {
             time: "09:00", title: "셰이크 자이드 그랜드 모스크 관람", vendor: "무료입장", cost: 0, memo: "순백의 대리석 모스크 관람 (긴바지·긴팔 착용 필수)",
-            nextTransport: { mode: "버스", icon: "🚌", label: "두바이 이동 버스/택시", cost: 40000 }
+            nextTransport: { mode: "버스", icon: "🚌", label: "아부다비 ➔ 두바이 에티하드 무료셔틀/E101버스", cost: 14000 }
           },
           {
             time: "13:00", title: "두바이 부르즈 할리파 & 두바이몰 · 분수쇼", vendor: "현장결제", cost: 40000, memo: "수크 알 바하르 산책 및 분수쇼 관람 후 공항 복귀",
@@ -888,15 +906,15 @@
             nextTransport: { mode: "항공", icon: "✈️", label: "에티하드 항공 EY99 (연결편 포함)", cost: 0 }
           },
           {
-            time: "06:55", title: "리스본 포르텔라 공항 도착 & 호시우 호텔 짐보관", vendor: "우버/지하철", cost: 15000, memo: "리스본 시내 중심 '호텔 문디알(호시우 광장)' 얼리 짐보관",
-            nextTransport: { mode: "기차", icon: "🚄", label: "15E 트램 이동", cost: 15000 }
+            time: "06:55", title: "리스본 포르텔라 공항 도착 & 호시우 호텔 짐보관", vendor: "지하철/우버", cost: 12000, memo: "리스본 시내 중심 '호텔 문디알(호시우 광장)' 얼리 짐보관",
+            nextTransport: { mode: "기차", icon: "🚄", label: "리스본 비바 비아젬 24시간 교통권 (2인)", cost: 21000 }
           },
           {
             time: "10:00", title: "제로니무스 수도원 & 발견기념비 · 벨렝 탑", vendor: "클룩", cost: 45000, memo: "대항해시대 마누엘 양식 대표 건축물 관람",
             nextTransport: { mode: "도보", icon: "🚶", label: "도보 5분", cost: 0 }
           },
           {
-            time: "12:30", title: "파스테이스 드 벨렝 (원조 에그타르트)", vendor: "현장결제", cost: 20000, memo: "따뜻한 원조 나타 + 시나몬 가루",
+            time: "12:30", title: "파스테이스 드 벨렝 (원조 에그타르트)", vendor: "현장결제", cost: 15000, memo: "따뜻한 원조 나타 + 시나몬 가루",
             nextTransport: null
           },
           {
@@ -913,7 +931,7 @@
             nextTransport: null
           },
           {
-            time: "14:00", title: "호시우 광장 & 시아두 카페 투어", vendor: "현장결제", cost: 40000, memo: "여유로운 연말 오후 산책 및 휴식",
+            time: "14:00", title: "호시우 광장 & 시아두 카페 투어", vendor: "현장결제", cost: 30000, memo: "여유로운 연말 오후 산책 및 휴식",
             nextTransport: null
           },
           {
@@ -926,15 +944,15 @@
         dayBadge: "DAY 4", title: "1월 1일 (금)", subtitle: "🇵🇹 리스본 ➔ 포르투 이동 & 동 루이스 다리 야경 (1박)",
         blocks: [
           {
-            time: "10:00", title: "리스본 오리엔테역 출발 (고속열차 AP)", vendor: "사전예매", cost: 0, memo: "포르투행 고속열차 탑승",
-            nextTransport: { mode: "기차", icon: "🚄", label: "포르투갈 국영철도 CP (2인)", cost: 56000 }
+            time: "10:00", title: "리스본 오리엔테역 출발 (고속열차 AP/IC)", vendor: "CP공홈예매", cost: 0, memo: "60일 전 얼리버드 Promo 특가 (€14×2인)",
+            nextTransport: { mode: "기차", icon: "🚄", label: "포르투갈 국영철도 CP 얼리버드 최저가 (2인)", cost: 42000 }
           },
           {
             time: "12:45", title: "포르투 캄파냥역 도착 & 상벤투역 아줄레주 벽화", vendor: "상벤투 호텔", cost: 0, memo: "상벤투역 앞 부티크 호텔 체크인 및 시내 산책",
             nextTransport: { mode: "도보", icon: "🚶", label: "도보 10분", cost: 0 }
           },
           {
-            time: "17:00", title: "동 루이스 1세 다리 & 모루 정원 일몰 · 와이너리", vendor: "와이너리", cost: 50000, memo: "강변 노을 감상 및 포트와인 시음",
+            time: "17:00", title: "동 루이스 1세 다리 & 모루 정원 일몰 · 와이너리", vendor: "와이너리", cost: 45000, memo: "강변 노을 감상 및 포트와인 시음",
             nextTransport: null
           }
         ]
@@ -943,16 +961,16 @@
         dayBadge: "DAY 5", title: "1월 2일 (토)", subtitle: "🇵🇹 포르투 시내 투어 ➔ 🇪🇸 마드리드행 야간버스 탑승",
         blocks: [
           {
-            time: "10:00", title: "렐루 서점 & 클레리구스 성당", vendor: "렐루공홈", cost: 25000, memo: "오픈 시간대 사전 예약 입장 (호텔 짐보관)",
+            time: "10:00", title: "렐루 서점 & 클레리구스 성당", vendor: "렐루공홈", cost: 24000, memo: "오픈 시간대 사전 예약 입장 (호텔 짐보관)",
             nextTransport: null
           },
           {
-            time: "13:00", title: "볼량 전통시장 & 프란세지냐 점심", vendor: "현장결제", cost: 40000, memo: "포르투 전통 시장 투어 및 카페 휴식",
+            time: "13:00", title: "볼량 전통시장 & 카페 마제스틱 거리 산책", vendor: "현장결제", cost: 25000, memo: "포르투 전통 시장 투어 및 카페 휴식",
             nextTransport: null
           },
           {
-            time: "22:30", title: "포르투 캄파냥 버스터미널 출발 (마드리드행 야간버스)", vendor: "알사(Alsa)", cost: 0, memo: "야간버스 이동으로 숙박비 1박 세이브!",
-            nextTransport: { mode: "버스", icon: "🚌", label: "알사(Alsa) 직통 야간버스 (2인)", cost: 90000 }
+            time: "22:30", title: "포르투 캄파냥 버스터미널 출발 (마드리드행 야간버스)", vendor: "알사(Alsa)", cost: 0, memo: "야간버스 이동으로 숙박비 1박 세이브! (1인 €24 특가)",
+            nextTransport: { mode: "버스", icon: "🚌", label: "알사(Alsa) / FlixBus 야간버스 최저가 (2인)", cost: 72000 }
           }
         ]
       },
@@ -977,8 +995,8 @@
         dayBadge: "DAY 7", title: "1월 4일 (월)", subtitle: "🇪🇸 마드리드 ➔ 바르셀로나 이동 & 가우디 투어 (1/2박)",
         blocks: [
           {
-            time: "07:30", title: "마드리드 아토차역 출발 (바르셀로나행 고속열차)", vendor: "사전예매", cost: 0, memo: "고속열차로 2시간 30분 이동",
-            nextTransport: { mode: "기차", icon: "🚄", label: "Iryo / AVE 고속열차 (2인)", cost: 80000 }
+            time: "07:30", title: "마드리드 아토차역 출발 (바르셀로나행 고속열차)", vendor: "Ouigo/Iryo", cost: 0, memo: "저가 고속열차 얼리버드 특가 (1인 €18×2인)",
+            nextTransport: { mode: "기차", icon: "🚄", label: "Ouigo / Iryo 고속열차 최저가 (2인)", cost: 54000 }
           },
           {
             time: "10:00", title: "바르셀로나 산츠역 도착 & 구엘 공원 · 까사 바트요", vendor: "마이리얼트립", cost: 110000, memo: "카탈루냐 광장 호텔 짐보관 후 가우디 투어",
@@ -998,7 +1016,7 @@
             nextTransport: null
           },
           {
-            time: "14:00", title: "바르셀로네타 해변 & 빠에야", vendor: "현장결제", cost: 60000, memo: "지중해 바다 산책 및 해변 식사",
+            time: "14:00", title: "바르셀로네타 해변 & 빠에야", vendor: "현장결제", cost: 50000, memo: "지중해 바다 산책 및 해변 식사",
             nextTransport: null
           },
           {
@@ -1011,12 +1029,12 @@
         dayBadge: "DAY 9", title: "1월 6일 (수)", subtitle: "🇪🇸 바르셀로나 ➔ 🇨🇭 스위스 인터라켄 도착 & 피르스트 (1/2박)",
         blocks: [
           {
-            time: "07:00", title: "바르셀로나 엘프라트 공항 출발 (취리히행)", vendor: "부엘링항공", cost: 0, memo: "위탁 수하물 포함",
-            nextTransport: { mode: "항공", icon: "✈️", label: "부엘링 항공 VY1226 (2인)", cost: 255300 }
+            time: "07:00", title: "바르셀로나 엘프라트 공항 출발 (취리히행 직항)", vendor: "부엘링항공", cost: 0, memo: "수하물 포함 최저가 운임 (1인 €74×2인)",
+            nextTransport: { mode: "항공", icon: "✈️", label: "부엘링 항공 VY1226 최저가 (2인)", cost: 218000 }
           },
           {
-            time: "08:55", title: "취리히 공항역 도착 ➔ 인터라켄 동역(Ost) 이동", vendor: "SBB", cost: 0, memo: "기차 환승 이동",
-            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 1일차 (2인)", cost: 170000 }
+            time: "08:55", title: "취리히 공항역 도착 ➔ 인터라켄 동역(Ost) 이동", vendor: "SBB공홈", cost: 0, memo: "60일 전 슈퍼세이버/세이버 데이 패스 최저가 (1인 CHF 52)",
+            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 얼리버드 1일차 (2인)", cost: 164000 }
           },
           {
             time: "12:30", title: "인터라켄 호텔 체크인 & 그린델발트 피르스트 전망대", vendor: "동신항운", cost: 130000, memo: "곤돌라 탑승 및 피르스트 클리프 워크",
@@ -1041,8 +1059,8 @@
         dayBadge: "DAY 11", title: "1월 8일 (금)", subtitle: "🇨🇭 인터라켄 ➔ 루체른 호수 투어 ➔ 취리히 체크인 (1박)",
         blocks: [
           {
-            time: "09:30", title: "인터라켄 동역 출발 (루체른행 파노라마 열차)", vendor: "패스포함", cost: 0, memo: "브뤼니히 고개 경유 골든패스 노선",
-            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 2일차 (2인)", cost: 170000 }
+            time: "09:30", title: "인터라켄 동역 출발 (루체른행 파노라마 열차)", vendor: "SBB공홈", cost: 0, memo: "브뤼니히 고개 경유 골든패스 노선 (세이버 데이 패스)",
+            nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 얼리버드 2일차 (2인)", cost: 164000 }
           },
           {
             time: "12:00", title: "루체른 카펠교 · 빈사의 사자상 반나절 투어", vendor: "코인락커", cost: 15000, memo: "호수 산책 후 저녁 취리히 중앙역 호텔 이동 및 체크인",
@@ -1051,92 +1069,88 @@
         ]
       },
       "1/9": {
-        dayBadge: "DAY 12 분리", title: "1월 9일 (토)", subtitle: "🇨🇭 취리히 출발 ➔ 🏛️ 워싱턴 (1/5박) & 🌴 마이애미 (1/2박) 이동",
+        dayBadge: "DAY 12", title: "1월 9일 (토)", subtitle: "🇨🇭 취리히 출발 ➔ 🏛️ 워싱턴 D.C. 도착 및 체크인 (1/5박)",
         blocks: [
           {
-            time: "10:15", title: "취리히 공항 출발 (모닝캄 위탁수하물 무료)", vendor: "델타항공", cost: 0, memo: "미국 도착 후 워싱턴(5박)과 마이애미(2박)로 각각 이동",
-            nextTransport: { mode: "항공", icon: "✈️", label: "델타항공 DL53 + 연결편 (2인 합산)", cost: 1245270 }
+            time: "10:15", title: "취리히 공항(ZRH) 출발 ➔ 워싱턴 덜레스 공항(IAD)행", vendor: "구글플라이트특가", cost: 0, memo: "1월 취리히➔워싱턴 편도 최저가 ($443/인 기준, 2인 합산)",
+            nextTransport: { mode: "항공", icon: "✈️", label: "취리히(ZRH) ➔ 워싱턴(IAD) 최저가 항공 (2인)", cost: 1210000 }
           },
           {
-            time: "17:30", title: "[동행] 워싱턴 D.C. 이동 & 학회 호텔 체크인 (1/5박)", vendor: "암트랙/학회지원", cost: 45000, memo: "큰 캐리어 전담 이동 및 5박 학회 호텔 체크인",
-            nextTransport: null
-          },
-          {
-            time: "19:00", title: "[본인] 마이애미 공항 도착 & 사우스비치 호텔 체크인 (1/2박)", vendor: "기내용캐리어", cost: 0, memo: "사우스비치 오션 호텔 체크인 및 해변 산책",
+            time: "16:40", title: "워싱턴 D.C. 도착 & 학회 호텔 체크인 (1/5박)", vendor: "메트로실버라인", cost: 12000, memo: "덜레스 공항에서 Silver Line 메트로로 워싱턴 시내 직결 이동",
             nextTransport: null
           }
         ]
       },
       "1/10": {
-        dayBadge: "DAY 13 분리", title: "1월 10일 (일)", subtitle: "🌴 본인: 마이애미 투어 (2/2박) / 🏛️ 동행: 워싱턴 학회 (2/5박)",
+        dayBadge: "DAY 13", title: "1월 10일 (일)", subtitle: "🏛️ 워싱턴 학회 일정 & 내셔널 몰 투어 (2/5박)",
         blocks: [
           {
-            time: "09:30", title: "[동행] 워싱턴 학회 일정 & 내셔널 몰 · 링컨 기념관 (2/5박)", vendor: "학회지원", cost: 0, memo: "숙박·식비 100% 학회 지원",
+            time: "09:30", title: "워싱턴 학회 등록 & 내셔널 몰 · 링컨 기념관", vendor: "학회지원", cost: 0, memo: "숙박·식비 100% 학회 지원",
             nextTransport: null
           },
           {
-            time: "10:30", title: "[본인] 마이애미 사우스비치 & 오션드라이브 · 리틀 아바나 (2/2박)", vendor: "우버/현지", cost: 40000, memo: "아르데코 해변 산책 및 쿠바 거리 투어",
+            time: "14:30", title: "백악관 외관 & 워싱턴 기념탑 산책", vendor: "무료", cost: 0, memo: "워싱턴 상징 랜드마크 도보 투어",
             nextTransport: null
           }
         ]
       },
       "1/11": {
-        dayBadge: "DAY 14 분리", title: "1월 11일 (월)", subtitle: "🌴 마이애미 ➔ 🎢 올랜도 이동 (1/3박) / 🏛️ 워싱턴 (3/5박)",
+        dayBadge: "DAY 14", title: "1월 11일 (월)", subtitle: "🏛️ 워싱턴 학회 참석 & 스미소니언 자연사박물관 (3/5박)",
         blocks: [
           {
-            time: "10:00", title: "[본인] 윈우드 월스 벽화거리 투어 후 기차역 이동", vendor: "현장결제", cost: 20000, memo: "그래피티 아트 감상 후 브라이트라인 탑승",
-            nextTransport: { mode: "기차", icon: "🚄", label: "브라이트라인 고속열차 (마이애미➔올랜도)", cost: 60000 }
+            time: "09:30", title: "워싱턴 학회 세션 참석", vendor: "학회지원", cost: 0, memo: "오전 학회 일정 소화",
+            nextTransport: null
           },
           {
-            time: "18:00", title: "[본인] 올랜도 유니버설 리조트 체크인 & 디즈니 스프링스 (1/3박)", vendor: "무료입장", cost: 0, memo: "카바나 베이 리조트 체크인 후 테마파크 전야 산책",
+            time: "14:00", title: "스미소니언 국립 자연사 박물관 관람", vendor: "무료입장", cost: 0, memo: "호프 다이아몬드 및 주요 전시 관람",
             nextTransport: null
           }
         ]
       },
       "1/12": {
-        dayBadge: "DAY 15 분리", title: "1월 12일 (화)", subtitle: "🎢 본인: 올랜도 유니버설 스튜디오 (2/3박) / 🏛️ 워싱턴 (4/5박)",
+        dayBadge: "DAY 15", title: "1월 12일 (화)", subtitle: "🏛️ 워싱턴 학회 & 국립 항공우주박물관 · 조지타운 (4/5박)",
         blocks: [
           {
-            time: "08:00", title: "[본인] 유니버설 스튜디오 2개 파크 통합권 종일 (2/3박)", vendor: "클룩", cost: 250000, memo: "해리포터 & 벨로시코스터 싱글라이더!",
+            time: "10:00", title: "워싱턴 학회 일정 & 스미소니언 항공우주박물관", vendor: "무료예약", cost: 0, memo: "사전 시간대 예약 후 무료 입장",
             nextTransport: null
           },
           {
-            time: "09:30", title: "[동행] 워싱턴 학회 참석 & 스미소니언 박물관 (4/5박)", vendor: "학회지원", cost: 0, memo: "국립 자연사/항공우주 박물관 무료 관람",
+            time: "16:30", title: "조지타운 역사지구 산책 & 컵케이크", vendor: "현장결제", cost: 25000, memo: "고풍스러운 대학가 및 수변 공원 산책",
             nextTransport: null
           }
         ]
       },
       "1/13": {
-        dayBadge: "DAY 16 분리", title: "1월 13일 (수)", subtitle: "🏰 본인: 디즈니월드 매직킹덤 (3/3박) / 🏛️ 워싱턴 (5/5박)",
+        dayBadge: "DAY 16", title: "1월 13일 (수)", subtitle: "🏛️ 워싱턴 국회의사당 · 의회도서관 투어 (5/5박)",
         blocks: [
           {
-            time: "09:00", title: "[본인] 디즈니월드 매직킹덤 & 신데렐라 성 불꽃놀이 (3/3박)", vendor: "디즈니공홈", cost: 200000, memo: "매직킹덤 어트랙션 및 밤 불꽃놀이 관람",
+            time: "10:00", title: "미국 국회의사당 & 의회도서관 관람", vendor: "사전예약(무료)", cost: 0, memo: "세계 최대 규모의 아름다운 도서관 내부 관람",
+            nextTransport: null
+          },
+          {
+            time: "15:00", title: "국립 미술관(National Gallery of Art) 관람", vendor: "무료입장", cost: 0, memo: "워싱턴 마지막 밤 여유로운 미술관 투어",
             nextTransport: null
           }
         ]
       },
       "1/14": {
-        dayBadge: "DAY 17 합류", title: "1월 14일 (목)", subtitle: "🇺🇸 올랜도 & 워싱턴 ➔ 뉴욕 맨해튼 재합류! (뉴욕 1/4박)",
+        dayBadge: "DAY 17", title: "1월 14일 (목)", subtitle: "🏛️ 워싱턴 출발 ➔ 🇺🇸 뉴욕 맨해튼 도착 & 써밋 전망대 (1/3박)",
         blocks: [
           {
-            time: "07:30", title: "[본인] 올랜도 공항(MCO) 출발 ➔ 뉴욕 도착", vendor: "델타/프론티어", cost: 0, memo: "오전 10시 뉴욕 라과디아/JFK 도착",
-            nextTransport: { mode: "항공", icon: "✈️", label: "올랜도 ➔ 뉴욕 직항 (1인)", cost: 135000 }
+            time: "08:30", title: "워싱턴 유니언역 출발 ➔ 뉴욕 펜스테이션 도착", vendor: "Amtrak공홈", cost: 0, memo: "암트랙 Northeast Regional 얼리버드 Saver 운임 (1인 $20×2인)",
+            nextTransport: { mode: "기차", icon: "🚄", label: "암트랙(Amtrak) 워싱턴➔뉴욕 최저가 (2인)", cost: 56000 }
           },
           {
-            time: "08:00", title: "[동행] 워싱턴 유니언역 출발 ➔ 뉴욕 펜스테이션 도착", vendor: "암트랙", cost: 0, memo: "오전 11시 뉴욕 펜스테이션 도착",
-            nextTransport: { mode: "기차", icon: "🚄", label: "암트랙(Amtrak) 편도 (1인)", cost: 45000 }
-          },
-          {
-            time: "14:00", title: "맨해튼 재합류! 써밋 전망대 & 타임스퀘어 (1/4박)", vendor: "마이리얼트립", cost: 120000, memo: "타임스퀘어 호텔 체크인 및 전망대 입장권 (2인)",
+            time: "14:00", title: "맨해튼 호텔 체크인! 써밋 전망대 & 타임스퀘어 (1/3박)", vendor: "마이리얼트립", cost: 120000, memo: "타임스퀘어 호텔 체크인 및 전망대 입장권 (2인)",
             nextTransport: null
           }
         ]
       },
       "1/15": {
-        dayBadge: "DAY 18", title: "1월 15일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 & 브루클린 브리지 (2/4박)",
+        dayBadge: "DAY 18", title: "1월 15일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 & 브루클린 브리지 · 덤보 (2/3박)",
         blocks: [
           {
-            time: "09:30", title: "자유의 여신상 페리 & 월스트리트 · 9/11 메모리얼", vendor: "클룩", cost: 80000, memo: "자유의 여신상 크루즈 및 첼시마켓 산책",
+            time: "09:30", title: "자유의 여신상 페리 & 월스트리트 · 9/11 메모리얼", vendor: "클룩", cost: 80000, memo: "자유의 여신상 크루즈 및 첼시마켓·하이라인 산책",
             nextTransport: null
           },
           {
@@ -1146,40 +1160,89 @@
         ]
       },
       "1/16": {
-        dayBadge: "DAY 19", title: "1월 16일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 뮤지컬 (3/4박)",
+        dayBadge: "DAY 19", title: "1월 16일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 브로드웨이 뮤지컬 (3/3박)",
         blocks: [
           {
-            time: "10:00", title: "센트럴파크 & 메트로폴리탄 미술관 · 5번가", vendor: "더멧공홈", cost: 80000, memo: "미술관 관람 및 5번가 산책",
+            time: "10:00", title: "센트럴파크 & 메트로폴리탄 미술관 · 소호(SoHo)", vendor: "더멧공홈", cost: 80000, memo: "미술관 관람 및 5번가·록펠러센터 산책",
             nextTransport: null
           },
           {
-            time: "19:30", title: "브로드웨이 뮤지컬 관람", vendor: "투데이틱스", cost: 280000, memo: "라이온킹 / 위키드 (2인)",
+            time: "19:30", title: "브로드웨이 뮤지컬 & 타임스퀘어 야경", vendor: "투데이틱스", cost: 280000, memo: "라이온킹 / 위키드 로터리·할인티켓 (2인)",
             nextTransport: null
           }
         ]
       },
       "1/17": {
-        dayBadge: "DAY 20", title: "1월 17일 (일)", subtitle: "🇺🇸 뉴욕 하이라인 파크 · 소호 · 록펠러 야경 (4/4박)",
+        dayBadge: "DAY 20", title: "1월 17일 (일)", subtitle: "🇺🇸 뉴욕 출발 ➔ 🌴 마이애미 도착 & 사우스비치 해변 (1/2박)",
         blocks: [
           {
-            time: "10:30", title: "하이라인 파크 & 소호(SoHo) 쇼핑 거리 산책", vendor: "지하철OMNY", cost: 15000, memo: "뉴욕 마지막 날 자유 산책 및 기념품 쇼핑",
-            nextTransport: null
+            time: "08:30", title: "뉴욕 공항(JFK/LGA/EWR) 출발 ➔ 마이애미(MIA/FLL) 도착", vendor: "구글플라이트", cost: 0, memo: "1월 뉴욕➔마이애미 편도 최저가 ($83~$99 기준)",
+            nextTransport: { mode: "항공", icon: "✈️", label: "뉴욕 ➔ 마이애미 직항 최저가 항공권", cost: 138000 }
           },
           {
-            time: "18:00", title: "록펠러 센터 & 타임스퀘어 마지막 밤 산책", vendor: "무료", cost: 0, memo: "맨해튼 야경 감상 및 귀국 짐 정리",
+            time: "14:00", title: "마이애미 사우스비치 호텔 체크인 & 오션드라이브 산책 (1/2박)", vendor: "우버/트롤리", cost: 25000, memo: "마이애미 무료 트롤리 활용 · 아르데코 해변 산책",
             nextTransport: null
           }
         ]
       },
       "1/18": {
-        dayBadge: "DAY 21 출국", title: "1월 18일 (월)", subtitle: "🇺🇸 뉴욕 JFK 출발 ➔ 🇰🇷 인천행 직항 귀국",
+        dayBadge: "DAY 21", title: "1월 18일 (월)", subtitle: "🌴 마이애미 리틀 아바나 & 베이사이드 마켓플레이스 (2/2박)",
         blocks: [
           {
-            time: "10:30", title: "뉴욕 JFK 국제공항 출발 (인천행 직항)", vendor: "아시아나항공", cost: 0, memo: "위탁 수하물 23kg×2개씩 무료",
-            nextTransport: { mode: "항공", icon: "✈️", label: "아시아나항공 OZ221/223 직항 (2인)", cost: 1435820 }
+            time: "10:30", title: "리틀 아바나(Little Havana) & 쿠바 커피·시가 거리", vendor: "현장결제", cost: 25000, memo: "마이애미 속 작은 쿠바 문화 체험",
+            nextTransport: null
           },
           {
-            time: "16:15", title: "인천국제공항 무사 도착 및 귀가", vendor: "공항버스", cost: 34000, memo: "세계일주 완주!",
+            time: "15:30", title: "베이사이드 마켓플레이스 & 마이애미 선셋 크루즈", vendor: "클룩", cost: 42000, memo: "항구 산책 및 해변 휴양",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/19": {
+        dayBadge: "DAY 22", title: "1월 19일 (화)", subtitle: "🌴 마이애미 윈우드 월스 ➔ 🎢 올랜도 이동 (1/3박)",
+        blocks: [
+          {
+            time: "10:00", title: "윈우드 월스(Wynwood Walls) 벽화거리 투어", vendor: "현장결제", cost: 20000, memo: "세계적인 그래피티 아트 감상 후 마이애미 중앙역 이동",
+            nextTransport: { mode: "기차", icon: "🚄", label: "브라이트라인(Brightline) 고속열차 Smart 최저가 ($44)", cost: 61000 }
+          },
+          {
+            time: "18:05", title: "올랜도 유니버설 리조트 체크인 & 디즈니 스프링스 (1/3박)", vendor: "무료입장", cost: 0, memo: "카바나 베이 리조트 체크인 후 테마파크 전야 산책",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/20": {
+        dayBadge: "DAY 23", title: "1월 20일 (수)", subtitle: "🎢 올랜도 유니버설 스튜디오 2개 파크 종일 (2/3박)",
+        blocks: [
+          {
+            time: "08:00", title: "유니버설 스튜디오 & 아일랜드 오브 어드벤처 종일 (2/3박)", vendor: "클룩", cost: 250000, memo: "해리포터 호그와트 익스프레스 & 벨로시코스터 탑승!",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/21": {
+        dayBadge: "DAY 24", title: "1월 21일 (목)", subtitle: "🏰 올랜도 디즈니월드 매직킹덤 & 불꽃놀이 (3/3박)",
+        blocks: [
+          {
+            time: "09:00", title: "디즈니월드 매직킹덤 & 신데렐라 성 불꽃놀이 (3/3박)", vendor: "디즈니공홈", cost: 200000, memo: "매직킹덤 어트랙션 및 밤 불꽃놀이 관람",
+            nextTransport: null
+          }
+        ]
+      },
+      "1/22": {
+        dayBadge: "DAY 25 출국", title: "1월 22일 (금)", subtitle: "🇺🇸 올랜도 출발 ➔ 🇰🇷 인천행 귀국편 탑승",
+        blocks: [
+          {
+            time: "10:30", title: "올랜도 국제공항(MCO) 출발 (인천행 귀국)", vendor: "구글플라이트특가", cost: 0, memo: "1월 올랜도(MCO)➔인천(ICN) 편도 최저가 ($627~ 기준)",
+            nextTransport: { mode: "항공", icon: "✈️", label: "올랜도(MCO) ➔ 인천(ICN) 귀국 최저가 항공편", cost: 1380000 }
+          }
+        ]
+      },
+      "1/23": {
+        dayBadge: "DAY 26 귀국", title: "1월 23일 (토)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
+        blocks: [
+          {
+            time: "16:15", title: "인천국제공항 무사 도착 및 귀가", vendor: "공항버스", cost: 34000, memo: "24박 25일 세계일주 완주!",
             nextTransport: null
           }
         ]
@@ -1194,38 +1257,33 @@
       { title: "🇪🇸 바르셀로나 카탈루냐 H10 호텔 (2박)", vendor: "아고다 (임시)", cost: 500000 },
       { title: "🇨🇭 인터라켄 오스트 린다우어 호텔 (2박)", vendor: "부킹닷컴 (임시)", cost: 680000 },
       { title: "🇨🇭 취리히 중앙역 호텔 몬타나 (1박)", vendor: "트립닷컴 (임시)", cost: 250000 },
-      { title: "🌴 마이애미(2박)+🎢 올랜도(3박) 호텔 [1인]", vendor: "유니버설/부킹 (임시)", cost: 620000 },
       { title: "🏛️ 워싱턴 D.C. 힐튼 컨벤션 학회 호텔 (5박)", vendor: "학회 100% 지원", cost: 0 },
-      { title: "🇺🇸 뉴욕 맨해튼 타임스퀘어 시티즌M 호텔 (4박)", vendor: "아고다 (임시)", cost: 980000 },
-      { title: "🍽️ 전 일정 2인 식비 예산", vendor: "현지결제", cost: 1650000 },
+      { title: "🇺🇸 뉴욕 맨해튼 타임스퀘어 시티즌M 호텔 (3박)", vendor: "아고다 (임시)", cost: 750000 },
+      { title: "🌴 마이애미(2박)+🎢 올랜도(3박) 호텔", vendor: "유니버설/부킹 (임시)", cost: 620000 },
+      { title: "🍽️ 전 일정 2인 식비 예산", vendor: "현지결제", cost: 1600000 },
       { title: "🛂 ESTA 비자 + eSIM + 여행보험", vendor: "공식사이트", cost: 230000 }
     ];
 
     // =========================================================================
-    // [2안: 바르셀로나 IN ➔ 스위스 인터라켄 ➔ 미국] (색상 통일 반영)
-    // - 스페인(바르셀로나): 주황색
-    // - 인터라켄 (2박), 취리히 1/8~1/9 (1박): 빨간색
-    // - 워싱턴 1/9~1/14 (5박): 파란색
-    // - 마이애미 1/9~1/11 (2박) + 올랜도 1/11~1/14 (3박): 노란색
-    // - 뉴욕 1/14~1/18 (4박): 파란색
+    // [2안: 바르셀로나 IN ➔ 스위스 인터라켄 ➔ 미국] (뉴욕 1/14~1/17 3박, 1/17 마이애미, 1/19 올랜도 반영)
     // =========================================================================
     const PLAN2_CALENDAR_EVENTS = [
-      { id: "p2_e2", title: "🇪🇸 바르셀로나 (3박)", start: "1/3", end: "1/6", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "p2_e3", title: "🇨🇭 인터라켄 (2박)", start: "1/6", end: "1/8", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "p2_e4", title: "🇨🇭 취리히 (1박)", start: "1/8", end: "1/9", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "p2_e5", title: "🇺🇸 워싱턴 (5박)", start: "1/9", end: "1/14", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p2_e6", title: "🇺🇸 마이애미 (2박)", start: "1/9", end: "1/11", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "p2_e7", title: "🇺🇸 올랜도 (3박)", start: "1/11", end: "1/14", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "p2_e8", title: "🇺🇸 뉴욕 (4박)", start: "1/14", end: "1/18", cls: "bg-blue-100 text-blue-900 border border-blue-200" }
+      { id: "p2_e2", title: "🇪🇸 바르셀로나 (3박)", start: "1/3", end: "1/6", inTime: "18:30", outTime: "07:00", transLabel: "✈️ 11:05➔18:30", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "p2_e3", title: "🇨🇭 인터라켄 (2박)", start: "1/6", end: "1/8", inTime: "12:30", outTime: "09:30", transLabel: "✈️🚄 07:00➔12:30", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "p2_e4", title: "🇨🇭 취리히 (1박)", start: "1/8", end: "1/9", inTime: "12:00", outTime: "10:15", transLabel: "🚄 09:30➔12:00", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "p2_e5", title: "🇺🇸 워싱턴 (5박)", start: "1/9", end: "1/14", inTime: "16:40", outTime: "08:30", transLabel: "✈️ 10:15➔16:40", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p2_e8", title: "🇺🇸 뉴욕 (3박)", start: "1/14", end: "1/17", inTime: "11:45", outTime: "08:30", transLabel: "🚄 08:30➔11:45", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "p2_e6", title: "🇺🇸 마이애미 (2박)", start: "1/17", end: "1/19", inTime: "11:40", outTime: "14:30", transLabel: "✈️ 08:30➔11:40", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
+      { id: "p2_e7", title: "🇺🇸 올랜도 (3박)", start: "1/19", end: "1/22", inTime: "18:05", outTime: "10:30", transLabel: "🚄 14:30➔18:05", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" }
     ];
 
     const PLAN2_SCHEDULES = {
       "1/3": {
-        dayBadge: "DAY 1", title: "1월 3일 (일)", subtitle: "🇰🇷 인천 출발 ➔ 🇪🇸 바르셀로나 직항 도착 (트리니티항공 특가)",
+        dayBadge: "DAY 1", title: "1월 3일 (일)", subtitle: "🇰🇷 인천 출발 ➔ 🇪🇸 바르셀로나 도착 (최저가 특가)",
         blocks: [
           {
-            time: "11:05", title: "인천국제공항 출발 (바르셀로나 IN 직항)", vendor: "트리니티항공", cost: 0, memo: "가성비 직항 특가로 바르셀로나 바로 입국!",
-            nextTransport: { mode: "항공", icon: "✈️", label: "트리니티항공 바르셀로나 직항 (2인)", cost: 980000 }
+            time: "11:05", title: "인천국제공항 출발 (바르셀로나 IN 특가)", vendor: "트리니티/경유특가", cost: 0, memo: "인천➔바르셀로나 편도 프로모션 최저가 (1인 39.5만×2인)",
+            nextTransport: { mode: "항공", icon: "✈️", label: "인천 ➔ 바르셀로나 최저가 항공권 (2인)", cost: 790000 }
           },
           {
             time: "18:30", title: "바르셀로나 엘프라트 공항 도착 & 카탈루냐 호텔 체크인 (1/3박)", vendor: "아에로버스", cost: 20000, memo: "카탈루냐 광장 호텔 체크인 및 람블라스 산책",
@@ -1250,195 +1308,39 @@
         dayBadge: "DAY 3", title: "1월 5일 (화)", subtitle: "🇪🇸 바르셀로나 고딕지구 · 해변 · 동방박사 퍼레이드 (3/3박)",
         blocks: [
           { time: "10:00", title: "고딕 지구 & 보케리아 시장", vendor: "현장결제", cost: 30000, memo: "중세 골목길 산책", nextTransport: null },
-          { time: "14:00", title: "바르셀로네타 해변 & 빠에야", vendor: "현장결제", cost: 60000, memo: "지중해 바다 산책", nextTransport: null },
+          { time: "14:00", title: "바르셀로네타 해변 & 빠에야", vendor: "현장결제", cost: 50000, memo: "지중해 바다 산책", nextTransport: null },
           { time: "18:00", title: "스페인 동방박사 퍼레이드 관람", vendor: "무료", cost: 0, memo: "1월 5일 밤 화려한 거리 축제 관람", nextTransport: null }
         ]
       },
       "1/6": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/6"])), dayBadge: "DAY 4" },
       "1/7": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/7"])), dayBadge: "DAY 5" },
       "1/8": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/8"])), dayBadge: "DAY 6" },
-      "1/9": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/9"])), dayBadge: "DAY 7 분리" },
-      "1/10": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/10"])), dayBadge: "DAY 8 분리" },
-      "1/11": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/11"])), dayBadge: "DAY 9 분리" },
-      "1/12": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/12"])), dayBadge: "DAY 10 분리" },
-      "1/13": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/13"])), dayBadge: "DAY 11 분리" },
-      "1/14": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/14"])), dayBadge: "DAY 12 합류" },
+      "1/9": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/9"])), dayBadge: "DAY 7" },
+      "1/10": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/10"])), dayBadge: "DAY 8" },
+      "1/11": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/11"])), dayBadge: "DAY 9" },
+      "1/12": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/12"])), dayBadge: "DAY 10" },
+      "1/13": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/13"])), dayBadge: "DAY 11" },
+      "1/14": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/14"])), dayBadge: "DAY 12" },
       "1/15": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/15"])), dayBadge: "DAY 13" },
       "1/16": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/16"])), dayBadge: "DAY 14" },
       "1/17": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/17"])), dayBadge: "DAY 15" },
-      "1/18": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/18"])), dayBadge: "DAY 16 출국" }
+      "1/18": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/18"])), dayBadge: "DAY 16" },
+      "1/19": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/19"])), dayBadge: "DAY 17" },
+      "1/20": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/20"])), dayBadge: "DAY 18" },
+      "1/21": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/21"])), dayBadge: "DAY 19" },
+      "1/22": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/22"])), dayBadge: "DAY 20 출국" },
+      "1/23": { ...JSON.parse(JSON.stringify(DEFAULT_SCHEDULES["1/23"])), dayBadge: "DAY 21 귀국" }
     };
 
     const PLAN2_BASE_EXPENSES = [
       { title: "🇪🇸 바르셀로나 카탈루냐 H10 호텔 (3박)", vendor: "아고다 (임시)", cost: 720000 },
       { title: "🇨🇭 인터라켄 오스트 린다우어 호텔 (2박)", vendor: "부킹닷컴 (임시)", cost: 680000 },
       { title: "🇨🇭 취리히 중앙역 호텔 몬타나 (1박)", vendor: "트립닷컴 (임시)", cost: 250000 },
-      { title: "🌴 마이애미(2박)+🎢 올랜도(3박) 호텔 [1인]", vendor: "유니버설/부킹 (임시)", cost: 620000 },
       { title: "🏛️ 워싱턴 D.C. 힐튼 컨벤션 학회 호텔 (5박)", vendor: "학회 100% 지원", cost: 0 },
-      { title: "🇺🇸 뉴욕 맨해튼 타임스퀘어 시티즌M 호텔 (4박)", vendor: "아고다 (임시)", cost: 980000 },
-      { title: "🍽️ 전 일정 2인 식비 예산 (16일)", vendor: "현지결제", cost: 1300000 },
+      { title: "🇺🇸 뉴욕 맨해튼 타임스퀘어 시티즌M 호텔 (3박)", vendor: "아고다 (임시)", cost: 750000 },
+      { title: "🌴 마이애미(2박)+🎢 올랜도(3박) 호텔", vendor: "유니버설/부킹 (임시)", cost: 620000 },
+      { title: "🍽️ 전 일정 2인 식비 예산", vendor: "현지결제", cost: 1250000 },
       { title: "🛂 ESTA 비자 + eSIM + 여행보험", vendor: "공식사이트", cost: 210000 }
-    ];
-
-    // =========================================================================
-    // [3안: 1월 14일 출발! 미국 동·서부 횡단] (색상 통일 반영)
-    // - 미국 도시(뉴욕·라스베가스·LA·샌프란시스코): 파란색
-    // - 마이애미·올랜도: 노란색
-    // =========================================================================
-    const PLAN3_CALENDAR_EVENTS = [
-      { id: "p3_e1", title: "🇺🇸 뉴욕 (3박)", start: "1/14", end: "1/17", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p3_e2", title: "🇺🇸 마이애미 (2박)", start: "1/17", end: "1/19", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "p3_e3", title: "🇺🇸 올랜도 (3박)", start: "1/19", end: "1/22", cls: "bg-amber-100 text-amber-900 border border-amber-200" },
-      { id: "p3_e4", title: "🇺🇸 라스베가스 (2박)", start: "1/22", end: "1/24", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p3_e5", title: "🇺🇸 LA (3박)", start: "1/24", end: "1/27", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p3_e6", title: "🇺🇸 샌프란시스코 (3박)", start: "1/27", end: "1/30", cls: "bg-blue-100 text-blue-900 border border-blue-200" }
-    ];
-
-    const PLAN3_SCHEDULES = {
-      "1/14": {
-        dayBadge: "DAY 1", title: "1월 14일 (목)", subtitle: "🇰🇷 인천 출발 ➔ 🇺🇸 뉴욕 JFK 도착 & 타임스퀘어 (1/3박)",
-        blocks: [
-          {
-            time: "10:00", title: "인천국제공항 출발 (뉴욕 JFK 직항)", vendor: "대한항공/아시아나", cost: 0, memo: "미국 동서부 대장정 시작 (뉴욕 IN / 샌프란 OUT 다구간)",
-            nextTransport: { mode: "항공", icon: "✈️", label: "인천➔뉴욕 / 샌프란➔인천 다구간 항공권 (2인)", cost: 2680000 }
-          },
-          { time: "14:00", title: "맨해튼 호텔 체크인 & 써밋 전망대 · 타임스퀘어", vendor: "마이리얼트립", cost: 120000, memo: "맨해튼 랜드마크 야경 감상", nextTransport: null }
-        ]
-      },
-      "1/15": {
-        dayBadge: "DAY 2", title: "1월 15일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 & 브루클린 브리지 (2/3박)",
-        blocks: [
-          { time: "09:30", title: "자유의 여신상 페리 & 월스트리트 · 9/11 메모리얼", vendor: "클룩", cost: 80000, memo: "로어 맨해튼 핵심 코스", nextTransport: null },
-          { time: "16:30", title: "덤보(DUMBO) & 브루클린 브리지 일몰", vendor: "무료", cost: 0, memo: "맨해튼 스카이라인 노을", nextTransport: null }
-        ]
-      },
-      "1/16": {
-        dayBadge: "DAY 3", title: "1월 16일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 뮤지컬 (3/3박)",
-        blocks: [
-          { time: "10:00", title: "센트럴파크 & 메트로폴리탄 미술관", vendor: "더멧공홈", cost: 80000, memo: "5번가 쇼핑 및 미술관 관람", nextTransport: null },
-          { time: "19:30", title: "브로드웨이 뮤지컬 관람", vendor: "투데이틱스", cost: 280000, memo: "라이온킹 또는 위키드 관람 (2인)", nextTransport: null }
-        ]
-      },
-      "1/17": {
-        dayBadge: "DAY 4", title: "1월 17일 (일)", subtitle: "🇺🇸 뉴욕 출발 ➔ 🌴 마이애미 도착 & 사우스비치 (1/2박)",
-        blocks: [
-          {
-            time: "08:30", title: "뉴욕 공항 출발 ➔ 마이애미 국제공항 도착", vendor: "델타/아메리칸", cost: 0, memo: "추운 뉴욕에서 따뜻한 플로리다로 이동!",
-            nextTransport: { mode: "항공", icon: "✈️", label: "뉴욕 ➔ 마이애미 국내선 (2인)", cost: 260000 }
-          },
-          { time: "13:30", title: "마이애미 사우스비치 & 오션드라이브 산책", vendor: "현장결제", cost: 50000, memo: "에메랄드빛 해변 휴양 및 씨푸드", nextTransport: null }
-        ]
-      },
-      "1/18": {
-        dayBadge: "DAY 5", title: "1월 18일 (월)", subtitle: "🌴 마이애미 윈우드 월스 & 리틀 아바나 (2/2박)",
-        blocks: [
-          { time: "10:30", title: "윈우드 월스 그래피티 거리 & 리틀 아바나", vendor: "현장결제", cost: 40000, memo: "쿠바 전통 거리와 아바나 카페 투어", nextTransport: null },
-          { time: "16:30", title: "베이사이드 마켓플레이스 선셋 보트 투어", vendor: "클룩", cost: 70000, memo: "마이애미 해안 선셋 크루즈", nextTransport: null }
-        ]
-      },
-      "1/19": {
-        dayBadge: "DAY 6", title: "1월 19일 (화)", subtitle: "🌴 마이애미 ➔ 🎢 올랜도 이동 & 디즈니 스프링스 (1/3박)",
-        blocks: [
-          {
-            time: "09:30", title: "마이애미 센트럴역 출발 ➔ 올랜도 도착", vendor: "사전예매", cost: 0, memo: "고속열차로 3시간 30분 쾌적 이동",
-            nextTransport: { mode: "기차", icon: "🚄", label: "브라이트라인 고속열차 (2인)", cost: 120000 }
-          },
-          { time: "15:00", title: "올랜도 리조트 체크인 & 프리미엄 아울렛 · 디즈니 스프링스", vendor: "현장결제", cost: 60000, memo: "쇼핑 및 테마파크 전야 산책", nextTransport: null }
-        ]
-      },
-      "1/20": {
-        dayBadge: "DAY 7", title: "1월 20일 (수)", subtitle: "🎢 올랜도 유니버설 스튜디오 2개 파크 종일 (2/3박)",
-        blocks: [
-          { time: "08:30", title: "유니버설 스튜디오 & 아일랜드 오브 어드벤처", vendor: "클룩", cost: 500000, memo: "해리포터 호그와트 급행열차 & 벨로시코스터 (2인)", nextTransport: null }
-        ]
-      },
-      "1/21": {
-        dayBadge: "DAY 8", title: "1월 21일 (목)", subtitle: "🏰 올랜도 디즈니월드 매직킹덤 종일 (3/3박)",
-        blocks: [
-          { time: "09:00", title: "디즈니월드 매직킹덤 & 신데렐라 성 불꽃놀이", vendor: "디즈니공홈", cost: 420000, memo: "트론(TRON) 롤러코스터 & 해필리 에버 애프터 불꽃쇼 (2인)", nextTransport: null }
-        ]
-      },
-      "1/22": {
-        dayBadge: "DAY 9", title: "1월 22일 (금)", subtitle: "🎢 올랜도 출발 ➔ 🎰 라스베가스 도착 & 스트립 야경 (1/2박)",
-        blocks: [
-          {
-            time: "09:30", title: "올랜도 공항(MCO) 출발 ➔ 라스베가스(LAS) 도착", vendor: "국내선직항", cost: 0, memo: "미 동부에서 미 서부 네바다주로 점프!",
-            nextTransport: { mode: "항공", icon: "✈️", label: "올랜도 ➔ 라스베가스 직항 (2인)", cost: 380000 }
-          },
-          { time: "18:00", title: "벨라지오 분수쇼 & 스피어(Sphere) 야경 투어", vendor: "현장결제", cost: 150000, memo: "라스베가스 스트립 호텔 투어", nextTransport: null }
-        ]
-      },
-      "1/23": {
-        dayBadge: "DAY 10", title: "1월 23일 (토)", subtitle: "🏜️ 그랜드캐년 · 앤텔로프캐년 일일 투어 (2/2박)",
-        blocks: [
-          { time: "05:30", title: "그랜드캐년 사우스림 & 앤텔로프캐년 · 홀스슈밴드 투어", vendor: "마이리얼트립", cost: 480000, memo: "미 서부 대자연 핵심 당일 투어 (2인)", nextTransport: null }
-        ]
-      },
-      "1/24": {
-        dayBadge: "DAY 11", title: "1월 24일 (일)", subtitle: "🎰 라스베가스 ➔ 🎬 LA 이동 & 그리피스 천문대 (1/3박)",
-        blocks: [
-          {
-            time: "10:00", title: "라스베가스 출발 ➔ 로스앤젤레스(LA) 도착", vendor: "국내선/버스", cost: 0, memo: "1시간 비행으로 LA 쾌속 이동",
-            nextTransport: { mode: "항공", icon: "✈️", label: "라스베가스 ➔ LA 항공편 (2인)", cost: 140000 }
-          },
-          { time: "16:30", title: "그리피스 천문대 & 할리우드 사인 일몰", vendor: "무료입장", cost: 0, memo: "라라랜드 배경지에서 LA 전경 및 야경 감상", nextTransport: null }
-        ]
-      },
-      "1/25": {
-        dayBadge: "DAY 12", title: "1월 25일 (월)", subtitle: "🌴 LA 산타모니카 해변 · 베버리힐스 · 파머스마켓 (2/3박)",
-        blocks: [
-          { time: "10:30", title: "할리우드 명예의 거리 & 더 그로브 · 파머스마켓", vendor: "현장결제", cost: 60000, memo: "LA 감성 브런치 및 쇼핑", nextTransport: null },
-          { time: "15:30", title: "산타모니카 비치(66번 국도 종점) & 베니스 비치", vendor: "우버이동", cost: 40000, memo: "태평양 해변 노을 산책", nextTransport: null }
-        ]
-      },
-      "1/26": {
-        dayBadge: "DAY 13", title: "1월 26일 (화)", subtitle: "🎨 LA 게티센터 미술관 & 코리아타운 맛집 (3/3박)",
-        blocks: [
-          { time: "10:30", title: "게티 센터(The Getty) 미술관 & 정원 전망", vendor: "무료예약", cost: 0, memo: "언덕 위 백색 미술관에서 LA 파노라마 감상", nextTransport: null },
-          { time: "18:00", title: "LA 코리아타운 & 인앤아웃 버거", vendor: "현장결제", cost: 80000, memo: "LA의 마지막 밤 만찬", nextTransport: null }
-        ]
-      },
-      "1/27": {
-        dayBadge: "DAY 14", title: "1월 27일 (수)", subtitle: "🎬 LA 출발 ➔ 🌉 샌프란시스코 도착 & 피어39 (1/3박)",
-        blocks: [
-          {
-            time: "09:30", title: "LA 공항(LAX) 출발 ➔ 샌프란시스코(SFO) 도착", vendor: "유나이티드/델타", cost: 0, memo: "1시간 30분 비행",
-            nextTransport: { mode: "항공", icon: "✈️", label: "LA ➔ 샌프란시스코 국내선 (2인)", cost: 160000 }
-          },
-          { time: "14:00", title: "피어39 바다사자 & 피셔맨스 워프 크램차우더", vendor: "현장결제", cost: 50000, memo: "항구 산책 및 사워도우 브레드 보울", nextTransport: null }
-        ]
-      },
-      "1/28": {
-        dayBadge: "DAY 15", title: "1월 28일 (목)", subtitle: "🌉 샌프란시스코 금문교 · 소살리토 · 케이블카 (2/3박)",
-        blocks: [
-          { time: "10:00", title: "금문교(Golden Gate Bridge) & 소살리토 마을", vendor: "페리/자전거", cost: 60000, memo: "금문교 뷰포인트 인생샷 및 소살리토 산책", nextTransport: null },
-          { time: "15:30", title: "롬바드 꽃길 & 파웰-하이드 케이블카 탑승", vendor: "교통패스", cost: 30000, memo: "샌프란시스코 명물 언덕 케이블카 체험", nextTransport: null }
-        ]
-      },
-      "1/29": {
-        dayBadge: "DAY 16", title: "1월 29일 (금)", subtitle: "🚋 샌프란시스코 페리빌딩 · 페인티드 레이디스 (3/3박)",
-        blocks: [
-          { time: "10:30", title: "페리 빌딩 마켓플레이스 & 블루보틀 1호점", vendor: "현장결제", cost: 40000, memo: "베이브리지 전망 카페 투어", nextTransport: null },
-          { time: "15:00", title: "알라모 스퀘어(페인티드 레이디스) & 유니언 스퀘어", vendor: "무료", cost: 0, memo: "파스텔톤 빅토리아풍 주택가와 시내 쇼핑", nextTransport: null }
-        ]
-      },
-      "1/30": {
-        dayBadge: "DAY 17 출국", title: "1월 30일 (토)", subtitle: "🌉 샌프란시스코(SFO) 출발 ➔ 🇰🇷 인천행 직항 귀국",
-        blocks: [
-          { time: "12:30", title: "샌프란시스코 국제공항 출발 (인천행 직항)", vendor: "다구간포함", cost: 0, memo: "뉴욕·플로리다·라스베가스·LA·샌프란 미국 횡단 완주!", nextTransport: null }
-        ]
-      }
-    };
-
-    const PLAN3_BASE_EXPENSES = [
-      { title: "🇺🇸 뉴욕 맨해튼 타임스퀘어 시티즌M 호텔 (3박)", vendor: "아고다 (임시)", cost: 870000 },
-      { title: "🌴 마이애미 사우스비치 오션뷰 호텔 (2박)", vendor: "부킹닷컴 (임시)", cost: 480000 },
-      { title: "🎢 올랜도 유니버설 카바나 베이 리조트 (3박)", vendor: "유니버설공홈 (임시)", cost: 690000 },
-      { title: "🎰 라스베가스 더 코스모폴리탄/벨라지오 호텔 (2박)", vendor: "아고다 (임시)", cost: 420000 },
-      { title: "🎬 LA 할리우드 로즈벨트/다운타운 호텔 (3박)", vendor: "부킹닷컴 (임시)", cost: 750000 },
-      { title: "🌉 샌프란시스코 유니언스퀘어 힐튼 호텔 (3박)", vendor: "아고다 (임시)", cost: 780000 },
-      { title: "🍽️ 전 일정 2인 기본 식비/간식 예비비 (17일)", vendor: "트래블로그/카드", cost: 1350000 },
-      { title: "🛂 미국 ESTA 비자 + 미국 무제한 eSIM + 여행자보험", vendor: "공식사이트", cost: 200000 }
     ];
 
     // 기본 세계일주 준비물 체크리스트
@@ -1464,7 +1366,7 @@
     // 안건별 메타 & 지도 설정
     const PLAN_CONFIGS = {
       1: {
-        durationBadge: "20박 21일 (1안 풀코스)",
+        durationBadge: "24박 25일 (1안 풀코스)",
         defaultDay: "12/29",
         mapTitle: "🗺️ 1안: 세계일주 풀코스 루트 맵",
         events: DEFAULT_CALENDAR_EVENTS,
@@ -1479,20 +1381,18 @@
           { num: "6", name: "🇪🇸 바르셀로나", coords: [41.38, 2.17], color: "#ea580c", key: "1/4" },
           { num: "7", name: "🇨🇭 인터라켄", coords: [46.68, 7.86], color: "#dc2626", key: "1/6" },
           { num: "8", name: "🇨🇭 루체른·취리히", coords: [47.37, 8.54], color: "#dc2626", key: "1/8" },
-          { num: "9A", name: "🏛️ 워싱턴 D.C. (5박)", coords: [38.90, -77.03], color: "#2563eb", key: "1/9" },
-          { num: "9B", name: "🌴 마이애미 (2박)", coords: [25.76, -80.19], color: "#d97706", key: "1/9" },
-          { num: "9C", name: "🎢 올랜도 (3박)", coords: [28.53, -81.37], color: "#d97706", key: "1/11" },
-          { num: "10", name: "🇺🇸 뉴욕 (4박)", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" }
+          { num: "9", name: "🏛️ 워싱턴 D.C. (5박)", coords: [38.90, -77.03], color: "#2563eb", key: "1/9" },
+          { num: "10", name: "🇺🇸 뉴욕 (3박)", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
+          { num: "11", name: "🌴 마이애미 (2박)", coords: [25.76, -80.19], color: "#eab308", key: "1/17" },
+          { id: "s12", num: "12", name: "🎢 올랜도 (3박)", coords: [28.53, -81.37], color: "#eab308", key: "1/19" }
         ],
-        mainLine: [[37.46, 126.44], [24.45, 54.37], [38.72, -9.13], [41.15, -8.62], [40.41, -3.70], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [38.90, -77.03], [40.71, -74.00]],
-        subLines: [
-          { coords: [[47.37, 8.54], [25.76, -80.19], [28.53, -81.37], [40.71, -74.00]], color: '#f59e0b', dashArray: '5, 5' }
-        ],
+        mainLine: [[37.46, 126.44], [24.45, 54.37], [38.72, -9.13], [41.15, -8.62], [40.41, -3.70], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [38.90, -77.03], [40.71, -74.00], [25.76, -80.19], [28.53, -81.37]],
+        subLines: [],
         viewCenter: [32.0, -5.0],
         viewZoom: 2
       },
       2: {
-        durationBadge: "15박 16일 (2안 바르셀로나·스위스·미국)",
+        durationBadge: "19박 20일 (2안 바르셀로나·스위스·미국)",
         defaultDay: "1/3",
         mapTitle: "🗺️ 2안: 바르셀로나 IN ➔ 인터라켄 ➔ 미국 루트 맵",
         events: PLAN2_CALENDAR_EVENTS,
@@ -1500,44 +1400,23 @@
         base: PLAN2_BASE_EXPENSES,
         stops: [
           { num: "1", name: "🇰🇷 인천", coords: [37.46, 126.44], color: "#1e293b", key: "1/3" },
-          { num: "2", name: "🇪🇸 바르셀로나", coords: [41.38, 2.17], color: "#e11d48", key: "1/3" },
+          { num: "2", name: "🇪🇸 바르셀로나", coords: [41.38, 2.17], color: "#ea580c", key: "1/3" },
           { num: "3", name: "🇨🇭 인터라켄", coords: [46.68, 7.86], color: "#dc2626", key: "1/6" },
           { num: "4", name: "🇨🇭 루체른·취리히", coords: [47.37, 8.54], color: "#dc2626", key: "1/8" },
-          { num: "5A", name: "🏛️ 워싱턴 D.C. (5박)", coords: [38.90, -77.03], color: "#7c3aed", key: "1/9" },
-          { num: "5B", name: "🌴 마이애미", coords: [25.76, -80.19], color: "#f97316", key: "1/9" },
-          { num: "5C", name: "🎢 올랜도", coords: [28.53, -81.37], color: "#f97316", key: "1/12" },
-          { num: "6", name: "🇺🇸 뉴욕 (4박)", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" }
+          { num: "5", name: "🏛️ 워싱턴 D.C. (5박)", coords: [38.90, -77.03], color: "#2563eb", key: "1/9" },
+          { num: "6", name: "🇺🇸 뉴욕 (3박)", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
+          { num: "7", name: "🌴 마이애미 (2박)", coords: [25.76, -80.19], color: "#eab308", key: "1/17" },
+          { num: "8", name: "🎢 올랜도 (3박)", coords: [28.53, -81.37], color: "#eab308", key: "1/19" }
         ],
-        mainLine: [[37.46, 126.44], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [38.90, -77.03], [40.71, -74.00]],
-        subLines: [
-          { coords: [[47.37, 8.54], [25.76, -80.19], [28.53, -81.37], [40.71, -74.00]], color: '#f97316', dashArray: '5, 5' }
-        ],
+        mainLine: [[37.46, 126.44], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [38.90, -77.03], [40.71, -74.00], [25.76, -80.19], [28.53, -81.37]],
+        subLines: [],
         viewCenter: [36.0, -15.0],
         viewZoom: 2
-      },
-      3: {
-        durationBadge: "16박 17일 (3안 미국 동·서부 횡단)",
-        defaultDay: "1/14",
-        mapTitle: "🗺️ 3안: 뉴욕 ➔ 마이애미·올랜도 ➔ 베가스·LA·샌프란",
-        events: PLAN3_CALENDAR_EVENTS,
-        schedules: PLAN3_SCHEDULES,
-        base: PLAN3_BASE_EXPENSES,
-        stops: [
-          { num: "1", name: "🇺🇸 뉴욕 (3박)", coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
-          { num: "2", name: "🌴 마이애미 (2박)", coords: [25.76, -80.19], color: "#f97316", key: "1/17" },
-          { num: "3", name: "🎢 올랜도 (3박)", coords: [28.53, -81.37], color: "#d97706", key: "1/19" },
-          { num: "4", name: "🎰 라스베가스 (2박)", coords: [36.17, -115.14], color: "#7c3aed", key: "1/22" },
-          { num: "5", name: "🎬 LA (3박)", coords: [34.05, -118.24], color: "#e11d48", key: "1/24" },
-          { num: "6", name: "🌉 샌프란시스코 (3박)", coords: [37.77, -122.42], color: "#059669", key: "1/27" }
-        ],
-        mainLine: [[40.71, -74.00], [25.76, -80.19], [28.53, -81.37], [36.17, -115.14], [34.05, -118.24], [37.77, -122.42]],
-        subLines: [],
-        viewCenter: [36.0, -96.0],
-        viewZoom: 4
       }
     };
 
     let currentPlan = Number(localStorage.getItem('wt_active_plan')) || 1;
+    if (currentPlan !== 1 && currentPlan !== 2) currentPlan = 1;
     let currentMainTab = "planner";
     let calendarEvents = [];
     let schedules = {};
@@ -1594,9 +1473,9 @@
 
     function getStorageKeys(planId) {
       if (planId === 1) {
-        return { ev: 'wt_v12_events', sc: 'wt_v12_sched', bs: 'wt_v12_base' };
+        return { ev: 'wt_v17_events', sc: 'wt_v17_sched', bs: 'wt_v17_base' };
       }
-      return { ev: `wt_p${planId}_v12_events`, sc: `wt_p${planId}_v12_sched`, bs: `wt_p${planId}_v12_base` };
+      return { ev: `wt_p${planId}_v17_events`, sc: `wt_p${planId}_v17_sched`, bs: `wt_p${planId}_v17_base` };
     }
 
     function loadPlanData(planId) {
@@ -1613,7 +1492,7 @@
       const cfg = PLAN_CONFIGS[currentPlan];
       document.getElementById('header-duration-badge').innerText = cfg.durationBadge;
 
-      [1, 2, 3].forEach(p => {
+      [1, 2].forEach(p => {
         const btn = document.getElementById(`plan-btn-${p}`);
         if (!btn) return;
         if (p === currentPlan) {
@@ -1664,7 +1543,6 @@
       schedules[currentDayKey].blocks.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
     }
 
-    // 전 일정 비용 자동 합산
     function calculateTotals() {
       let transportSum = 0;
       let scheduleSum = 0;
@@ -1700,11 +1578,10 @@
       document.getElementById('tl-day-cost').innerText = `당일 ${formatKRW(curDaySum)}`;
     }
 
-    // 전 기간 한 줄 파노라마 달력 렌더링 (현재 안건의 실제 일정 기간이 정중앙에 오도록 날짜 범위 자동 조절!)
+    // 전 기간을 깔끔한 2줄(전반부 / 후반부)로 나누어 스크롤 없이 큼직하게 보여주고, 출발시·교통아이콘·도착시가 절대 겹치지 않게 렌더링
     function renderSpanCalendar() {
       const container = document.getElementById('span-calendar-body');
 
-      // 현재 안건의 막대(calendarEvents) 및 일정(schedules)에서 가장 빠른 날과 가장 늦은 날 인덱스 계산
       let minIdx = ALL_CALENDAR_DAYS.length - 1;
       let maxIdx = 0;
 
@@ -1728,118 +1605,267 @@
         maxIdx = 22;
       }
 
-      // 실제 일정 앞뒤로 동일한 여백(최소 1~2일, 일정이 짧은 2·3안은 좌우 대칭 여백 확대)을 두어 일정이 정가운데에 위치하도록 계산
-      const eventSpan = (maxIdx - minIdx) + 1;
-      const minTotalCols = Math.max(eventSpan + 2, 15);
-      const totalPad = minTotalCols - eventSpan;
-      const leftPad = Math.floor(totalPad / 2);
-      const rightPad = totalPad - leftPad;
+      // 1번 줄 끝을 무조건 1/9(토)로 고정하고, 2번 줄은 1/10(일)부터 동일 칸수로 배치
+      const jan9Idx = ALL_CALENDAR_DAYS.findIndex(d => d.key === "1/9");
+      let startSlice = Math.max(0, minIdx - 1);
+      if (startSlice > jan9Idx) startSlice = Math.max(0, jan9Idx - 7);
 
-      let startSlice = Math.max(0, minIdx - leftPad);
-      let endSlice = Math.min(ALL_CALENDAR_DAYS.length - 1, maxIdx + rightPad);
+      // 1번 줄: startSlice ~ 1/9(토) 까지
+      const row1Count = (jan9Idx - startSlice) + 1;
+      // 2번 줄도 최소한 마지막 일정(+여유 1일)을 포함하면서 1번 줄과 동일한 칸수를 유지하도록 설정
+      const neededRow2Count = Math.max(1, (maxIdx + 1) - jan9Idx);
+      const halfCols = Math.max(row1Count, neededRow2Count);
 
-      // 양 끝 여백 대칭 보정
-      const leftMargin = minIdx - startSlice;
-      const rightMargin = endSlice - maxIdx;
-      if (leftMargin > rightMargin && startSlice + (leftMargin - rightMargin) <= minIdx) {
-        startSlice += (leftMargin - rightMargin);
-      } else if (rightMargin > leftMargin && endSlice - (rightMargin - leftMargin) >= maxIdx) {
-        endSlice -= (rightMargin - leftMargin);
+      // 만약 2번 줄이 더 길어야 한다면 1번 줄 앞쪽 여백을 늘려 1번 줄 끝이 항상 1/9(토)에 오도록 맞춤
+      startSlice = Math.max(0, jan9Idx - halfCols + 1);
+      const actualRow1Days = ALL_CALENDAR_DAYS.slice(startSlice, jan9Idx + 1);
+      const actualRow2Days = ALL_CALENDAR_DAYS.slice(jan9Idx + 1, jan9Idx + 1 + actualRow1Days.length);
+
+      const allStripDays = [...actualRow1Days, ...actualRow2Days];
+      const rowChunks = [actualRow1Days, actualRow2Days];
+      const row1Len = actualRow1Days.length;
+
+      function parseHourFraction(tStr, fallbackFrac) {
+        if (!tStr || typeof tStr !== 'string') return fallbackFrac;
+        const m = tStr.match(/(\d{1,2}):(\d{2})/);
+        if (!m) return fallbackFrac;
+        const mins = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        return Math.max(0.04, Math.min(0.96, mins / 1440));
       }
 
-      const stripDays = ALL_CALENDAR_DAYS.slice(startSlice, endSlice + 1);
-      const totalCols = stripDays.length;
-      const gridStyle = `display: grid; grid-template-columns: repeat(${totalCols}, minmax(42px, 1fr)); width: 100%;`;
-
-      const segments = [];
+      // 전체 기간 기준 각 이벤트의 글로벌 시작/종료 위치 계산
+      const globalEvents = [];
       calendarEvents.forEach((ev, evIdx) => {
-        const sIdx = stripDays.findIndex(d => d.key === ev.start);
-        const eIdx = stripDays.findIndex(d => d.key === ev.end);
+        const sIdx = allStripDays.findIndex(d => d.key === ev.start);
+        const eIdx = allStripDays.findIndex(d => d.key === ev.end);
         if (sIdx === -1 && eIdx === -1) return;
 
         const safeS = sIdx === -1 ? 0 : sIdx;
-        const safeE = eIdx === -1 ? totalCols - 1 : eIdx;
+        const safeE = eIdx === -1 ? allStripDays.length - 1 : eIdx;
         const actualStart = Math.min(safeS, safeE);
         const actualEnd = Math.max(safeS, safeE);
 
-        segments.push({
+        const inFrac = parseHourFraction(ev.inTime, 0.35);
+        const outFrac = parseHourFraction(ev.outTime, 0.45);
+
+        let gStart = actualStart + inFrac;
+        let gEnd = actualEnd + outFrac;
+        if (gEnd <= gStart + 0.18) gEnd = gStart + 0.55;
+
+        const transText = ev.transLabel || '';
+        const iconMatch = transText.match(/(✈️🚄|✈️|🚄|🚌|🚕|🚶)/);
+        const transIcon = iconMatch ? iconMatch[0] : '✈️';
+        const depMatch = transText.match(/(\d{1,2}:\d{2})\s*➔/);
+        const prevDepTime = depMatch ? depMatch[1] : '';
+
+        globalEvents.push({
           evIdx,
           title: ev.title,
           cls: ev.cls,
           clickKey: ev.start,
-          colStart: actualStart + 1,
-          span: (actualEnd - actualStart) + 1
+          inTime: ev.inTime || '',
+          outTime: ev.outTime || '',
+          prevDepTime,
+          transIcon,
+          gStart,
+          gEnd,
+          preferredRow: typeof ev.row === 'number' ? ev.row : null
         });
       });
 
-      segments.sort((a, b) => a.colStart - b.colStart || b.span - a.span);
-      const lanes = [];
-      segments.forEach(seg => {
-        let placed = false;
-        for (let l = 0; l < lanes.length; l++) {
-          const lane = lanes[l];
-          const conflict = lane.some(item => {
-            const itemEnd = item.colStart + item.span - 1;
-            const segEnd = seg.colStart + seg.span - 1;
-            return !(segEnd < item.colStart || seg.colStart > itemEnd);
+      // 각 줄(1줄차: ~1/9(토) / 2줄차: 1/10(일)~) 렌더링 HTML 생성
+      const rowsHtml = rowChunks.map((rowDays, rIdx) => {
+        const rowStartOffset = rIdx === 0 ? 0 : row1Len;
+        const rowEndOffset = rowStartOffset + rowDays.length;
+        const cols = rowDays.length;
+        const gridStyle = `display: grid; grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width: 100%;`;
+
+        // 현재 줄에 걸치는 막대 조각 추출
+        const rowBars = [];
+        globalEvents.forEach(gev => {
+          if (gev.gEnd <= rowStartOffset || gev.gStart >= rowEndOffset) return;
+
+          const clippedStart = Math.max(gev.gStart, rowStartOffset) - rowStartOffset;
+          const clippedEnd = Math.min(gev.gEnd, rowEndOffset) - rowStartOffset;
+
+          const isRealStart = gev.gStart >= rowStartOffset;
+          const isRealEnd = gev.gEnd <= rowEndOffset;
+
+          // 이동 시간/아이콘과 막대가 시각적으로 명확히 구분되도록 막대 좌우에 미세 여백(gap) 부여
+          const visualPadLeft = isRealStart ? 0.04 : 0;
+          const visualPadRight = isRealEnd ? 0.04 : 0;
+          const adjStart = clippedStart + visualPadLeft;
+          const adjEnd = Math.max(adjStart + 0.15, clippedEnd - visualPadRight);
+
+          const leftPct = (adjStart / cols) * 100;
+          const widthPct = Math.max(2.2, ((adjEnd - adjStart) / cols) * 100);
+
+          rowBars.push({
+            ...gev,
+            clippedStart,
+            clippedEnd,
+            isRealStart,
+            isRealEnd,
+            leftPct,
+            widthPct
           });
-          if (!conflict) {
-            lane.push(seg);
-            placed = true;
-            break;
+        });
+
+        rowBars.sort((a, b) => a.clippedStart - b.clippedStart || (b.clippedEnd - b.clippedStart) - (a.clippedEnd - a.clippedStart));
+
+        // 겹치는 막대(워싱턴 vs 마이애미·올랜도) 레인 분리
+        const lanes = [];
+        rowBars.forEach(bar => {
+          if (bar.preferredRow !== null) {
+            while (lanes.length <= bar.preferredRow) lanes.push([]);
+            lanes[bar.preferredRow].push(bar);
+            return;
           }
-        }
-        if (!placed) lanes.push([seg]);
-      });
+          let placed = false;
+          for (let l = 0; l < lanes.length; l++) {
+            const conflict = lanes[l].some(item => !(bar.clippedEnd <= item.clippedStart + 0.02 || bar.clippedStart >= item.clippedEnd - 0.02));
+            if (!conflict) {
+              lanes[l].push(bar);
+              placed = true;
+              break;
+            }
+          }
+          if (!placed) lanes.push([bar]);
+        });
 
-      container.innerHTML = `
-        <!-- 요일 & 날짜 헤더 (현재 안건 일정이 가운데 오도록 동적 컬럼 적용) -->
-        <div style="${gridStyle}" class="border-b border-slate-100 pb-1.5 mb-1.5 text-center">
-          ${stripDays.map((d, idx) => {
-            const isSelected = d.key === currentDayKey;
-            const isSun = d.w === '일';
-            const isSat = d.w === '토';
-            const globalIdx = startSlice + idx;
-            const isOutsideTrip = globalIdx < minIdx || globalIdx > maxIdx;
+        const cleanLanes = lanes.filter(l => l && l.length > 0);
 
-            let wColor = "text-slate-400";
-            if (isSun) wColor = "text-rose-400";
-            else if (isSat) wColor = "text-blue-400";
+        // 핵심: 시간과 교통수단이 절대 겹치지 않도록, 각 전환 지점(Junction)마다 [출발시각 | 아이콘 | 도착시각]을 하나의 정렬된 그룹으로 묶어서 배치!
+        const laneJunctions = cleanLanes.map(lane => {
+          lane.sort((a, b) => a.clippedStart - b.clippedStart);
+          const jList = [];
 
-            let numColor = "text-slate-800";
-            if (isOutsideTrip || d.muted) numColor = "text-slate-300";
-            else if (d.isRed || isSun) numColor = "text-rose-500";
-            else if (d.isBlue || isSat) numColor = "text-blue-500";
+          lane.forEach((bar, bIdx) => {
+            if (!bar.isRealStart) return; // 이전 줄에서 이어진 막대는 도착 전환점 생략
 
-            const monthPrefix = (idx === 0 || d.key === '1/1') ? `<span class="text-[9px] font-extrabold text-slate-400 mr-0.5">${d.key.split('/')[0]}.</span>` : '';
+            const prevBar = bIdx > 0 ? lane[bIdx - 1] : null;
+            // 이전 막대와 바로 이어지는 경우: 이전 막대 우측 끝과 현재 막대 좌측 시작의 정중앙을 기준점으로 삼음
+            let anchorPct = bar.leftPct;
+            let depTime = bar.prevDepTime || (prevBar && prevBar.isRealEnd ? prevBar.outTime : '');
+            const arrTime = bar.inTime || '';
 
-            return `
-              <div onclick="selectDate('${d.key}')" class="cursor-pointer flex flex-col items-center gap-0.5 py-0.5 rounded-lg hover:bg-slate-50 transition ${isSun ? 'border-l border-slate-100' : ''}">
-                <span class="text-[10px] font-bold ${wColor}">${d.w}</span>
-                <span class="day-num-btn text-[11px] font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
-                  ${monthPrefix}${d.label}
-                </span>
+            if (prevBar && prevBar.isRealEnd && (bar.leftPct - (prevBar.leftPct + prevBar.widthPct)) < 12) {
+              anchorPct = ((prevBar.leftPct + prevBar.widthPct) + bar.leftPct) / 2;
+              prevBar.mergedRightOut = true; // 이미 전환 그룹에 출발 시각이 포함되었으므로 중복 표시 방지
+            }
+
+            jList.push({
+              anchorPct: Math.max(2.5, Math.min(97.5, anchorPct)),
+              depTime,
+              icon: bar.transIcon || '✈️',
+              arrTime,
+              title: `${depTime ? depTime + ' 출발 ' : ''}➔ ${arrTime} 도착 (${bar.title})`
+            });
+          });
+
+          // 마지막 막대의 오른쪽 끝 단독 출발 시각(귀국편 출발 등)
+          lane.forEach(bar => {
+            if (bar.isRealEnd && !bar.mergedRightOut && bar.outTime) {
+              jList.push({
+                anchorPct: Math.min(98, bar.leftPct + bar.widthPct),
+                depTime: bar.outTime,
+                icon: '🛫',
+                arrTime: '',
+                title: `${bar.outTime} 출발`
+              });
+            }
+          });
+
+          return jList;
+        });
+
+        return `
+          <div class="${rIdx > 0 ? 'pt-3.5 mt-3 border-t-4 border-double border-slate-400' : ''}">
+            <div class="rounded-xl border border-slate-300 bg-slate-50/40 px-2 pt-1.5 pb-1">
+              <!-- 요일 & 날짜 헤더 (가로 한 줄 슬림형) -->
+              <div style="${gridStyle}" class="border-b-2 border-slate-300 pb-1.5 mb-2 text-center bg-white rounded-lg py-1 shadow-2xs">
+                ${rowDays.map((d, idx) => {
+                  const isSelected = d.key === currentDayKey;
+                  const isSun = d.w === '일';
+                  const isSat = d.w === '토';
+                  const globalIdx = startSlice + rowStartOffset + idx;
+                  const isOutsideTrip = globalIdx < minIdx || globalIdx > maxIdx;
+
+                  let wColor = "text-slate-400";
+                  if (isSun) wColor = "text-rose-500";
+                  else if (isSat) wColor = "text-blue-500";
+
+                  let numColor = "text-slate-800";
+                  if (isOutsideTrip || d.muted) numColor = "text-slate-300";
+                  else if (d.isRed || isSun) numColor = "text-rose-500";
+                  else if (d.isBlue || isSat) numColor = "text-blue-500";
+
+                  const monthPrefix = ((rIdx === 0 && idx === 0) || d.key === '1/1')
+                    ? `<span class="text-[10px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
+                    : '';
+
+                  return `
+                    <div id="cal-col-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100/80 transition ${idx > 0 ? 'border-l border-slate-200/80' : ''} ${isSelected ? 'bg-slate-100/90' : ''}">
+                      <span class="day-num-btn text-xs font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
+                        ${monthPrefix}${d.label}<span class="text-[10px] font-bold ${wColor} ml-0.5">(${d.w})</span>
+                      </span>
+                    </div>
+                  `;
+                }).join('')}
               </div>
-            `;
-          }).join('')}
-        </div>
 
-        <!-- 끊김 없는 연속 일정 막대 영역 -->
-        <div class="space-y-1">
-          ${lanes.map(lane => `
-            <div style="${gridStyle}" class="gap-x-1">
-              ${lane.map(bar => `
-                <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
-                     style="grid-column: ${bar.colStart} / span ${bar.span};"
-                     class="span-bar ${bar.cls}"
-                     title="${bar.title}">
-                  <span class="truncate">${bar.title}</span>
+              <!-- 도시 막대 + 겹침 없는 [세로 출발시 | 교통수단 아이콘 | 세로 도착시] 통합 전환 배지 -->
+              <div class="relative py-0.5">
+                <!-- 일자별 세로 가이드선 배경 -->
+                <div style="${gridStyle}" class="absolute inset-0 pointer-events-none">
+                  ${rowDays.map((d, idx) => `
+                    <div class="border-r border-slate-200/90 h-full ${idx === 0 ? 'border-l border-slate-200/90' : ''} ${d.key === currentDayKey ? 'bg-blue-50/40' : ''}"></div>
+                  `).join('')}
                 </div>
-              `).join('')}
+
+                <div class="relative space-y-2">
+                  ${cleanLanes.map((lane, lIdx) => `
+                    <div class="relative h-[64px] w-full">
+                      <!-- 1층: 도시 체류 막대 -->
+                      ${lane.map(bar => `
+                        <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
+                             style="left: ${bar.leftPct.toFixed(3)}%; width: ${bar.widthPct.toFixed(3)}%;"
+                             class="absolute top-0 group cursor-pointer z-10"
+                             title="${bar.title} (${bar.inTime ? '도착 ' + bar.inTime : ''} ~ ${bar.outTime ? '출발 ' + bar.outTime : ''})">
+                          <div class="span-bar w-full shadow-xs ${bar.cls} ${!bar.isRealStart ? 'rounded-l-none border-l-0' : ''} ${!bar.isRealEnd ? 'rounded-r-none border-r-0' : ''}">
+                            <span class="px-1 truncate">${bar.title}</span>
+                          </div>
+                        </div>
+                      `).join('')}
+
+                      <!-- 2층: 막대 아래 전환 지점마다 [세로 출발시각] + [교통수단 아이콘] + [세로 도착시각]이 나란히 정렬되어 절대 안 겹침 -->
+                      ${(laneJunctions[lIdx] || []).map(j => `
+                        <div style="left: ${j.anchorPct.toFixed(3)}%;"
+                             title="${j.title}"
+                             class="absolute top-[30px] -translate-x-1/2 z-20 pointer-events-none inline-flex items-start gap-0.5 bg-white/95 px-1 py-0.5 rounded-md border border-slate-200/80 shadow-2xs">
+                          ${j.depTime ? `<span class="v-time-label text-slate-400">${j.depTime}</span>` : ''}
+                          <span class="text-[11px] leading-none self-center px-0.5">${j.icon}</span>
+                          ${j.arrTime ? `<span class="v-time-label text-slate-700">${j.arrTime}</span>` : ''}
+                        </div>
+                      `).join('')}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
             </div>
-          `).join('')}
-        </div>
-      `;
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="w-full">${rowsHtml}</div>`;
+    }
+
+    function scrollCalendarToDay(key) {
+      const wrap = document.getElementById('calendar-scroll-wrap');
+      const col = document.getElementById(`cal-col-${key.replace('/', '-')}`);
+      if (!wrap || !col) return;
+      const targetLeft = col.offsetLeft - (wrap.clientWidth / 2) + (col.clientWidth / 2);
+      wrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
     }
 
     function populateDateSelects() {
@@ -1876,10 +1902,13 @@
       populateDateSelects();
       editingEventIdx = evIdx;
       const ev = calendarEvents[evIdx];
-      document.getElementById('modal-title').innerText = '📅 일정 기간 수정';
+      document.getElementById('modal-title').innerText = '📅 일정 기간 및 시간 수정';
       document.getElementById('modal-bar-title').value = ev.title;
       document.getElementById('modal-bar-start').value = ev.start;
       document.getElementById('modal-bar-end').value = ev.end;
+      document.getElementById('modal-bar-in').value = ev.inTime || '10:00';
+      document.getElementById('modal-bar-out').value = ev.outTime || '10:00';
+      document.getElementById('modal-bar-trans').value = ev.transLabel || '';
       document.getElementById('modal-bar-color').value = ev.cls;
       document.getElementById('modal-delete-btn').style.display = 'inline-block';
       document.getElementById('bar-modal').classList.replace('hidden', 'flex');
@@ -1892,6 +1921,9 @@
       document.getElementById('modal-bar-title').value = '';
       document.getElementById('modal-bar-start').value = currentDayKey;
       document.getElementById('modal-bar-end').value = currentDayKey;
+      document.getElementById('modal-bar-in').value = '10:00';
+      document.getElementById('modal-bar-out').value = '18:00';
+      document.getElementById('modal-bar-trans').value = '';
       document.getElementById('modal-delete-btn').style.display = 'none';
       document.getElementById('bar-modal').classList.replace('hidden', 'flex');
     }
@@ -1904,6 +1936,9 @@
       const title = document.getElementById('modal-bar-title').value.trim() || '새 일정';
       let start = document.getElementById('modal-bar-start').value;
       let end = document.getElementById('modal-bar-end').value;
+      const inTime = document.getElementById('modal-bar-in').value || '10:00';
+      const outTime = document.getElementById('modal-bar-out').value || '18:00';
+      const transLabel = document.getElementById('modal-bar-trans').value.trim();
       const cls = document.getElementById('modal-bar-color').value;
 
       const sIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === start);
@@ -1913,9 +1948,9 @@
       }
 
       if (editingEventIdx === null) {
-        calendarEvents.push({ id: 'ev_' + Date.now(), title, start, end, cls });
+        calendarEvents.push({ id: 'ev_' + Date.now(), title, start, end, inTime, outTime, transLabel, cls });
       } else {
-        calendarEvents[editingEventIdx] = { ...calendarEvents[editingEventIdx], title, start, end, cls };
+        calendarEvents[editingEventIdx] = { ...calendarEvents[editingEventIdx], title, start, end, inTime, outTime, transLabel, cls };
       }
 
       saveAll();
@@ -1938,11 +1973,25 @@
       const keys = Object.keys(schedules);
       const box = document.getElementById('quick-day-selector');
       box.innerHTML = keys.map(k => `
-        <button onclick="selectDate('${k}')"
-                class="px-2.5 py-1 rounded-full font-bold whitespace-nowrap transition ${k === currentDayKey ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+        <button id="qday-chip-${k.replace('/', '-')}" onclick="selectDate('${k}')"
+                class="px-2.5 py-1 rounded-full font-bold whitespace-nowrap shrink-0 transition ${k === currentDayKey ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
           ${k}
         </button>
       `).join('');
+
+      setTimeout(() => {
+        const activeChip = document.getElementById(`qday-chip-${currentDayKey.replace('/', '-')}`);
+        if (box && activeChip) {
+          const targetLeft = activeChip.offsetLeft - (box.clientWidth / 2) + (activeChip.clientWidth / 2);
+          box.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+        }
+      }, 20);
+    }
+
+    function scrollQuickDaySelector(delta) {
+      const box = document.getElementById('quick-day-selector');
+      if (!box) return;
+      box.scrollBy({ left: delta, behavior: 'smooth' });
     }
 
     function renderTimeline() {
@@ -2757,6 +2806,7 @@
       renderQuickSelector();
       renderTimeline();
       renderMap();
+      setTimeout(() => scrollCalendarToDay(key), 30);
     }
 
     function moveBlock(idx, dir) {
@@ -2989,6 +3039,70 @@
       }
     });
 
+    // PC(Windows) 환경에서 국기 이모지(🇰🇷 등)가 'KR' 영문자로 깨지는 문제를 해결하기 위한 자동 이미지 국기 변환기
+    const FLAG_EMOJI_REGEX = /(?:\uD83C[\uDDE6-\uDDFF]){2}/g;
+    function convertFlagEmojisInNode(rootNode) {
+      if (!rootNode) return;
+      const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, null, false);
+      const textNodes = [];
+      let current;
+      while ((current = walker.nextNode())) {
+        const parentTag = current.parentNode && current.parentNode.tagName;
+        if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'TEXTAREA' || parentTag === 'OPTION') continue;
+        if (FLAG_EMOJI_REGEX.test(current.nodeValue)) {
+          textNodes.push(current);
+        }
+        FLAG_EMOJI_REGEX.lastIndex = 0;
+      }
+
+      textNodes.forEach(textNode => {
+        const text = textNode.nodeValue;
+        FLAG_EMOJI_REGEX.lastIndex = 0;
+        let lastIdx = 0;
+        let match;
+        const frag = document.createDocumentFragment();
+
+        while ((match = FLAG_EMOJI_REGEX.exec(text)) !== null) {
+          if (match.index > lastIdx) {
+            frag.appendChild(document.createTextNode(text.slice(lastIdx, match.index)));
+          }
+          const emoji = match[0];
+          const cp1 = emoji.codePointAt(0) - 0x1F1E6 + 65;
+          const cp2 = emoji.codePointAt(2) - 0x1F1E6 + 65;
+          const iso = String.fromCharCode(cp1, cp2).toLowerCase();
+
+          const img = document.createElement('img');
+          img.src = `https://flagcdn.com/w40/${iso}.png`;
+          img.alt = emoji;
+          img.className = "inline-block w-4 h-3 object-cover rounded-[2px] mr-0.5 align-baseline shadow-2xs";
+          img.style.verticalAlign = "-1px";
+          frag.appendChild(img);
+
+          lastIdx = FLAG_EMOJI_REGEX.lastIndex;
+        }
+        if (lastIdx < text.length) {
+          frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+        }
+        if (textNode.parentNode) {
+          textNode.parentNode.replaceChild(frag, textNode);
+        }
+      });
+    }
+
+    const flagObserver = new MutationObserver((mutations) => {
+      flagObserver.disconnect();
+      mutations.forEach(m => {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType === 1) convertFlagEmojisInNode(node);
+          else if (node.nodeType === 3 && node.parentNode) convertFlagEmojisInNode(node.parentNode);
+        });
+        if (m.type === 'characterData' && m.target.parentNode) {
+          convertFlagEmojisInNode(m.target.parentNode);
+        }
+      });
+      flagObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+    });
+
     // 초기 실행
     loadPlanData(currentPlan);
     updateHeaderPlanUI();
@@ -2998,9 +3112,12 @@
     renderDailyBudgetBreakdown();
     renderPackingList();
     renderTimeline();
+    convertFlagEmojisInNode(document.body);
+    flagObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
     setTimeout(() => {
       map.invalidateSize();
       renderMap();
+      convertFlagEmojisInNode(document.body);
     }, 50);
   </script>
 </body>

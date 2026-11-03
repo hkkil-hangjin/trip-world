@@ -22,11 +22,17 @@
       max-width: 1760px;
       margin-left: auto;
       margin-right: auto;
-      padding-left: 1rem;
-      padding-right: 1rem;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .layout-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
     }
     #map {
-      height: 360px;
+      height: 280px;
       width: 100%;
       border-radius: 1rem;
       z-index: 10;
@@ -102,41 +108,43 @@
        상단 헤더 (1·2·3안 선택 + 일정/가계부/준비물 메뉴 탭)
        ========================================== -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm shrink-0">
-    <div class="layout-container py-2.5 flex flex-wrap justify-between items-center gap-2">
-      <!-- 좌측: 타이틀 & 1·2·3안 선택 스위치 -->
-      <div class="flex items-center gap-2 flex-wrap min-w-0">
-        <span id="header-duration-badge" class="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">24박 25일 (1안 풀코스)</span>
-        <h1 class="text-sm sm:text-base font-extrabold text-slate-900 truncate">2027년 1월 세계일주 플래너</h1>
+    <div class="layout-container py-2 sm:py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      <!-- 1단(모바일): 타이틀 & 1·2안 선택 스위치 -->
+      <div class="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto min-w-0">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span id="header-duration-badge" class="bg-rose-500 text-white text-[10px] sm:text-[11px] font-extrabold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0 whitespace-nowrap">24박 25일 (1안 풀코스)</span>
+          <h1 class="text-xs sm:text-base font-extrabold text-slate-900 truncate">2027년 1월 세계일주 플래너</h1>
+        </div>
 
         <!-- 1 / 2 안건 선택 버튼 그룹 -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1 shrink-0">
-          <button id="plan-btn-1" onclick="switchPlan(1)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-sm" title="1안: 풀코스 (중동·포르투갈·스페인·스위스·미국)">
+        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 gap-0.5 sm:gap-1 shrink-0">
+          <button id="plan-btn-1" onclick="switchPlan(1)" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap bg-slate-900 text-white shadow-sm" title="1안: 풀코스 (중동·포르투갈·스페인·스위스·미국)">
             1안 풀코스
           </button>
-          <button id="plan-btn-2" onclick="switchPlan(2)" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900" title="2안: 스페인 ➔ 스위스 ➔ 미국">
+          <button id="plan-btn-2" onclick="switchPlan(2)" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900" title="2안: 스페인 ➔ 스위스 ➔ 미국">
             2안 스·스·미
           </button>
         </div>
       </div>
 
-      <!-- 우측: 메인 메뉴 탭 (일정·지도 / 가계부 / 준비물) & 총예산 배지 -->
-      <div class="flex items-center gap-2 shrink-0 ml-auto">
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1">
-          <button id="tab-btn-planner" onclick="switchMainTab('planner')" class="px-3 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap bg-blue-600 text-white shadow-sm">
+      <!-- 2단(모바일): 메인 메뉴 탭 (일정·지도 / 가계부 / 준비물) & 총예산 배지 -->
+      <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0">
+        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 gap-0.5 sm:gap-1 flex-1 sm:flex-initial">
+          <button id="tab-btn-planner" onclick="switchMainTab('planner')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap bg-blue-600 text-white shadow-sm text-center">
             📅 일정·지도
           </button>
-          <button id="tab-btn-budget" onclick="switchMainTab('budget')" class="px-3 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900">
+          <button id="tab-btn-budget" onclick="switchMainTab('budget')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
             💰 가계부
           </button>
-          <button id="tab-btn-packing" onclick="switchMainTab('packing')" class="px-3 py-1 rounded-lg text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900">
+          <button id="tab-btn-packing" onclick="switchMainTab('packing')" class="flex-1 sm:flex-initial px-2 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900 text-center">
             🎒 준비물
           </button>
         </div>
 
-        <div onclick="switchMainTab('budget')" class="cursor-pointer text-xs font-extrabold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 whitespace-nowrap transition" title="클릭 시 가계부 메뉴로 이동">
+        <div onclick="switchMainTab('budget')" class="cursor-pointer text-[11px] sm:text-xs font-extrabold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 sm:px-3 py-1.5 rounded-xl border border-emerald-200 whitespace-nowrap transition shrink-0" title="클릭 시 가계부 메뉴로 이동">
           총예산 <span id="grand-total-display">₩0</span>
         </div>
-        <button onclick="resetAllData()" class="text-xs font-semibold text-slate-500 hover:text-rose-600 bg-slate-100 px-2.5 py-1.5 rounded-xl transition whitespace-nowrap">
+        <button onclick="resetAllData()" class="text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-rose-600 bg-slate-100 px-2 sm:px-2.5 py-1.5 rounded-xl transition whitespace-nowrap shrink-0">
           초기화
         </button>
       </div>
@@ -156,24 +164,24 @@
     <div id="view-planner" class="flex flex-col gap-3.5 flex-1 min-h-0">
 
       <!-- 1. 상단 전체 폭: 끊김 없는 한 줄 연속 파노라마 달력 뷰 -->
-      <section id="calendar-section" class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-3 sm:p-3.5 flex flex-col shrink-0 min-w-0">
-        <div class="flex justify-between items-center mb-2 gap-2">
-          <div class="flex items-center gap-2 min-w-0">
-            <h2 class="text-sm sm:text-base font-extrabold text-slate-900 whitespace-nowrap">📅 2026.12 ~ 2027.01 전체 여정 한눈에 보기</h2>
-            <span id="cal-mode-badge" class="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-600 rounded-full whitespace-nowrap">2줄 분할 · 시간비례 뷰</span>
+      <section id="calendar-section" class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-2.5 sm:p-3.5 flex flex-col shrink-0 min-w-0">
+        <div class="flex flex-wrap justify-between items-center mb-2 gap-1.5">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <h2 class="text-xs sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정</h2>
+            <span id="cal-mode-badge" class="text-[10px] font-bold px-2 py-0.5 bg-rose-100 text-rose-600 rounded-full whitespace-nowrap shrink-0">좌우 스크롤 · 터치</span>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <button onclick="openAddBarModal()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+            <button onclick="openAddBarModal()" class="text-[11px] font-bold px-2 sm:px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
               + 막대
             </button>
-            <button id="cal-edit-btn" onclick="toggleCalendarEditMode()" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
+            <button id="cal-edit-btn" onclick="toggleCalendarEditMode()" class="text-[11px] font-bold px-2 sm:px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition whitespace-nowrap">
               ⚙️ 달력 편집
             </button>
           </div>
         </div>
 
-        <!-- 가로 한 줄 파노라마 달력 본문 (여유롭고 큼직한 사이즈 + 부드러운 가로 스크롤) -->
-        <div id="calendar-scroll-wrap" class="overflow-x-auto custom-scroll pb-2">
+        <!-- 달력 본문 (모바일에서는 각 줄마다 좌우 터치 스크롤이 작동해 글씨와 막대가 절대 찌그러지지 않음) -->
+        <div id="calendar-scroll-wrap" class="w-full">
           <div id="span-calendar-body"></div>
         </div>
       </section>
@@ -1678,7 +1686,8 @@
         const rowStartOffset = rIdx === 0 ? 0 : row1Len;
         const rowEndOffset = rowStartOffset + rowDays.length;
         const cols = rowDays.length;
-        const gridStyle = `display: grid; grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width: 100%;`;
+        const minRowPx = cols * 68;
+        const gridStyle = `display: grid; grid-template-columns: repeat(${cols}, minmax(68px, 1fr)); width: 100%; min-width: ${minRowPx}px;`;
 
         // 현재 줄에 걸치는 막대 조각 추출
         const rowBars = [];
@@ -1781,75 +1790,77 @@
 
         return `
           <div class="${rIdx > 0 ? 'pt-3.5 mt-3 border-t-4 border-double border-slate-400' : ''}">
-            <div class="rounded-xl border border-slate-300 bg-slate-50/40 px-2 pt-1.5 pb-1">
-              <!-- 요일 & 날짜 헤더 (가로 한 줄 슬림형) -->
-              <div style="${gridStyle}" class="border-b-2 border-slate-300 pb-1.5 mb-2 text-center bg-white rounded-lg py-1 shadow-2xs">
-                ${rowDays.map((d, idx) => {
-                  const isSelected = d.key === currentDayKey;
-                  const isSun = d.w === '일';
-                  const isSat = d.w === '토';
-                  const globalIdx = startSlice + rowStartOffset + idx;
-                  const isOutsideTrip = globalIdx < minIdx || globalIdx > maxIdx;
+            <div class="overflow-x-auto custom-scroll rounded-xl border border-slate-300 bg-slate-50/40 pb-1">
+              <div style="min-width: ${minRowPx}px;" class="px-2 pt-1.5 pb-1">
+                <!-- 요일 & 날짜 헤더 (가로 한 줄 슬림형) -->
+                <div style="display: grid; grid-template-columns: repeat(${cols}, minmax(0, 1fr)); width: 100%;" class="border-b-2 border-slate-300 pb-1.5 mb-2 text-center bg-white rounded-lg py-1 shadow-2xs">
+                  ${rowDays.map((d, idx) => {
+                    const isSelected = d.key === currentDayKey;
+                    const isSun = d.w === '일';
+                    const isSat = d.w === '토';
+                    const globalIdx = startSlice + rowStartOffset + idx;
+                    const isOutsideTrip = globalIdx < minIdx || globalIdx > maxIdx;
 
-                  let wColor = "text-slate-400";
-                  if (isSun) wColor = "text-rose-500";
-                  else if (isSat) wColor = "text-blue-500";
+                    let wColor = "text-slate-400";
+                    if (isSun) wColor = "text-rose-500";
+                    else if (isSat) wColor = "text-blue-500";
 
-                  let numColor = "text-slate-800";
-                  if (isOutsideTrip || d.muted) numColor = "text-slate-300";
-                  else if (d.isRed || isSun) numColor = "text-rose-500";
-                  else if (d.isBlue || isSat) numColor = "text-blue-500";
+                    let numColor = "text-slate-800";
+                    if (isOutsideTrip || d.muted) numColor = "text-slate-300";
+                    else if (d.isRed || isSun) numColor = "text-rose-500";
+                    else if (d.isBlue || isSat) numColor = "text-blue-500";
 
-                  const monthPrefix = ((rIdx === 0 && idx === 0) || d.key === '1/1')
-                    ? `<span class="text-[10px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
-                    : '';
+                    const monthPrefix = ((rIdx === 0 && idx === 0) || d.key === '1/1')
+                      ? `<span class="text-[10px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
+                      : '';
 
-                  return `
-                    <div id="cal-col-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100/80 transition ${idx > 0 ? 'border-l border-slate-200/80' : ''} ${isSelected ? 'bg-slate-100/90' : ''}">
-                      <span class="day-num-btn text-xs font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
-                        ${monthPrefix}${d.label}<span class="text-[10px] font-bold ${wColor} ml-0.5">(${d.w})</span>
-                      </span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-
-              <!-- 도시 막대 + 겹침 없는 [세로 출발시 | 교통수단 아이콘 | 세로 도착시] 통합 전환 배지 -->
-              <div class="relative py-0.5">
-                <!-- 일자별 세로 가이드선 배경 -->
-                <div style="${gridStyle}" class="absolute inset-0 pointer-events-none">
-                  ${rowDays.map((d, idx) => `
-                    <div class="border-r border-slate-200/90 h-full ${idx === 0 ? 'border-l border-slate-200/90' : ''} ${d.key === currentDayKey ? 'bg-blue-50/40' : ''}"></div>
-                  `).join('')}
+                    return `
+                      <div id="cal-col-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100/80 transition ${idx > 0 ? 'border-l border-slate-200/80' : ''} ${isSelected ? 'bg-slate-100/90' : ''}">
+                        <span class="day-num-btn text-xs font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
+                          ${monthPrefix}${d.label}<span class="text-[10px] font-bold ${wColor} ml-0.5">(${d.w})</span>
+                        </span>
+                      </div>
+                    `;
+                  }).join('')}
                 </div>
 
-                <div class="relative space-y-2">
-                  ${cleanLanes.map((lane, lIdx) => `
-                    <div class="relative h-[64px] w-full">
-                      <!-- 1층: 도시 체류 막대 -->
-                      ${lane.map(bar => `
-                        <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
-                             style="left: ${bar.leftPct.toFixed(3)}%; width: ${bar.widthPct.toFixed(3)}%;"
-                             class="absolute top-0 group cursor-pointer z-10"
-                             title="${bar.title} (${bar.inTime ? '도착 ' + bar.inTime : ''} ~ ${bar.outTime ? '출발 ' + bar.outTime : ''})">
-                          <div class="span-bar w-full shadow-xs ${bar.cls} ${!bar.isRealStart ? 'rounded-l-none border-l-0' : ''} ${!bar.isRealEnd ? 'rounded-r-none border-r-0' : ''}">
-                            <span class="px-1 truncate">${bar.title}</span>
-                          </div>
-                        </div>
-                      `).join('')}
+                <!-- 도시 막대 + 겹침 없는 [세로 출발시 | 교통수단 아이콘 | 세로 도착시] 통합 전환 배지 -->
+                <div class="relative py-0.5">
+                  <!-- 일자별 세로 가이드선 배경 -->
+                  <div style="display: grid; grid-template-columns: repeat(${cols}, minmax(0, 1fr)); width: 100%;" class="absolute inset-0 pointer-events-none">
+                    ${rowDays.map((d, idx) => `
+                      <div class="border-r border-slate-200/90 h-full ${idx === 0 ? 'border-l border-slate-200/90' : ''} ${d.key === currentDayKey ? 'bg-blue-50/40' : ''}"></div>
+                    `).join('')}
+                  </div>
 
-                      <!-- 2층: 막대 아래 전환 지점마다 [세로 출발시각] + [교통수단 아이콘] + [세로 도착시각]이 나란히 정렬되어 절대 안 겹침 -->
-                      ${(laneJunctions[lIdx] || []).map(j => `
-                        <div style="left: ${j.anchorPct.toFixed(3)}%;"
-                             title="${j.title}"
-                             class="absolute top-[30px] -translate-x-1/2 z-20 pointer-events-none inline-flex items-start gap-0.5 bg-white/95 px-1 py-0.5 rounded-md border border-slate-200/80 shadow-2xs">
-                          ${j.depTime ? `<span class="v-time-label text-slate-400">${j.depTime}</span>` : ''}
-                          <span class="text-[11px] leading-none self-center px-0.5">${j.icon}</span>
-                          ${j.arrTime ? `<span class="v-time-label text-slate-700">${j.arrTime}</span>` : ''}
-                        </div>
-                      `).join('')}
-                    </div>
-                  `).join('')}
+                  <div class="relative space-y-2">
+                    ${cleanLanes.map((lane, lIdx) => `
+                      <div class="relative h-[64px] w-full">
+                        <!-- 1층: 도시 체류 막대 -->
+                        ${lane.map(bar => `
+                          <div onclick="handleBarClick(${bar.evIdx}, '${bar.clickKey}')"
+                               style="left: ${bar.leftPct.toFixed(3)}%; width: ${bar.widthPct.toFixed(3)}%;"
+                               class="absolute top-0 group cursor-pointer z-10"
+                               title="${bar.title} (${bar.inTime ? '도착 ' + bar.inTime : ''} ~ ${bar.outTime ? '출발 ' + bar.outTime : ''})">
+                            <div class="span-bar w-full shadow-xs ${bar.cls} ${!bar.isRealStart ? 'rounded-l-none border-l-0' : ''} ${!bar.isRealEnd ? 'rounded-r-none border-r-0' : ''}">
+                              <span class="px-1 truncate">${bar.title}</span>
+                            </div>
+                          </div>
+                        `).join('')}
+
+                        <!-- 2층: 막대 아래 전환 지점마다 [세로 출발시각] + [교통수단 아이콘] + [세로 도착시각]이 나란히 정렬되어 절대 안 겹침 -->
+                        ${(laneJunctions[lIdx] || []).map(j => `
+                          <div style="left: ${j.anchorPct.toFixed(3)}%;"
+                               title="${j.title}"
+                               class="absolute top-[30px] -translate-x-1/2 z-20 pointer-events-none inline-flex items-start gap-0.5 bg-white/95 px-1 py-0.5 rounded-md border border-slate-200/80 shadow-2xs">
+                            ${j.depTime ? `<span class="v-time-label text-slate-400">${j.depTime}</span>` : ''}
+                            <span class="text-[11px] leading-none self-center px-0.5">${j.icon}</span>
+                            ${j.arrTime ? `<span class="v-time-label text-slate-700">${j.arrTime}</span>` : ''}
+                          </div>
+                        `).join('')}
+                      </div>
+                    `).join('')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1858,6 +1869,15 @@
       }).join('');
 
       container.innerHTML = `<div class="w-full">${rowsHtml}</div>`;
+    }
+
+    function scrollCalendarToDay(key) {
+      const col = document.getElementById(`cal-col-${key.replace('/', '-')}`);
+      if (!col) return;
+      const scrollBox = col.closest('.overflow-x-auto');
+      if (!scrollBox) return;
+      const targetLeft = col.offsetLeft - (scrollBox.clientWidth / 2) + (col.clientWidth / 2);
+      scrollBox.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
     }
 
     function scrollCalendarToDay(key) {
@@ -2051,25 +2071,25 @@
 
         return `
           <div>
-            <div class="flex items-center gap-2.5">
-              <div class="w-12 text-right shrink-0">
-                <span class="text-xs font-extrabold text-slate-700 bg-slate-100 px-1.5 py-1 rounded-lg inline-block w-full text-center">${b.time}</span>
+            <div class="flex items-start sm:items-center gap-2">
+              <div class="w-11 sm:w-12 text-right shrink-0 pt-1 sm:pt-0">
+                <span class="text-[11px] sm:text-xs font-extrabold text-slate-700 bg-slate-100 px-1 py-1 rounded-lg inline-block w-full text-center">${b.time}</span>
               </div>
 
               <div onclick="openPlaceModal(${idx})"
-                   class="flex-1 min-w-0 bg-slate-50 hover:bg-white border border-slate-200/90 hover:border-blue-300 rounded-2xl px-3.5 py-2.5 shadow-sm cursor-pointer transition flex items-center justify-between gap-2">
+                   class="flex-1 min-w-0 bg-slate-50 hover:bg-white border border-slate-200/90 hover:border-blue-300 rounded-2xl px-3 py-2.5 shadow-sm cursor-pointer transition flex items-center justify-between gap-2">
                 <div class="min-w-0 flex-1">
-                  <div class="flex items-center justify-between gap-2 flex-wrap">
-                    <div class="flex items-center gap-1.5 min-w-0">
+                  <div class="flex items-start sm:items-center justify-between gap-1.5 flex-col sm:flex-row">
+                    <div class="flex items-center gap-1.5 min-w-0 w-full sm:w-auto">
                       <span class="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-extrabold inline-flex items-center justify-center shrink-0">${idx + 1}</span>
-                      <span class="text-xs sm:text-sm font-extrabold text-slate-900 truncate">${b.title}</span>
+                      <span class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug break-words">${b.title}</span>
                     </div>
                     ${infoTag}
                   </div>
-                  ${b.memo ? `<p class="text-[11px] text-slate-400 truncate mt-0.5 pl-6">${b.memo}</p>` : ''}
+                  ${b.memo ? `<p class="text-[11px] text-slate-400 leading-snug mt-1 pl-6 break-words">${b.memo}</p>` : ''}
                 </div>
 
-                <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
+                <div class="flex flex-col sm:flex-row items-center gap-1 shrink-0" onclick="event.stopPropagation()">
                   <button onclick="moveBlock(${idx}, -1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center">▲</button>
                   <button onclick="moveBlock(${idx}, 1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 text-[10px] font-bold flex items-center justify-center">▼</button>
                 </div>

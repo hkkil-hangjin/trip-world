@@ -94,24 +94,14 @@
        ========================================== -->
   <header class="bg-white/95 backdrop-blur border-b border-slate-200/90 sticky top-0 z-40 shadow-2xs shrink-0">
     <div class="layout-container py-2 sm:py-2.5 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
-      <!-- 1단: 타이틀 + 1안/2안 스위처 + 우측 유틸 버튼 (저장·공유 / 총예산 / 초기화) -->
-      <div class="flex items-center justify-between gap-1.5 w-full lg:w-auto min-w-0 flex-wrap sm:flex-nowrap">
+      <!-- 1단: 타이틀 + 우측 유틸 버튼 (저장·공유 / 총예산 / 초기화) -->
+      <div class="flex items-center justify-between gap-1.5 w-full lg:w-auto min-w-0">
         <div class="flex items-center gap-1.5 min-w-0">
-          <span id="header-duration-badge" class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap">24박 25일</span>
+          <span id="header-duration-badge" class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap">21박 23일</span>
           <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate">2027 세계일주 플래너</h1>
-
-          <!-- 1안 / 2안 여정 전환 탭 -->
-          <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/90 ml-1 shrink-0">
-            <button id="plan-btn-1" onclick="switchPlan(1)" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap bg-blue-600 text-white shadow-2xs">
-              1안 <span class="hidden sm:inline font-bold opacity-95">(12/29 유럽➔미국)</span>
-            </button>
-            <button id="plan-btn-2" onclick="switchPlan(2)" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900">
-              2안 <span class="hidden sm:inline font-bold opacity-85">(1/7 미국➔유럽)</span>
-            </button>
-          </div>
         </div>
 
-        <div class="flex items-center gap-1 shrink-0 ml-auto lg:ml-2">
+        <div class="flex items-center gap-1 shrink-0">
           <div onclick="switchMainTab('budget')" class="cursor-pointer text-[11px] sm:text-xs font-extrabold text-slate-700 bg-emerald-50/90 hover:bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-200 whitespace-nowrap transition shrink-0" title="클릭 시 가계부 메뉴로 이동">
             <span class="hidden sm:inline">총예산 </span><span id="grand-total-display" class="text-emerald-700">₩0</span>
           </div>
@@ -159,7 +149,7 @@
       <section id="calendar-section" class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3 sm:p-4 flex flex-col shrink-0 min-w-0">
         <div class="flex flex-wrap justify-between items-center mb-2.5 gap-2">
           <div class="flex items-center gap-2 min-w-0">
-            <h2 id="calendar-section-title" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정 (1안)</h2>
+            <h2 id="calendar-section-title" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정</h2>
             <span id="cal-mode-badge" class="text-xs font-bold px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-full whitespace-nowrap shrink-0">날짜 · 막대 터치 이동</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
@@ -201,9 +191,9 @@
             <div id="map" class="border border-slate-200/80"></div>
           </div>
           <div id="map-legend-bar" class="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2 shrink-0">
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-emerald-600 inline-block rounded"></span> 유럽 구간</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 워싱턴 · 뉴욕</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 마이애미 · 올랜도</span>
+            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-emerald-600 inline-block rounded"></span> 유럽 (포르투갈·스페인·스위스)</span>
+            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 뉴욕 · 워싱턴</span>
+            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 플로리다 · 샌프란시스코</span>
           </div>
         </section>
 
@@ -761,7 +751,7 @@
 
     const ALL_CALENDAR_DAYS = [
       { label: "27", key: "12/27", w: "일", muted: true },
-      { label: "28", key: "12/28", w: "월", muted: true },
+      { label: "28", key: "12/28", w: "월" },
       { label: "29", key: "12/29", w: "화" },
       { label: "30", key: "12/30", w: "수" },
       { label: "31", key: "12/31", w: "목" },
@@ -806,6 +796,12 @@
       { kw: "모스크", coords: [24.4128, 54.4750] },
       { kw: "두바이", coords: [25.1972, 55.2744] },
       { kw: "할리파", coords: [25.1972, 55.2744] },
+      { kw: "프랑크푸르트 공항", coords: [50.0379, 8.5622] },
+      { kw: "프랑크푸르트 중앙역", coords: [50.1072, 8.6638] },
+      { kw: "뢰머", coords: [50.1104, 8.6821] },
+      { kw: "아이제르너", coords: [50.1082, 8.6822] },
+      { kw: "마인 타워", coords: [50.1125, 8.6722] },
+      { kw: "프랑크푸르트", coords: [50.1109, 8.6821] },
       { kw: "포르텔라", coords: [38.7756, -9.1354] },
       { kw: "제로니무스", coords: [38.6979, -9.2067] },
       { kw: "벨렝", coords: [38.6976, -9.2032] },
@@ -822,11 +818,22 @@
       { kw: "렐루", coords: [41.1468, -8.6148] },
       { kw: "볼량", coords: [41.1487, -8.6069] },
       { kw: "포르투", coords: [41.1579, -8.6291] },
+      { kw: "바라하스", coords: [40.4983, -3.5676] },
       { kw: "아토차", coords: [40.4065, -3.6896] },
       { kw: "마드리드 왕궁", coords: [40.4180, -3.7143] },
       { kw: "솔 광장", coords: [40.4169, -3.7035] },
       { kw: "프라도", coords: [40.4138, -3.6921] },
       { kw: "마드리드", coords: [40.4168, -3.7038] },
+      { kw: "발렌시아 호아킨 소로야", coords: [39.4601, -0.3818] },
+      { kw: "예술과학도시", coords: [39.4549, -0.3504] },
+      { kw: "말바로사", coords: [39.4769, -0.3233] },
+      { kw: "발렌시아", coords: [39.4699, -0.3763] },
+      { kw: "세비야 산타 후스타", coords: [37.3919, -5.9754] },
+      { kw: "스페인 광장", coords: [37.3772, -5.9869] },
+      { kw: "세비야 대성당", coords: [37.3858, -5.9931] },
+      { kw: "알카사르", coords: [37.3831, -5.9902] },
+      { kw: "히랄다", coords: [37.3862, -5.9926] },
+      { kw: "세비야", coords: [37.3891, -5.9845] },
       { kw: "산츠", coords: [41.3791, 2.1401] },
       { kw: "구엘", coords: [41.4145, 2.1527] },
       { kw: "파밀리아", coords: [41.4036, 2.1744] },
@@ -882,15 +889,27 @@
       { kw: "디즈니월드", coords: [28.4177, -81.5812] },
       { kw: "매직킹덤", coords: [28.4177, -81.5812] },
       { kw: "올랜도 국제공항", coords: [28.4312, -81.3081] },
-      { kw: "올랜도", coords: [28.5383, -81.3792] }
+      { kw: "올랜도", coords: [28.5383, -81.3792] },
+      { kw: "금문교", coords: [37.8199, -122.4783] },
+      { kw: "피셔맨즈", coords: [37.8080, -122.4177] },
+      { kw: "피어 39", coords: [37.8087, -122.4098] },
+      { kw: "롬바드", coords: [37.8021, -122.4187] },
+      { kw: "유니언 스퀘어", coords: [37.7879, -122.4075] },
+      { kw: "페리 빌딩", coords: [37.7955, -122.3937] },
+      { kw: "소살리토", coords: [37.8591, -122.4853] },
+      { kw: "샌프란시스코 국제공항", coords: [37.6213, -122.3790] },
+      { kw: "샌프란", coords: [37.7749, -122.4194] }
     ];
 
     const CITY_ENV_PROFILES = [
       { kw: "아부다비", flag: "🇦🇪", diff: "시차 -5시간", weather: "18~25°C (온화)", plug: "230V (G타입)", pay: "디르함/트래블카드", currency: "AED" },
       { kw: "두바이",   flag: "🇦🇪", diff: "시차 -5시간", weather: "18~25°C (온화)", plug: "230V (G타입)", pay: "디르함/트래블카드", currency: "AED" },
+      { kw: "프랑크푸르트", flag: "🇩🇪", diff: "시차 -8시간", weather: "0~6°C (초겨울)", plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "리스본",   flag: "🇵🇹", diff: "시차 -9시간", weather: "9~15°C (선선)",  plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "포르투",   flag: "🇵🇹", diff: "시차 -9시간", weather: "7~14°C (강변바람)", plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "마드리드", flag: "🇪🇸", diff: "시차 -8시간", weather: "3~11°C (맑음)",  plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
+      { kw: "발렌시아", flag: "🇪🇸", diff: "시차 -8시간", weather: "8~17°C (따뜻)",  plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
+      { kw: "세비야",   flag: "🇪🇸", diff: "시차 -8시간", weather: "7~17°C (봄날씨)", plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "바르셀로나", flag: "🇪🇸", diff: "시차 -8시간", weather: "8~15°C (온화)", plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "리옹",     flag: "🇫🇷", diff: "시차 -8시간", weather: "2~8°C (미식도시)", plug: "230V (한국동일)", pay: "유로(EUR)/카드", currency: "EUR" },
       { kw: "파리",     flag: "🇫🇷", diff: "시차 -8시간", weather: "3~8°C (코트/패딩)", plug: "230V (한국동일)", pay: "유로(EUR)/컨택리스", currency: "EUR" },
@@ -903,275 +922,263 @@
       { kw: "뉴욕",     flag: "🇺🇸", diff: "시차 -14시간", weather: "-3~4°C (겨울)", plug: "110V (A타입)", pay: "달러(USD)/OMNY", currency: "USD" },
       { kw: "마이애미", flag: "🌴", diff: "시차 -14시간", weather: "20~26°C (초여름)", plug: "110V (A타입)", pay: "달러(USD)/카드", currency: "USD" },
       { kw: "올랜도",   flag: "🎢", diff: "시차 -14시간", weather: "13~23°C (쾌청)", plug: "110V (A타입)", pay: "달러(USD)/카드", currency: "USD" },
+      { kw: "샌프란",   flag: "🌉", diff: "시차 -17시간", weather: "8~15°C (선선)", plug: "110V (A타입)", pay: "달러(USD)/카드", currency: "USD" },
       { kw: "인천",     flag: "🇰🇷", diff: "한국 표준시",  weather: "-5~2°C (서울)",  plug: "220V (한국)", pay: "원화(KRW)", currency: "USD" }
     ];
 
-    // 일자별 핵심 여행 팁 사전 (최신 워싱턴 5박 ➔ 뉴욕 3박 ➔ 마이애미 2박 ➔ 올랜도 3박 일정에 완벽 동기화)
+    // 일자별 핵심 여행 팁 사전 (12/28 출국 ~ 1/22 귀국: 리스본➔세비야➔마드리드➔바르셀로나➔인터라켄·취리히➔뉴욕·워싱턴·플로리다·샌프란시스코)
     const DAY_TIPS_DICT = {
-      "12/29": "아부다비 모스크 입장 시 긴바지·긴팔 착용 필수! 위탁수하물은 리스본까지 자동 연결됩니다.",
-      "12/30": "벨렝 지구 트램 이동 시 소매치기 주의! 파스테이스 드 벨렝은 매장 내 테이블 주문이 훨씬 빠릅니다.",
-      "12/31": "코메르시우 광장 새해 카운트다운 불꽃놀이는 22시 이후 인파가 몰리므로 미리 방한용품을 챙겨 이동하세요.",
-      "1/1":   "오리엔테역➔캄파냥역 CP 기차 탑승 후 상벤투역까지 일반 전철 환승 시 같은 티켓으로 무료 이용 가능!",
-      "1/2":   "포르투갈에서 스페인 넘어갈 때 시차가 +1시간 변경됩니다. 야간버스용 목베개와 안대를 기내용 가방에 챙기세요.",
-      "1/3":   "다음 날 아침 일찍 바르셀로나행 고속열차를 타므로 아토차역 도보권 호텔이 동선상 가장 편리합니다.",
-      "1/4":   "사그라다 파밀리아 성당은 오후 3~4시 서쪽 스테인드글라스 황금 채광이 가장 아름답습니다.",
-      "1/5":   "1월 5일 저녁은 스페인 최대 축제 중 하나인 '동방박사 퍼레이드(Cabalgata de Reyes)'가 시내에서 열립니다!",
-      "1/6":   "스위스 콘센트(J타입)는 육각형 홈이 깊어 한국 돼지코가 안 들어갑니다. 반드시 멀티어댑터를 사용하세요!",
-      "1/7":   "융프라우 정상은 설원 반사광이 강하므로 선글라스 필수! 동신항운 쿠폰으로 신라면 무료 교환 가능.",
-      "1/8":   "루체른역 지하 코인락커에 캐리어를 보관하고 카펠교와 빈사의 사자상을 가볍게 산책하세요.",
-      "1/9":   "취리히에서 워싱턴 덜레스(IAD) 입국 후 Silver Line 메트로를 타면 워싱턴 도심까지 직결 이동합니다.",
-      "1/10":  "워싱턴 내셔널 몰과 스미소니언 박물관 대부분은 무료입장이며, 도보 이동이 많으니 편한 신발을 착용하세요.",
-      "1/11":  "스미소니언 자연사박물관의 '호프 다이아몬드'(2층 보석관)는 오전 일찍 관람하면 여유롭습니다.",
-      "1/12":  "국립 항공우주박물관은 무료이지만 공식 홈페이지에서 사전 시간대 패스(Timed-Entry) 예약이 필수입니다.",
-      "1/13":  "미국 국회의사당과 의회도서관은 지하 터널로 연결되어 있어 한 번의 보안 검색으로 함께 둘러볼 수 있습니다.",
-      "1/14":  "워싱턴 유니언역에서 암트랙(Amtrak)으로 뉴욕 펜스테이션 이동! 얼리버드 Saver 운임이 가장 경제적입니다.",
-      "1/15":  "뉴욕 지하철은 별도 교통카드 없이 트래블카드(컨택리스)를 개찰구 OMNY 단말기에 바로 태그하면 됩니다.",
-      "1/16":  "브로드웨이 극장 입장 시 보안 검색이 있으므로 공연 시작 30분 전까지 극장에 도착하세요.",
-      "1/17":  "추운 뉴욕에서 따뜻한 마이애미로 이동하는 날! 공항에서 바로 가벼운 복장으로 갈아입기 좋게 짐을 배치하세요.",
-      "1/18":  "마이애미 사우스비치와 리틀 아바나 구간은 마이애미 무료 트롤리(Trolley)나 우버를 활용하면 편리합니다.",
-      "1/19":  "마이애미 중앙역에서 브라이트라인(Brightline) 고속열차로 올랜도 공항역까지 약 3시간 반 만에 쾌적하게 이동합니다.",
-      "1/20":  "해리포터 호그와트 익스프레스 열차를 타려면 유니버설 2개 파크 이동권(Park-to-Park) 티켓이 필요합니다!",
-      "1/21":  "디즈니월드 매직킹덤 신데렐라 성 불꽃놀이(Happily Ever After)는 메인스트리트 USA 중앙이 최고 명당입니다.",
-      "1/22":  "올랜도 국제공항(MCO)은 테마파크 기념품샵 인파로 보안검색 줄이 기니 최소 3시간 전 도착을 권장합니다.",
-      "1/23":  "인천국제공항 무사 귀국! 잊으신 수하물 없이 즐겁고 안전한 세계일주 완주를 축하드립니다!",
-      "1/24":  "사그라다 파밀리아 성당은 오후 3~4시 서쪽 스테인드글라스 황금 채광이 가장 아름답습니다.",
-      "1/25":  "바르셀로나 산츠역에서 파리 리옹역까지 TGV 고속열차로 지중해와 프랑스 남부 풍경을 감상하며 직결 이동합니다.",
-      "1/26":  "파리 에펠탑 화이트 에펠(반짝이는 조명)은 해가 진 뒤 매시 정각부터 5분간 반짝입니다!",
-      "1/27":  "스위스 콘센트(J타입)는 육각형 홈이 깊어 한국 돼지코가 안 들어갑니다. 반드시 멀티어댑터를 사용하세요!",
-      "1/28":  "융프라우 정상은 설원 반사광이 강하므로 선글라스 필수! 동신항운 쿠폰으로 신라면 무료 교환 가능.",
-      "1/29":  "그린델발트 피르스트 클리프 워크와 액티비티는 오전 기상이 맑을 때 먼저 올라가는 것이 좋습니다.",
-      "1/30":  "루체른역 코인락커에 캐리어를 보관하고 카펠교와 빈사의 사자상을 산책한 뒤 취리히로 넘어가세요.",
-      "1/31":  "취리히 국제공항(ZRH)에서 면세품 택스리펀을 받을 경우 출국장 통과 전 세관 도장을 먼저 받아야 합니다.",
-      "2/1":   "인천국제공항 무사 귀국! 미국과 유럽을 아우른 18박 19일 세계일주 완주를 축하드립니다!"
+      "12/28": "인천 01:15 출발 ➔ 아부다비 06:30 도착! 그랜드 모스크 입장 시 긴바지·긴팔 착용 필수입니다.",
+      "12/29": "02:00 아부다비 출발 ➔ 06:55 리스본 도착! 벨렝 지구 파스테이스 드 벨렝은 매장 안쪽 좌석 주문이 훨씬 빠릅니다.",
+      "12/30": "07:30 리스본에서 버스로 출발해 14:29 세비야에 도착합니다! (포르투갈➔스페인 시차 +1시간 변경)",
+      "12/31": "세비야 대성당·알카사르 투어의 날! 자정에는 스페인 전통대로 포도 12알을 먹으며 새해를 맞이해보세요.",
+      "1/1":   "오전 세비야에서 AVE 고속열차(2시간 반)로 마드리드 이동! 오후에는 솔 광장과 프라도 미술관 주변을 산책합니다.",
+      "1/2":   "오전 마드리드 왕궁 관람 후 11:22 고속열차로 바르셀로나(14:39 도착) 입성! 카탈루냐 광장과 고딕 지구를 둘러봅니다.",
+      "1/3":   "바르셀로나 가우디 집중 투어의 날! 사그라다 파밀리아 성당은 오후 3~4시 스테인드글라스 황금 채광이 가장 아름답습니다.",
+      "1/4":   "바르셀로나 몬주익 언덕과 보케리아 시장, 바르셀로네타 해변까지 여유롭게 즐기는 전일 투어 날입니다.",
+      "1/5":   "06:40 바르셀로나 출발 항공(08:15 제네바 착) ➔ 08:45 제네바 공항역 기차 탑승 ➔ 11:53 인터라켄 동역 도착! 환승 동선이 매우 편리합니다.",
+      "1/6":   "융프라우요흐 등정의 날! 만년설 반사광이 강하므로 선글라스 필수이며, 동신항운 쿠폰으로 정상 신라면 무료 교환이 가능합니다.",
+      "1/7":   "오전 그린델발트 피르스트 설경 감상 후, 16:04 인터라켄 동역 출발 기차(52 CHF)로 17:58 취리히 중앙역에 도착합니다.",
+      "1/8":   "취리히 공항(13:30 출발)에서 델타항공 직항으로 뉴욕 JFK(16:55 도착) 입성! 저녁에는 타임스퀘어 야경을 만끽하세요.",
+      "1/9":   "뉴욕 지하철은 별도 교통카드 발급 없이 트래블카드(컨택리스)를 개찰구 OMNY 단말기에 바로 태그하면 됩니다.",
+      "1/10":  "자유의 여신상 페리 탑승 및 브루클린 브리지·덤보 일몰 코스! 강바람이 차가우니 방한용품을 잘 챙기세요.",
+      "1/11":  "브로드웨이 뮤지컬 극장 입장 시 보안 검색이 있으므로 공연 시작 30분 전까지 극장에 도착하는 것이 좋습니다.",
+      "1/12":  "오전 뉴욕 펜스테이션에서 암트랙(Amtrak)으로 워싱턴 D.C. 유니언역까지 약 3시간 15분 만에 도심 간 직결 이동합니다.",
+      "1/13":  "스미소니언 박물관 대부분은 무료입장이며, 항공우주박물관과 국회의사당은 사전 시간대 예약 패스를 챙기세요.",
+      "1/14":  "추운 워싱턴에서 따뜻한 플로리다 올랜도로 날아가는 날! 공항에서 바로 가벼운 복장으로 갈아입기 좋게 짐을 배치하세요.",
+      "1/15":  "해리포터 호그와트 익스프레스 열차를 타려면 유니버설 2개 파크 이동권(Park-to-Park) 티켓이 필요합니다!",
+      "1/16":  "09:20 올랜도 출발 브라이트라인(Brightline) 고속열차로 12:56 마이애미에 도착해 오후부터 사우스비치 해변을 여유롭게 즐깁니다.",
+      "1/17":  "마이애미 사우스비치와 리틀 아바나, 베이사이드 마켓플레이스는 무료 트롤리나 우버로 편리하게 이동할 수 있습니다.",
+      "1/18":  "마이애미(09:05)➔샌프란시스코(12:42) 도착 후 23:45 인천행 비행기까지 약 11시간 레이오버! 금문교·피어39 핵심 투어 후 심야 출국합니다.",
+      "1/19":  "태평양 상공 기내 숙면 및 날짜변경선 통과 구간입니다. (1/18 23:45 샌프란 출발편은 +1일 시차로 한국 시간 1/20 새벽 도착)",
+      "1/20":  "05:40 인천국제공항 무사 귀국! 유럽부터 미국 동·서부까지 알차게 완주하신 것을 축하드립니다!"
     };
 
-    // [1안: 유럽 ➔ 미국 (12/29 ~ 1/23)] 기본 데이터
+    // [12/28 출국 ~ 1/20 귀국: 아부다비➔리스본➔세비야➔마드리드➔바르셀로나(3박)➔인터라켄(2박)➔취리히(1박)➔1/8 뉴욕·워싱턴·플로리다·1/18 샌프란시스코 경유 귀국]
     const DEFAULT_CALENDAR_EVENTS = [
-      { id: "e1",  title: "🇦🇪 아부다비 (1박)",   start: "12/29", end: "12/30", inTime: "06:50", outTime: "02:20", transLabel: "✈️ 01:15➔06:50", cls: "bg-slate-200 text-slate-800 border border-slate-300" },
-      { id: "e2",  title: "🇵🇹 리스본 (2박)",     start: "12/30", end: "1/1",   inTime: "06:55", outTime: "10:00", transLabel: "✈️ 02:20➔06:55", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
-      { id: "e3",  title: "🇵🇹 포르투 (1박)",     start: "1/1",   end: "1/2",   inTime: "12:45", outTime: "22:30", transLabel: "🚄 10:00➔12:45", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
-      { id: "e4",  title: "🇪🇸 마드리드 (1박)",   start: "1/3",   end: "1/4",   inTime: "08:00", outTime: "07:30", transLabel: "🚌 22:30➔08:00", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "e5",  title: "🇪🇸 바르셀로나 (2박)", start: "1/4",   end: "1/6",   inTime: "10:00", outTime: "07:00", transLabel: "🚄 07:30➔10:00", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "e6",  title: "🇨🇭 인터라켄 (2박)",   start: "1/6",   end: "1/8",   inTime: "12:30", outTime: "09:30", transLabel: "✈️🚄 07:00➔12:30", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "e7",  title: "🇨🇭 취리히 (1박)",     start: "1/8",   end: "1/9",   inTime: "12:00", outTime: "10:15", transLabel: "🚄 09:30➔12:00", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "e8",  title: "🇺🇸 워싱턴 (5박)",     start: "1/9",   end: "1/14",  inTime: "16:40", outTime: "08:30", transLabel: "✈️ 10:15➔16:40", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "e11", title: "🇺🇸 뉴욕 (3박)",       start: "1/14",  end: "1/17",  inTime: "11:45", outTime: "08:30", transLabel: "🚄 08:30➔11:45", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "e9",  title: "🇺🇸 마이애미 (2박)",   start: "1/17",  end: "1/19",  inTime: "11:40", outTime: "14:30", transLabel: "✈️ 08:30➔11:40", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
-      { id: "e10", title: "🇺🇸 올랜도 (3박)",     start: "1/19",  end: "1/22",  inTime: "18:05", outTime: "10:30", transLabel: "🚄 14:30➔18:05", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" }
+      { id: "e1",  title: "🇦🇪 아부다비 (1박)",        start: "12/28", end: "12/29", inTime: "06:30", outTime: "02:00", transLabel: "✈️ 01:15➔06:30", cls: "bg-slate-200 text-slate-800 border border-slate-300" },
+      { id: "e2",  title: "🇵🇹 리스본 (1박)",          start: "12/29", end: "12/30", inTime: "06:55", outTime: "07:30", transLabel: "✈️ 02:00➔06:55", cls: "bg-emerald-100 text-emerald-900 border border-emerald-200" },
+      { id: "e3",  title: "🇪🇸 세비야 (2박)",          start: "12/30", end: "1/1",   inTime: "14:29", outTime: "10:28", transLabel: "🚌 07:30➔14:29", cls: "bg-rose-100 text-rose-900 border border-rose-200" },
+      { id: "e4",  title: "🇪🇸 마드리드 (1박)",        start: "1/1",   end: "1/2",   inTime: "13:06", outTime: "11:22", transLabel: "🚄 10:28➔13:06", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "e5",  title: "🇪🇸 바르셀로나 (3박)",      start: "1/2",   end: "1/5",   inTime: "14:39", outTime: "06:40", transLabel: "🚄 11:22➔14:39", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
+      { id: "e7",  title: "🇨🇭 인터라켄 (2박)",        start: "1/5",   end: "1/7",   inTime: "11:53", outTime: "16:04", transLabel: "✈️🚄 06:40➔11:53", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "e8",  title: "🇨🇭 취리히 (1박)",          start: "1/7",   end: "1/8",   inTime: "17:58", outTime: "13:30", transLabel: "🚄 16:04➔17:58", cls: "bg-red-100 text-red-900 border border-red-200" },
+      { id: "e9",  title: "🇺🇸 뉴욕 (4박)",            start: "1/8",   end: "1/12",  inTime: "16:55", outTime: "09:00", transLabel: "✈️ 13:30➔16:55", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e10", title: "🏛️ 워싱턴 (2박)",          start: "1/12",  end: "1/14",  inTime: "12:15", outTime: "06:59", transLabel: "🚄 09:00➔12:15", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
+      { id: "e11", title: "🎢 올랜도 (2박)",           start: "1/14",  end: "1/16",  inTime: "09:35", outTime: "09:20", transLabel: "✈️ 06:59➔09:35", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
+      { id: "e12", title: "🌴 마이애미 (2박)",         start: "1/16",  end: "1/18",  inTime: "12:56", outTime: "09:05", transLabel: "🚄 09:20➔12:56", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
+      { id: "e13", title: "🌉 샌프란 경유",            start: "1/18",  end: "1/18",  inTime: "12:42", outTime: "23:45", transLabel: "✈️ 09:05➔12:42", cls: "bg-teal-100 text-teal-900 border border-teal-200" }
     ];
 
     const DEFAULT_SCHEDULES = {
-      "12/29": {
-        dayBadge: "DAY 1", title: "12월 29일 (화)", subtitle: "🇰🇷 인천 ➔ 🇦🇪 아부다비 · 두바이 (경유지 투어)",
+      "12/28": {
+        dayBadge: "DAY 1 출국", title: "12월 28일 (월)", subtitle: "🇰🇷 인천 01:15 출발 ➔ 🇦🇪 아부다비 06:30 도착 · 두바이 투어",
         blocks: [
-          { time: "01:15", title: "인천국제공항 제1터미널", vendor: "", cost: 0, memo: "리스본까지 위탁수하물 자동 연결", nextTransport: { mode: "항공", icon: "✈️", label: "인천➔리스본 에티하드 (2인)", cost: 1151200 } },
-          { time: "06:50", title: "아부다비 자이드 국제공항", vendor: "", cost: 0, memo: "기내용 가방만 지참 후 입국", nextTransport: { mode: "택시", icon: "🚕", label: "아부다비 공항➔모스크 우버", cost: 18000 } },
-          { time: "09:00", title: "셰이크 자이드 그랜드 모스크", vendor: "", cost: 0, memo: "긴바지·긴팔 착용 필수", nextTransport: { mode: "버스", icon: "🚌", label: "아부다비➔두바이 왕복버스", cost: 14000 } },
-          { time: "13:00", title: "두바이 몰", vendor: "현장결제", cost: 40000, memo: "분수쇼 관람 및 식사", nextTransport: null }
+          { time: "01:15", title: "인천국제공항 제1터미널", vendor: "", cost: 0, memo: "에티하드 항공 탑승 (리스본까지 위탁수하물 자동 연결)", nextTransport: { mode: "항공", icon: "✈️", label: "인천➔리스본 에티하드 항공 (2인)", cost: 1151200 } },
+          { time: "06:30", title: "아부다비 자이드 국제공항", vendor: "", cost: 0, memo: "기내용 가방만 지참 후 경유지 입국", nextTransport: null },
+          { time: "09:00", title: "셰이크 자이드 그랜드 모스크", vendor: "", cost: 0, memo: "긴바지·긴팔 착용 필수 관람", nextTransport: { mode: "버스", icon: "🚌", label: "아부다비➔두바이 왕복버스", cost: 14000 } },
+          { time: "13:30", title: "두바이 몰 & 부르즈 할리파", vendor: "", cost: 0, memo: "두바이 분수쇼 관람 및 저녁 식사 후 공항 복귀", nextTransport: null }
+        ]
+      },
+      "12/29": {
+        dayBadge: "DAY 2", title: "12월 29일 (화)", subtitle: "🇦🇪 아부다비 02:00 ➔ 🇵🇹 리스본 06:55 도착 & 벨렝·바이샤 투어 (1박)",
+        blocks: [
+          { time: "02:00", title: "아부다비 자이드 국제공항", vendor: "", cost: 0, memo: "리스본행 에티하드 항공 탑승 (기내 숙면)", nextTransport: { mode: "항공", icon: "✈️", label: "아부다비➔리스본 EY99 (포함)", cost: 0 } },
+          { time: "06:55", title: "리스본 포르텔라 공항", vendor: "", cost: 0, memo: "시내 이동 후 호시우 광장 호텔 짐보관", nextTransport: null },
+          { time: "10:00", title: "제로니무스 수도원 & 벨렝 탑", vendor: "", cost: 0, memo: "벨렝 지구 마누엘 양식 수도원 관람", nextTransport: { mode: "도보", icon: "🚶", label: "도보 5분", cost: 0 } },
+          { time: "12:30", title: "파스테이스 드 벨렝", vendor: "", cost: 0, memo: "포르투갈 원조 에그타르트 시식", nextTransport: null },
+          { time: "16:30", title: "산타 후스타 엘리베이터 & 코메르시우 광장", vendor: "", cost: 0, memo: "바이샤 지구 및 테주강 일몰 산책", nextTransport: null }
         ]
       },
       "12/30": {
-        dayBadge: "DAY 2", title: "12월 30일 (수)", subtitle: "🇦🇪 아부다비 ➔ 🇵🇹 리스본 도착 및 벨렝 지구 투어",
+        dayBadge: "DAY 3", title: "12월 30일 (수)", subtitle: "🇵🇹 리스본 07:30 출발 ➔ 🇪🇸 세비야 14:29 도착 & 스페인 광장 일몰 (1/2박)",
         blocks: [
-          { time: "02:20", title: "아부다비 자이드 국제공항", vendor: "", cost: 0, memo: "8시간 35분 비행 (기내 숙면)", nextTransport: { mode: "항공", icon: "✈️", label: "아부다비➔리스본 EY99 (포함)", cost: 0 } },
-          { time: "06:55", title: "리스본 포르텔라 공항", vendor: "현장결제", cost: 12000, memo: "시내 이동 후 호시우 광장 호텔 짐보관", nextTransport: { mode: "기차", icon: "🚄", label: "리스본 24시간 교통권 (2인)", cost: 21000 } },
-          { time: "10:00", title: "제로니무스 수도원", vendor: "클룩", cost: 45000, memo: "벨렝 지구 마누엘 양식 수도원", nextTransport: { mode: "도보", icon: "🚶", label: "도보 5분", cost: 0 } },
-          { time: "12:30", title: "파스테이스 드 벨렝", vendor: "현장결제", cost: 15000, memo: "포르투갈 원조 에그타르트", nextTransport: null },
-          { time: "16:30", title: "산타 후스타 엘리베이터", vendor: "", cost: 0, memo: "바이샤 지구 및 테주강 일몰 산책", nextTransport: null }
+          { time: "07:30", title: "리스본 오리엔테 버스터미널", vendor: "", cost: 0, memo: "세비야행 직행버스 탑승 (07:30 출발 ➔ 14:29 도착 · 시차 +1시간)", nextTransport: { mode: "버스", icon: "🚌", label: "리스본➔세비야 직행버스 (1인 44,521원·2인)", cost: 89042 } },
+          { time: "14:29", title: "세비야 플라자 데 아르마스 터미널", vendor: "", cost: 0, memo: "세비야 도착 후 호텔 체크인 및 타파스 점심 식사", nextTransport: null },
+          { time: "17:00", title: "스페인 광장 & 과달키비르강 산책", vendor: "", cost: 0, memo: "스페인 광장 일몰 감상 및 세비야 구시가지 저녁 만찬", nextTransport: null }
         ]
       },
       "12/31": {
-        dayBadge: "DAY 3", title: "12월 31일 (목)", subtitle: "🇵🇹 리스본 알파마 골목 투어 & 테주강 새해 불꽃놀이",
+        dayBadge: "DAY 4", title: "12월 31일 (목)", subtitle: "🇪🇸 세비야 대성당 · 알카사르 · 플라멩코 & 새해 카운트다운 (2/2박)",
         blocks: [
-          { time: "10:00", title: "포르타스 두 솔 전망대", vendor: "현장결제", cost: 15000, memo: "28번 트램 탑승 및 알파마 지구", nextTransport: null },
-          { time: "14:00", title: "호시우 광장", vendor: "현장결제", cost: 30000, memo: "시아두 거리 카페 투어", nextTransport: null },
-          { time: "22:30", title: "코메르시우 광장", vendor: "", cost: 0, memo: "테주강 새해 카운트다운 불꽃놀이", nextTransport: null }
+          { time: "09:30", title: "세비야 대성당 & 히랄다 탑", vendor: "", cost: 0, memo: "세계 3대 성당 및 콜럼버스 묘 관람", nextTransport: { mode: "도보", icon: "🚶", label: "도보 3분", cost: 0 } },
+          { time: "13:30", title: "세비야 알카사르 궁전", vendor: "", cost: 0, memo: "이슬람 무데하르 양식 왕궁 및 정원 산책", nextTransport: null },
+          { time: "19:30", title: "정통 플라멩코 공연 & 누에바 광장 카운트다운", vendor: "", cost: 0, memo: "본고장 세비야 타블라오 플라멩코 관람 및 새해맞이", nextTransport: null }
         ]
       },
       "1/1": {
-        dayBadge: "DAY 4", title: "1월 1일 (금)", subtitle: "🇵🇹 리스본 ➔ 포르투 이동 & 동 루이스 다리 야경 (1박)",
+        dayBadge: "DAY 5", title: "1월 1일 (금)", subtitle: "🇪🇸 세비야 10:28 출발 ➔ 마드리드 13:06 도착 & 솔 광장 · 프라도 산책 (1박)",
         blocks: [
-          { time: "10:00", title: "리스본 오리엔테역", vendor: "", cost: 0, memo: "CP 고속열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "리스본➔포르투 CP 고속열차", cost: 42000 } },
-          { time: "12:45", title: "포르투 상벤투역", vendor: "", cost: 0, memo: "아줄레주 벽화 감상 및 체크인", nextTransport: { mode: "도보", icon: "🚶", label: "도보 10분", cost: 0 } },
-          { time: "17:00", title: "동 루이스 1세 다리", vendor: "와이너리투어", cost: 45000, memo: "모루 정원 일몰 및 포트와인 시음", nextTransport: null }
+          { time: "10:28", title: "세비야 산타 후스타역", vendor: "", cost: 0, memo: "마드리드 아토차역행 고속열차 탑승 (10:28 출발 ➔ 13:06 도착)", nextTransport: { mode: "기차", icon: "🚄", label: "세비야➔마드리드 고속열차 (1인 44,867원·2인)", cost: 89734 } },
+          { time: "13:06", title: "마드리드 아토차역", vendor: "", cost: 0, memo: "마드리드 도착 후 호텔 체크인 및 짐 보관", nextTransport: null },
+          { time: "15:00", title: "솔 광장 & 마요르 광장", vendor: "", cost: 0, memo: "산 히네스 츄러스 간식 및 마드리드 중심가 산책", nextTransport: null },
+          { time: "18:00", title: "프라도 미술관 & 그란비아 거리", vendor: "", cost: 0, memo: "마드리드 신년 일루미네이션 야경 및 저녁 식사", nextTransport: null }
         ]
       },
       "1/2": {
-        dayBadge: "DAY 5", title: "1월 2일 (토)", subtitle: "🇵🇹 포르투 시내 투어 ➔ 🇪🇸 마드리드행 야간버스 탑승",
+        dayBadge: "DAY 6", title: "1월 2일 (토)", subtitle: "🇪🇸 마드리드 11:22 출발 ➔ 바르셀로나 14:39 도착 & 고딕 지구 (1/3박)",
         blocks: [
-          { time: "10:00", title: "렐루 서점", vendor: "공식홈페이지", cost: 24000, memo: "오픈 시간대 사전 예약 입장", nextTransport: null },
-          { time: "13:00", title: "볼량 시장", vendor: "현장결제", cost: 25000, memo: "전통 시장 투어 및 카페 휴식", nextTransport: null },
-          { time: "22:30", title: "포르투 캄파냥 버스터미널", vendor: "", cost: 0, memo: "마드리드행 야간버스 탑승 (숙박 세이브)", nextTransport: { mode: "버스", icon: "🚌", label: "포르투➔마드리드 알사 야간버스", cost: 72000 } }
+          { time: "09:00", title: "마드리드 왕궁", vendor: "", cost: 0, memo: "오전 일찍 왕궁 관람 후 아토차역으로 이동", nextTransport: null },
+          { time: "11:22", title: "마드리드 아토차역", vendor: "", cost: 0, memo: "바르셀로나 산츠역행 고속열차 탑승 (11:22 출발 ➔ 14:39 도착)", nextTransport: { mode: "기차", icon: "🚄", label: "마드리드➔바르셀로나 고속열차 (1인 6만원·2인)", cost: 120000 } },
+          { time: "14:39", title: "바르셀로나 산츠역 & 카탈루냐 광장", vendor: "", cost: 0, memo: "바르셀로나 도착 후 호텔 체크인 및 고딕 지구·람블라스 거리 산책", nextTransport: null }
         ]
       },
       "1/3": {
-        dayBadge: "DAY 6", title: "1월 3일 (일)", subtitle: "🇪🇸 마드리드 왕궁 · 솔 광장 · 프라도 미술관 투어 (1박)",
+        dayBadge: "DAY 7", title: "1월 3일 (일)", subtitle: "🇪🇸 바르셀로나 가우디 투어 · 사그라다 파밀리아 (2/3박)",
         blocks: [
-          { time: "08:00", title: "초콜라테리아 산 히네스", vendor: "현장결제", cost: 15000, memo: "아토차 호텔 짐보관 후 츄러스 아침", nextTransport: null },
-          { time: "11:00", title: "마드리드 왕궁", vendor: "공식홈페이지", cost: 45000, memo: "왕궁 관람 및 솔 광장 산책", nextTransport: null },
-          { time: "17:00", title: "프라도 미술관", vendor: "", cost: 0, memo: "일요일 무료입장 시간대 관람", nextTransport: null }
+          { time: "09:00", title: "구엘 공원 & 까사 바트요", vendor: "", cost: 0, memo: "가우디 핵심 건축물 반일 투어", nextTransport: null },
+          { time: "15:00", title: "사그라다 파밀리아", vendor: "", cost: 0, memo: "오후 스테인드글라스 황금 채광 시간대 입장", nextTransport: null },
+          { time: "18:30", title: "그라시아 거리 & 타파스 만찬", vendor: "", cost: 0, memo: "까사 밀라 외관 야경 감상 및 타파스 저녁 식사", nextTransport: null }
         ]
       },
       "1/4": {
-        dayBadge: "DAY 7", title: "1월 4일 (월)", subtitle: "🇪🇸 마드리드 ➔ 바르셀로나 이동 & 가우디 투어 (1/2박)",
+        dayBadge: "DAY 8", title: "1월 4일 (월)", subtitle: "🇪🇸 바르셀로나 보케리아 시장 · 바르셀로네타 해변 · 몬주익 (3/3박)",
         blocks: [
-          { time: "07:30", title: "마드리드 아토차역", vendor: "", cost: 0, memo: "바르셀로나행 고속열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "마드리드➔바르셀로나 고속열차", cost: 54000 } },
-          { time: "10:00", title: "구엘 공원", vendor: "마이리얼트립", cost: 110000, memo: "가우디 반일투어 (까사 바트요 포함)", nextTransport: null },
-          { time: "15:00", title: "사그라다 파밀리아", vendor: "공식홈페이지", cost: 110000, memo: "오후 스테인드글라스 채광 시간대 입장", nextTransport: null }
+          { time: "10:00", title: "보케리아 시장 & 고딕 지구", vendor: "", cost: 0, memo: "전통 시장 과일·하몽 간식 및 골목 투어", nextTransport: null },
+          { time: "13:30", title: "바르셀로네타 해변", vendor: "", cost: 0, memo: "지중해 해변 산책 및 해산물 빠에야 점심 식사", nextTransport: null },
+          { time: "17:00", title: "몬주익 언덕 & 스페인 광장", vendor: "", cost: 0, memo: "바르셀로나 시내 일몰 조망 및 저녁 산책", nextTransport: null }
         ]
       },
       "1/5": {
-        dayBadge: "DAY 8", title: "1월 5일 (화)", subtitle: "🇪🇸 바르셀로나 고딕지구 · 해변 · 동방박사 퍼레이드 (2/2박)",
+        dayBadge: "DAY 9", title: "1월 5일 (화)", subtitle: "🇪🇸 바르셀로나 06:40 ➔ ✈️🚄 제네바 경유 ➔ 🇨🇭 인터라켄 11:53 도착 (1/2박)",
         blocks: [
-          { time: "10:00", title: "보케리아 시장", vendor: "현장결제", cost: 30000, memo: "고딕 지구 산책 및 하몽·과일 간식", nextTransport: null },
-          { time: "14:00", title: "바르셀로네타 해변", vendor: "현장결제", cost: 50000, memo: "지중해 해변 산책 및 빠에야 식사", nextTransport: null },
-          { time: "18:00", title: "카탈루냐 광장", vendor: "", cost: 0, memo: "스페인 동방박사 퍼레이드 관람", nextTransport: null }
+          { time: "06:40", title: "바르셀로나 엘프라트 공항 (BCN)", vendor: "", cost: 0, memo: "06:40 출발 ➔ 08:15 제네바 공항 도착 (직항)", nextTransport: { mode: "항공", icon: "✈️", label: "바르셀로나➔제네바 항공권 (1인 15만원·2인)", cost: 300000 } },
+          { time: "08:45", title: "제네바 공항역 (Genève-Aéroport)", vendor: "", cost: 0, memo: "08:45 출발 ➔ 11:53 인터라켄 동역 도착 (SBB 열차)", nextTransport: { mode: "기차", icon: "🚄", label: "제네바➔인터라켄 기차 (1인 26프랑·2인)", cost: 82680 } },
+          { time: "11:53", title: "인터라켄 동역 (Interlaken Ost)", vendor: "", cost: 0, memo: "인터라켄 호텔 체크인 후 호수 산책 및 스위스 퐁듀 저녁 식사", nextTransport: null }
         ]
       },
       "1/6": {
-        dayBadge: "DAY 9", title: "1월 6일 (수)", subtitle: "🇪🇸 바르셀로나 ➔ 🇨🇭 스위스 인터라켄 도착 & 피르스트 (1/2박)",
+        dayBadge: "DAY 10", title: "1월 6일 (수)", subtitle: "🇨🇭 인터라켄 ➔ 융프라우요흐 등정 & 라우터브루넨 폭포 마을 (2/2박)",
         blocks: [
-          { time: "07:00", title: "바르셀로나 엘프라트 공항", vendor: "", cost: 0, memo: "취리히행 직항 탑승", nextTransport: { mode: "항공", icon: "✈️", label: "바르셀로나➔취리히 부엘링 직항", cost: 218000 } },
-          { time: "08:55", title: "취리히 공항역", vendor: "", cost: 0, memo: "인터라켄 동역행 SBB 열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 1일차", cost: 164000 } },
-          { time: "12:30", title: "그린델발트 피르스트", vendor: "동신항운", cost: 130000, memo: "곤돌라 탑승 및 클리프 워크", nextTransport: null }
+          { time: "08:30", title: "융프라우요흐 (Top of Europe)", vendor: "", cost: 0, memo: "아이거 익스프레스 탑승 & 만년설 전망대 (컵라면 쿠폰)", nextTransport: null },
+          { time: "14:00", title: "라우터브루넨 & 그린델발트 마을", vendor: "", cost: 0, memo: "절벽 폭포 마을 산책 및 인터라켄 쿱(Coop) 마트", nextTransport: null }
         ]
       },
       "1/7": {
-        dayBadge: "DAY 10", title: "1월 7일 (목)", subtitle: "🇨🇭 인터라켄 ➔ 융프라우요흐 등정 & 라우터브루넨 (2/2박)",
+        dayBadge: "DAY 11", title: "1월 7일 (목)", subtitle: "🇨🇭 그린델발트 피르스트 ➔ 16:04 기차로 취리히 이동 (17:58 도착 · 1박)",
         blocks: [
-          { time: "08:30", title: "융프라우요흐", vendor: "동신항운", cost: 420000, memo: "아이거 익스프레스 & 정상 전망대 (컵라면 쿠폰)", nextTransport: null },
-          { time: "13:30", title: "라우터브루넨", vendor: "", cost: 0, memo: "절벽 폭포 마을 산책 및 인터라켄 마트", nextTransport: null }
+          { time: "09:00", title: "그린델발트 피르스트", vendor: "", cost: 0, memo: "곤돌라 탑승 및 클리프 워크 알프스 파노라마", nextTransport: null },
+          { time: "16:04", title: "인터라켄 동역 (Interlaken Ost)", vendor: "", cost: 0, memo: "취리히행 SBB 열차 탑승 (1인 52 CHF · 17:58 도착)", nextTransport: { mode: "기차", icon: "🚄", label: "인터라켄➔취리히 SBB 기차 (1인 52프랑·2인)", cost: 165360 } },
+          { time: "17:58", title: "취리히 중앙역 & 반호프슈트라세", vendor: "", cost: 0, memo: "취리히 중앙역 도착 후 호텔 체크인 및 구시가지 야경 산책", nextTransport: null }
         ]
       },
       "1/8": {
-        dayBadge: "DAY 11", title: "1월 8일 (금)", subtitle: "🇨🇭 인터라켄 ➔ 루체른 호수 투어 ➔ 취리히 체크인 (1박)",
+        dayBadge: "DAY 12", title: "1월 8일 (금)", subtitle: "🇨🇭 취리히 13:30 출발 ➔ 🇺🇸 뉴욕 16:55 도착 (델타항공) & 타임스퀘어 (1/4박)",
         blocks: [
-          { time: "09:30", title: "인터라켄 동역", vendor: "", cost: 0, memo: "루체른행 골든패스 파노라마 열차", nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 2일차", cost: 164000 } },
-          { time: "12:00", title: "루체른 카펠교", vendor: "현장결제", cost: 15000, memo: "루체른역 코인락커 짐보관 후 호수 투어", nextTransport: null }
+          { time: "10:30", title: "취리히 구시가지 오전 산책 & 공항 이동", vendor: "", cost: 0, memo: "취리히 중앙역에서 공항역까지 기차 10분 이동", nextTransport: null },
+          { time: "13:30", title: "취리히 공항 (ZRH)", vendor: "", cost: 0, memo: "뉴욕 JFK행 델타항공 직항 탑승 (13:30 출발 ➔ 16:55 도착)", nextTransport: { mode: "항공", icon: "✈️", label: "취리히➔뉴욕 델타항공 (2인)", cost: 1250000 } },
+          { time: "16:55", title: "뉴욕 JFK 국제공항", vendor: "", cost: 0, memo: "입국 수속 후 맨해튼 타임스퀘어 호텔 체크인", nextTransport: null },
+          { time: "20:00", title: "타임스퀘어", vendor: "", cost: 0, memo: "맨해튼 야경 산책 및 저녁 식사", nextTransport: null }
         ]
       },
       "1/9": {
-        dayBadge: "DAY 12", title: "1월 9일 (토)", subtitle: "🇨🇭 취리히 출발 ➔ 🏛️ 워싱턴 D.C. 도착 및 체크인 (1/5박)",
+        dayBadge: "DAY 13", title: "1월 9일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 써밋 전망대 (2/4박)",
         blocks: [
-          { time: "10:15", title: "취리히 공항", vendor: "", cost: 0, memo: "워싱턴 덜레스(IAD)행 출국", nextTransport: { mode: "항공", icon: "✈️", label: "취리히➔워싱턴 대서양 항공 (2인)", cost: 1210000 } },
-          { time: "16:40", title: "워싱턴 덜레스 국제공항", vendor: "현장결제", cost: 12000, memo: "실버라인 메트로 탑승 후 학회 호텔 체크인", nextTransport: null }
+          { time: "10:00", title: "메트로폴리탄 미술관 & 센트럴파크", vendor: "", cost: 0, memo: "세계 3대 미술관 관람 후 센트럴파크 산책", nextTransport: null },
+          { time: "16:00", title: "써밋 원 밴더빌트", vendor: "", cost: 0, memo: "맨해튼 스카이라인 일몰 및 야경 관람", nextTransport: null }
         ]
       },
       "1/10": {
-        dayBadge: "DAY 13", title: "1월 10일 (일)", subtitle: "🏛️ 워싱턴 학회 일정 & 내셔널 몰 투어 (2/5박)",
+        dayBadge: "DAY 14", title: "1월 10일 (일)", subtitle: "🇺🇸 뉴욕 자유의 여신상 · 월스트리트 · 브루클린 브리지 (3/4박)",
         blocks: [
-          { time: "09:30", title: "링컨 기념관", vendor: "", cost: 0, memo: "오전 학회 등록 후 내셔널 몰 산책", nextTransport: null },
-          { time: "14:30", title: "백악관", vendor: "", cost: 0, memo: "외관 관람 및 워싱턴 기념탑 도보 투어", nextTransport: null }
+          { time: "09:30", title: "자유의 여신상 크루즈", vendor: "", cost: 0, memo: "리버티섬 페리 탑승 및 월스트리트 황소상", nextTransport: null },
+          { time: "15:30", title: "브루클린 브리지 & 덤보", vendor: "", cost: 0, memo: "덤보 포토존 및 브루클린 브리지 일몰 도보 횡단", nextTransport: null }
         ]
       },
       "1/11": {
-        dayBadge: "DAY 14", title: "1월 11일 (월)", subtitle: "🏛️ 워싱턴 학회 참석 & 스미소니언 자연사박물관 (3/5박)",
+        dayBadge: "DAY 15", title: "1월 11일 (월)", subtitle: "🇺🇸 뉴욕 첼시마켓 · 하이라인 & 브로드웨이 뮤지컬 (4/4박)",
         blocks: [
-          { time: "09:30", title: "워싱턴 컨벤션 센터", vendor: "", cost: 0, memo: "오전 학회 세션 참석", nextTransport: null },
-          { time: "14:00", title: "스미소니언 국립 자연사 박물관", vendor: "", cost: 0, memo: "호프 다이아몬드 및 주요 전시 관람", nextTransport: null }
+          { time: "11:00", title: "첼시마켓 & 하이라인 파크", vendor: "", cost: 0, memo: "랍스터 롤 점심 식사 및 공중 정원 산책", nextTransport: null },
+          { time: "19:30", title: "타임스퀘어 브로드웨이", vendor: "", cost: 0, memo: "브로드웨이 본고장 뮤지컬 관람", nextTransport: null }
         ]
       },
       "1/12": {
-        dayBadge: "DAY 15", title: "1월 12일 (화)", subtitle: "🏛️ 워싱턴 학회 & 국립 항공우주박물관 · 조지타운 (4/5박)",
+        dayBadge: "DAY 16", title: "1월 12일 (화)", subtitle: "🇺🇸 뉴욕 오전 출발 ➔ 🏛️ 워싱턴 D.C. 도착 & 내셔널 몰 (1/2박)",
         blocks: [
-          { time: "10:00", title: "스미소니언 국립 항공우주박물관", vendor: "", cost: 0, memo: "사전 예약 패스로 무료 입장", nextTransport: null },
-          { time: "16:30", title: "조지타운", vendor: "현장결제", cost: 25000, memo: "대학가 역사지구 산책 및 컵케이크", nextTransport: null }
+          { time: "09:00", title: "뉴욕 펜스테이션", vendor: "", cost: 0, memo: "워싱턴 유니언역행 암트랙(Amtrak) 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "뉴욕➔워싱턴 암트랙 열차 (2인)", cost: 56000 } },
+          { time: "12:15", title: "워싱턴 유니언역", vendor: "", cost: 0, memo: "워싱턴 호텔 체크인 및 짐 보관", nextTransport: null },
+          { time: "14:30", title: "백악관 & 링컨 기념관", vendor: "", cost: 0, memo: "내셔널 몰 및 워싱턴 기념탑 도보 투어", nextTransport: null }
         ]
       },
       "1/13": {
-        dayBadge: "DAY 16", title: "1월 13일 (수)", subtitle: "🏛️ 워싱턴 국회의사당 · 의회도서관 투어 (5/5박)",
+        dayBadge: "DAY 17", title: "1월 13일 (수)", subtitle: "🏛️ 워싱턴 국회의사당 · 스미소니언 박물관 · 조지타운 (2/2박)",
         blocks: [
-          { time: "10:00", title: "미국 국회의사당", vendor: "", cost: 0, memo: "사전 예약 투어 및 의회도서관 관람", nextTransport: null },
-          { time: "15:00", title: "워싱턴 국립 미술관", vendor: "", cost: 0, memo: "서관·동관 명작 감상", nextTransport: null }
+          { time: "09:30", title: "미국 국회의사당 & 의회도서관", vendor: "", cost: 0, memo: "사전 예약 패스로 의사당 및 도서관 투어", nextTransport: null },
+          { time: "13:30", title: "스미소니언 국립 자연사·항공우주박물관", vendor: "", cost: 0, memo: "호프 다이아몬드 및 우주선 전시 관람", nextTransport: null },
+          { time: "17:00", title: "조지타운", vendor: "", cost: 0, memo: "역사지구 산책 및 저녁 식사", nextTransport: null }
         ]
       },
       "1/14": {
-        dayBadge: "DAY 17", title: "1월 14일 (목)", subtitle: "🏛️ 워싱턴 출발 ➔ 🇺🇸 뉴욕 맨해튼 도착 & 써밋 전망대 (1/3박)",
+        dayBadge: "DAY 18", title: "1월 14일 (목)", subtitle: "🏛️ 워싱턴 06:59 출발 ➔ 🎢 올랜도 09:35 도착 (델타항공) & 디즈니 스프링스 (1/2박)",
         blocks: [
-          { time: "08:30", title: "워싱턴 유니언역", vendor: "", cost: 0, memo: "뉴욕 펜스테이션행 암트랙 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "워싱턴➔뉴욕 암트랙 열차 (2인)", cost: 56000 } },
-          { time: "14:00", title: "써밋 원 밴더빌트", vendor: "마이리얼트립", cost: 120000, memo: "맨해튼 호텔 체크인 후 전망대 입장", nextTransport: null }
+          { time: "06:59", title: "워싱턴 내셔널 공항 (DCA)", vendor: "", cost: 0, memo: "올랜도행 델타항공 직항 탑승 (06:59 출발 ➔ 09:35 도착)", nextTransport: { mode: "항공", icon: "✈️", label: "워싱턴➔올랜도 델타항공 (2인)", cost: 450000 } },
+          { time: "09:35", title: "올랜도 국제공항", vendor: "", cost: 0, memo: "올랜도 도착 후 리조트 이동 및 짐 보관", nextTransport: null },
+          { time: "16:00", title: "디즈니 스프링스", vendor: "", cost: 0, memo: "디즈니 테마 타운 산책 및 저녁 식사", nextTransport: null }
         ]
       },
       "1/15": {
-        dayBadge: "DAY 18", title: "1월 15일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 & 브루클린 브리지 · 덤보 (2/3박)",
+        dayBadge: "DAY 19", title: "1월 15일 (금)", subtitle: "🎢 올랜도 유니버설 스튜디오 2개 파크 종일 투어 (2/2박)",
         blocks: [
-          { time: "09:30", title: "자유의 여신상", vendor: "클룩", cost: 80000, memo: "페리 탑승 및 월스트리트·첼시마켓", nextTransport: null },
-          { time: "16:30", title: "브루클린 브리지", vendor: "", cost: 0, memo: "덤보 포토존 및 맨해튼 일몰 산책", nextTransport: null }
+          { time: "08:30", title: "올랜도 유니버설 스튜디오", vendor: "", cost: 0, memo: "해리포터 호그와트 익스프레스 & 2개 파크 종일권", nextTransport: null }
         ]
       },
       "1/16": {
-        dayBadge: "DAY 19", title: "1월 16일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 브로드웨이 뮤지컬 (3/3박)",
+        dayBadge: "DAY 20", title: "1월 16일 (토)", subtitle: "🎢 올랜도 09:20 출발 ➔ 🌴 마이애미 12:56 도착 & 사우스비치 (1/2박)",
         blocks: [
-          { time: "10:00", title: "메트로폴리탄 미술관", vendor: "공식홈페이지", cost: 80000, memo: "미술관 관람 및 센트럴파크 산책", nextTransport: null },
-          { time: "19:30", title: "타임스퀘어 브로드웨이", vendor: "투데이틱스", cost: 280000, memo: "뮤지컬 관람 및 타임스퀘어 야경", nextTransport: null }
+          { time: "09:20", title: "올랜도 브라이트라인 역", vendor: "", cost: 0, memo: "마이애미행 브라이트라인 고속열차 탑승 (09:20 출발 ➔ 12:56 도착)", nextTransport: { mode: "기차", icon: "🚄", label: "올랜도➔마이애미 브라이트라인 (1인 $48·2인)", cost: 132480 } },
+          { time: "12:56", title: "마이애미 중앙역 (MiamiCentral)", vendor: "", cost: 0, memo: "마이애미 도착 후 호텔 이동 및 체크인", nextTransport: null },
+          { time: "15:30", title: "마이애미 사우스비치 & 오션드라이브", vendor: "", cost: 0, memo: "에메랄드빛 해변 산책 및 오션드라이브 저녁 식사", nextTransport: null }
         ]
       },
       "1/17": {
-        dayBadge: "DAY 20", title: "1월 17일 (일)", subtitle: "🇺🇸 뉴욕 출발 ➔ 🌴 마이애미 도착 & 사우스비치 해변 (1/2박)",
+        dayBadge: "DAY 21", title: "1월 17일 (일)", subtitle: "🌴 마이애미 사우스비치 · 리틀 아바나 · 선셋 크루즈 (2/2박)",
         blocks: [
-          { time: "08:30", title: "뉴욕 JFK 국제공항", vendor: "", cost: 0, memo: "마이애미행 국내선 탑승", nextTransport: { mode: "항공", icon: "✈️", label: "뉴욕➔마이애미 직항 항공권", cost: 138000 } },
-          { time: "14:00", title: "마이애미 사우스비치", vendor: "현장결제", cost: 25000, memo: "공항 우버 이동 및 오션드라이브 산책", nextTransport: null }
+          { time: "10:00", title: "마이애미 사우스비치 & 오션드라이브", vendor: "", cost: 0, memo: "아르데코 거리 및 에메랄드빛 해변 산책", nextTransport: null },
+          { time: "13:30", title: "리틀 아바나 & 윈우드 월스", vendor: "", cost: 0, memo: "쿠바 거리 문화 체험 및 그래피티 아트 투어", nextTransport: null },
+          { time: "17:00", title: "베이사이드 마켓플레이스", vendor: "", cost: 0, memo: "마이애미 항구 산책 및 선셋 요트 크루즈", nextTransport: null }
         ]
       },
       "1/18": {
-        dayBadge: "DAY 21", title: "1월 18일 (월)", subtitle: "🌴 마이애미 리틀 아바나 & 베이사이드 마켓플레이스 (2/2박)",
+        dayBadge: "DAY 22 출국", title: "1월 18일 (월)", subtitle: "🌴 마이애미 09:05 ➔ 🌉 샌프란시스코 12:42 도착 (레이오버 투어) ➔ 23:45 서울행 출국",
         blocks: [
-          { time: "10:30", title: "리틀 아바나", vendor: "현장결제", cost: 25000, memo: "쿠바 거리 문화 체험 및 커피", nextTransport: null },
-          { time: "15:30", title: "베이사이드 마켓플레이스", vendor: "클룩", cost: 42000, memo: "항구 산책 및 선셋 요트 크루즈", nextTransport: null }
+          { time: "09:05", title: "마이애미 국제공항 (MIA)", vendor: "", cost: 0, memo: "마이애미(09:05)➔샌프란(12:42) 경유➔서울행 탑승 (1인 76만원)", nextTransport: { mode: "항공", icon: "✈️", label: "마이애미➔샌프란➔인천 항공권 (1인 76만원·2인)", cost: 1520000 } },
+          { time: "12:42", title: "샌프란시스코 국제공항 (SFO)", vendor: "", cost: 0, memo: "약 11시간 레이오버! 가벼운 복장으로 시내 이동", nextTransport: null },
+          { time: "14:30", title: "금문교 & 피셔맨즈 워프 (피어 39)", vendor: "", cost: 0, memo: "금문교 인증샷 및 클램차우더 식사 후 공항 복귀", nextTransport: null },
+          { time: "23:45", title: "샌프란시스코 국제공항 출국", vendor: "", cost: 0, memo: "23:45 인천행 직항 탑승 (기내 숙면 · 날짜변경선 통과)", nextTransport: { mode: "항공", icon: "✈️", label: "샌프란시스코➔인천 (포함)", cost: 0 } }
         ]
       },
       "1/19": {
-        dayBadge: "DAY 22", title: "1월 19일 (화)", subtitle: "🌴 마이애미 윈우드 월스 ➔ 🎢 올랜도 이동 (1/3박)",
+        dayBadge: "DAY 23 기내", title: "1월 19일 (화)", subtitle: "✈️ 태평양 횡단 및 날짜변경선 통과 (1/20 05:40 인천 도착)",
         blocks: [
-          { time: "10:00", title: "윈우드 월스", vendor: "클룩", cost: 20000, memo: "그래피티 벽화 관람 후 중앙역 이동", nextTransport: { mode: "기차", icon: "🚄", label: "마이애미➔올랜도 브라이트라인", cost: 61000 } },
-          { time: "18:05", title: "디즈니 스프링스", vendor: "", cost: 0, memo: "올랜도 리조트 체크인 후 산책", nextTransport: null }
+          { time: "12:00", title: "태평양 상공 기내 이동 중", vendor: "", cost: 0, memo: "1/18 23:45 샌프란 출발편은 날짜변경선(+1일) 통과로 한국 시간 1/20 새벽 05:40 도착 (또는 1/19 05:40 도착 시 아래 일정 참고)", nextTransport: null }
         ]
       },
       "1/20": {
-        dayBadge: "DAY 23", title: "1월 20일 (수)", subtitle: "🎢 올랜도 유니버설 스튜디오 2개 파크 종일 (2/3박)",
+        dayBadge: "DAY 24 귀국", title: "1월 20일 (수)", subtitle: "🇰🇷 05:40 인천국제공항 무사 도착! 세계일주 완주",
         blocks: [
-          { time: "08:00", title: "올랜도 유니버설 스튜디오", vendor: "클룩", cost: 250000, memo: "2개 파크(호그와트 익스프레스) 종일권", nextTransport: null }
-        ]
-      },
-      "1/21": {
-        dayBadge: "DAY 24", title: "1월 21일 (목)", subtitle: "🏰 올랜도 디즈니월드 매직킹덤 & 불꽃놀이 (3/3박)",
-        blocks: [
-          { time: "09:00", title: "디즈니월드 매직킹덤", vendor: "공식홈페이지", cost: 200000, memo: "테마파크 종일 및 신데렐라 성 불꽃놀이", nextTransport: null }
-        ]
-      },
-      "1/22": {
-        dayBadge: "DAY 25 출국", title: "1월 22일 (금)", subtitle: "🇺🇸 올랜도 출발 ➔ 🇰🇷 인천행 귀국편 탑승",
-        blocks: [
-          { time: "10:30", title: "올랜도 국제공항", vendor: "", cost: 0, memo: "인천행 귀국편 탑승", nextTransport: { mode: "항공", icon: "✈️", label: "올랜도➔인천 귀국 항공권", cost: 1380000 } }
-        ]
-      },
-      "1/23": {
-        dayBadge: "DAY 26 귀국", title: "1월 23일 (토)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
-        blocks: [
-          { time: "16:15", title: "인천국제공항", vendor: "현장결제", cost: 34000, memo: "공항 리무진 버스 탑승 및 귀가", nextTransport: null }
+          { time: "05:40", title: "인천국제공항 도착", vendor: "", cost: 0, memo: "05:40 서울(인천) 무사 도착 및 귀가", nextTransport: null }
         ]
       }
     };
 
     const DEFAULT_BASE_EXPENSES = [
-      { period: "12/29~12/30", title: "🇦🇪 아부다비 경유 · 기내박 (1박)", vendor: "비용세이브", cost: 0 },
-      { period: "12/30~1/1",   title: "🇵🇹 리스본 호텔 문디알 (2박)", vendor: "아고다", cost: 480000 },
-      { period: "1/1~1/2",     title: "🇵🇹 포르투 상벤투 호텔 (1박)", vendor: "아고다", cost: 160000 },
-      { period: "1/2~1/3",     title: "🚌 마드리드행 야간버스 (1박)", vendor: "비용세이브", cost: 0 },
-      { period: "1/3~1/4",     title: "🇪🇸 마드리드 아토차 NH호텔 (1박)", vendor: "아고다", cost: 180000 },
-      { period: "1/4~1/6",     title: "🇪🇸 바르셀로나 H10 호텔 (2박)", vendor: "아고다", cost: 500000 },
-      { period: "1/6~1/8",     title: "🇨🇭 인터라켄 린다우어 호텔 (2박)", vendor: "부킹닷컴", cost: 680000 },
-      { period: "1/8~1/9",     title: "🇨🇭 취리히 중앙역 몬타나 (1박)", vendor: "트립닷컴", cost: 250000 },
-      { period: "1/9~1/14",    title: "🏛️ 워싱턴 힐튼 컨벤션 (5박)", vendor: "학회지원", cost: 0 },
-      { period: "1/14~1/17",   title: "🇺🇸 뉴욕 타임스퀘어 시티즌M (3박)", vendor: "아고다", cost: 750000 },
-      { period: "1/17~1/19",   title: "🌴 마이애미 사우스비치 호텔 (2박)", vendor: "부킹닷컴", cost: 260000 },
-      { period: "1/19~1/22",   title: "🎢 올랜도 카바나베이 리조트 (3박)", vendor: "유니버설", cost: 360000 }
+      { period: "12/28~12/29", title: "🇦🇪 아부다비 경유 · 기내박 (1박)", vendor: "미정", cost: 0 },
+      { period: "12/29~12/30", title: "🇵🇹 리스본 숙소 (1박)", vendor: "미정", cost: 0 },
+      { period: "12/30~1/1",   title: "🇪🇸 세비야 숙소 (2박)", vendor: "미정", cost: 0 },
+      { period: "1/1~1/2",     title: "🇪🇸 마드리드 숙소 (1박)", vendor: "미정", cost: 0 },
+      { period: "1/2~1/5",     title: "🇪🇸 바르셀로나 숙소 (3박)", vendor: "미정", cost: 0 },
+      { period: "1/5~1/7",     title: "🇨🇭 인터라켄 숙소 (2박)", vendor: "미정", cost: 0 },
+      { period: "1/7~1/8",     title: "🇨🇭 취리히 숙소 (1박)", vendor: "미정", cost: 0 },
+      { period: "1/8~1/12",    title: "🇺🇸 뉴욕 숙소 (4박)", vendor: "미정", cost: 0 },
+      { period: "1/12~1/14",   title: "🏛️ 워싱턴 숙소 (2박)", vendor: "미정", cost: 0 },
+      { period: "1/14~1/16",   title: "🎢 올랜도 숙소 (2박)", vendor: "미정", cost: 0 },
+      { period: "1/16~1/18",   title: "🌴 마이애미 숙소 (2박)", vendor: "미정", cost: 0 }
     ];
 
     const DEFAULT_PACKING_ITEMS = [
       { id: "pk1",  cat: "서류·예약", title: "여권 (유효기간 6개월 이상) & 여권사본", done: true },
       { id: "pk2",  cat: "서류·예약", title: "미국 ESTA 전자비자 승인 출력본", done: true },
-      { id: "pk3",  cat: "서류·예약", title: "전 구간 항공권 · 열차(CP/Ouigo/SBB/Amtrak) E-티켓", done: false },
+      { id: "pk3",  cat: "서류·예약", title: "전 구간 항공권 · 열차(AVE/TGV/SBB/Amtrak) E-티켓", done: false },
       { id: "pk4",  cat: "서류·예약", title: "해외여행자보험 가입 증명서", done: false },
       { id: "pk5",  cat: "서류·예약", title: "트래블로그 / 트래블월렛 카드 & 비상용 신용카드", done: true },
       { id: "pk6",  cat: "전자기기",  title: "유럽·스위스(J타입)·미국 겸용 멀티어댑터 (2개 이상)", done: false },
@@ -1187,251 +1194,31 @@
       { id: "pk16", cat: "상비약·기타", title: "휴대용 세면도구 · 샤워기 필터 · 지퍼백", done: false }
     ];
 
-    // [2안: 미국 ➔ 유럽 (1/7 에어프레미아 뉴욕 입국 ➔ 워싱턴 ➔ 올랜도 ➔ 마이애미 ➔ 마드리드·바르셀로나·리옹·스위스)] 기본 데이터
-    const DEFAULT_CALENDAR_EVENTS_P2 = [
-      { id: "p2_e1", title: "🇺🇸 뉴욕 (3박)",       start: "1/7",  end: "1/10", inTime: "21:30", outTime: "08:30", transLabel: "✈️ 21:55➔21:30", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p2_e2", title: "🏛️ 워싱턴 (4박)",     start: "1/10", end: "1/14", inTime: "11:45", outTime: "08:30", transLabel: "🚄 08:30➔11:45", cls: "bg-blue-100 text-blue-900 border border-blue-200" },
-      { id: "p2_e3", title: "🎢 올랜도 (2박)",     start: "1/14", end: "1/16", inTime: "11:05", outTime: "09:00", transLabel: "✈️ 08:30➔11:05", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
-      { id: "p2_e4", title: "🌴 마이애미 (1박+기내)", start: "1/16", end: "1/17", inTime: "12:30", outTime: "21:45", transLabel: "🚄 09:00➔12:30", cls: "bg-yellow-100 text-yellow-900 border border-yellow-300" },
-      { id: "p2_e5", title: "🇪🇸 마드리드 (2박)",   start: "1/18", end: "1/20", inTime: "12:15", outTime: "08:30", transLabel: "✈️ 21:45➔12:15", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "p2_e6", title: "🇪🇸 바르셀로나 (2박)", start: "1/20", end: "1/22", inTime: "11:10", outTime: "08:20", transLabel: "🚄 08:30➔11:10", cls: "bg-orange-100 text-orange-900 border border-orange-200" },
-      { id: "p2_e7", title: "🇫🇷 리옹 (2박)",       start: "1/22", end: "1/24", inTime: "13:20", outTime: "08:30", transLabel: "🚄 08:20➔13:20", cls: "bg-indigo-100 text-indigo-900 border border-indigo-200" },
-      { id: "p2_e8", title: "🇨🇭 인터라켄 (2박)",   start: "1/24", end: "1/26", inTime: "13:30", outTime: "09:30", transLabel: "🚄 08:30➔13:30", cls: "bg-red-100 text-red-900 border border-red-200" },
-      { id: "p2_e9", title: "🇨🇭 루체른·취리히 (1박)", start: "1/26", end: "1/27", inTime: "11:30", outTime: "13:30", transLabel: "🚄 09:30➔11:30", cls: "bg-red-100 text-red-900 border border-red-200" }
-    ];
-
-    const DEFAULT_SCHEDULES_P2 = {
-      "1/7": {
-        dayBadge: "DAY 1 출국", title: "1월 7일 (목)", subtitle: "🇰🇷 인천 출국 (YP131) ➔ 🇺🇸 뉴욕 뉴어크 입국 & 체크인 (1/3박)",
-        blocks: [
-          { time: "21:55", title: "인천국제공항 제1터미널", vendor: "에어프레미아", cost: 0, memo: "에어프레미아 YP131 탑승 (인당 1,185,500원 · 날짜변경선 통과로 당일 밤 도착)", nextTransport: { mode: "항공", icon: "✈️", label: "인천➔뉴욕 에어프레미아 YP131 (2인)", cost: 2371000 } },
-          { time: "21:30", title: "뉴욕 뉴어크 리버티 공항(EWR)", vendor: "현장결제", cost: 45000, memo: "입국 심사 후 NJ 트랜짓/우버로 맨해튼 타임스퀘어 호텔 직행 및 숙면", nextTransport: null }
-        ]
-      },
-      "1/8": {
-        dayBadge: "DAY 2", title: "1월 8일 (금)", subtitle: "🇺🇸 뉴욕 자유의 여신상 · 브루클린 브리지 · 써밋 전망대 (2/3박)",
-        blocks: [
-          { time: "09:30", title: "자유의 여신상", vendor: "클룩", cost: 80000, memo: "유람선 페리 탑승 및 월스트리트 황소상", nextTransport: null },
-          { time: "13:00", title: "덤보 & 브루클린 브리지", vendor: "현장결제", cost: 45000, memo: "브루클린 피자 런치 후 다리 도보 횡단", nextTransport: null },
-          { time: "16:30", title: "써밋 원 밴더빌트", vendor: "마이리얼트립", cost: 120000, memo: "맨해튼 통유리 일몰 & 야경 전망대", nextTransport: null }
-        ]
-      },
-      "1/9": {
-        dayBadge: "DAY 3", title: "1월 9일 (토)", subtitle: "🇺🇸 뉴욕 센트럴파크 · 메트로폴리탄 · 브로드웨이 뮤지컬 (3/3박)",
-        blocks: [
-          { time: "10:00", title: "센트럴파크", vendor: "현장결제", cost: 25000, memo: "뉴욕 베이글 브런치 및 공원 산책", nextTransport: null },
-          { time: "13:00", title: "메트로폴리탄 미술관", vendor: "공식홈페이지", cost: 80000, memo: "세계 3대 미술관 관람 및 5번가 산책", nextTransport: null },
-          { time: "19:30", title: "타임스퀘어 브로드웨이", vendor: "투데이틱스", cost: 280000, memo: "브로드웨이 뮤지컬 관람 및 타임스퀘어 야경", nextTransport: null }
-        ]
-      },
-      "1/10": {
-        dayBadge: "DAY 4", title: "1월 10일 (일)", subtitle: "🇺🇸 뉴욕 오전 출발(암트랙) ➔ 🏛️ 워싱턴 D.C. 도착 & 내셔널 몰 (1/4박)",
-        blocks: [
-          { time: "08:30", title: "뉴욕 펜스테이션", vendor: "", cost: 0, memo: "워싱턴 유니언역행 암트랙(Amtrak) 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "뉴욕➔워싱턴 암트랙 열차 (2인)", cost: 56000 } },
-          { time: "11:45", title: "워싱턴 유니언역", vendor: "", cost: 0, memo: "학회 호텔 체크인 및 짐 보관", nextTransport: null },
-          { time: "14:30", title: "링컨 기념관 & 백악관", vendor: "", cost: 0, memo: "내셔널 몰 산책 및 워싱턴 기념탑 관람", nextTransport: null }
-        ]
-      },
-      "1/11": {
-        dayBadge: "DAY 5", title: "1월 11일 (월)", subtitle: "🏛️ 워싱턴 학회 참석 & 스미소니언 자연사박물관 (2/4박)",
-        blocks: [
-          { time: "09:30", title: "워싱턴 컨벤션 센터", vendor: "", cost: 0, memo: "오전 학회 일정 참석", nextTransport: null },
-          { time: "14:00", title: "스미소니언 국립 자연사 박물관", vendor: "", cost: 0, memo: "호프 다이아몬드 및 주요 전시 관람", nextTransport: null }
-        ]
-      },
-      "1/12": {
-        dayBadge: "DAY 6", title: "1월 12일 (화)", subtitle: "🏛️ 워싱턴 학회 & 국립 항공우주박물관 · 조지타운 (3/4박)",
-        blocks: [
-          { time: "10:00", title: "스미소니언 국립 항공우주박물관", vendor: "", cost: 0, memo: "사전 예약 패스로 무료 입장", nextTransport: null },
-          { time: "16:30", title: "조지타운", vendor: "현장결제", cost: 25000, memo: "대학가 역사지구 산책 및 컵케이크", nextTransport: null }
-        ]
-      },
-      "1/13": {
-        dayBadge: "DAY 7", title: "1월 13일 (수)", subtitle: "🏛️ 워싱턴 국회의사당 · 의회도서관 · 국립미술관 (4/4박)",
-        blocks: [
-          { time: "10:00", title: "미국 국회의사당", vendor: "", cost: 0, memo: "사전 예약 투어 및 의회도서관 관람", nextTransport: null },
-          { time: "15:00", title: "워싱턴 국립 미술관", vendor: "", cost: 0, memo: "서관·동관 명작 감상", nextTransport: null }
-        ]
-      },
-      "1/14": {
-        dayBadge: "DAY 8", title: "1월 14일 (목)", subtitle: "🏛️ 워싱턴 오전 출발 ➔ 🎢 올랜도 도착 & 디즈니월드 매직킹덤 (1/2박)",
-        blocks: [
-          { time: "08:30", title: "워싱턴 레이건 공항(DCA)", vendor: "", cost: 0, memo: "올랜도(MCO)행 오전 직항 탑승", nextTransport: { mode: "항공", icon: "✈️", label: "워싱턴➔올랜도 직항 항공권 (2인)", cost: 220000 } },
-          { time: "11:05", title: "올랜도 국제공항", vendor: "현장결제", cost: 35000, memo: "우버로 리조트 이동 후 짐 보관", nextTransport: null },
-          { time: "13:00", title: "디즈니월드 매직킹덤", vendor: "공식홈페이지", cost: 210000, memo: "테마파크 어트랙션 및 신데렐라 성 불꽃놀이 관람", nextTransport: null }
-        ]
-      },
-      "1/15": {
-        dayBadge: "DAY 9", title: "1월 15일 (금)", subtitle: "🎢 올랜도 유니버설 스튜디오 2개 파크 종일 (2/2박)",
-        blocks: [
-          { time: "08:30", title: "올랜도 유니버설 스튜디오", vendor: "클룩", cost: 250000, memo: "해리포터 호그와트 익스프레스 & 2개 파크 종일권", nextTransport: null },
-          { time: "19:30", title: "디즈니 스프링스", vendor: "현장결제", cost: 45000, memo: "저녁 식사 및 디즈니 기념품 쇼핑", nextTransport: null }
-        ]
-      },
-      "1/16": {
-        dayBadge: "DAY 10", title: "1월 16일 (토)", subtitle: "🎢 올랜도 출발 ➔ 🌴 마이애미 도착 & 사우스비치 · 선셋 크루즈 (1박)",
-        blocks: [
-          { time: "09:00", title: "올랜도 국제공항역", vendor: "", cost: 0, memo: "마이애미행 브라이트라인 고속열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "올랜도➔마이애미 브라이트라인 (2인)", cost: 110000 } },
-          { time: "13:00", title: "마이애미 사우스비치", vendor: "현장결제", cost: 40000, memo: "호텔 체크인 후 오션드라이브 해변 산책", nextTransport: null },
-          { time: "16:30", title: "베이사이드 마켓플레이스", vendor: "클룩", cost: 45000, memo: "항구 산책 및 마이애미 선셋 요트 크루즈", nextTransport: null }
-        ]
-      },
-      "1/17": {
-        dayBadge: "DAY 11", title: "1월 17일 (일)", subtitle: "🌴 마이애미 리틀 아바나 · 윈우드 ➔ 🇪🇸 에어유로파 마드리드행 탑승",
-        blocks: [
-          { time: "10:00", title: "리틀 아바나", vendor: "현장결제", cost: 30000, memo: "쿠바 커피 & 샌드위치 브런치", nextTransport: null },
-          { time: "13:30", title: "윈우드 월스", vendor: "클룩", cost: 24000, memo: "그래피티 아트 벽화 거리 관람", nextTransport: null },
-          { time: "21:45", title: "마이애미 국제공항", vendor: "에어유로파", cost: 0, memo: "에어유로파 UX98 직항 탑승 (기내 1박 · 숙박 세이브)", nextTransport: { mode: "항공", icon: "✈️", label: "마이애미➔마드리드 에어유로파 (2인)", cost: 1160000 } }
-        ]
-      },
-      "1/18": {
-        dayBadge: "DAY 12", title: "1월 18일 (월)", subtitle: "🇪🇸 마드리드 도착 & 솔 광장 · 그란비아 거리 투어 (1/2박)",
-        blocks: [
-          { time: "12:15", title: "마드리드 바라하스 국제공항", vendor: "현장결제", cost: 16000, memo: "공항버스로 아토차/솔 광장 호텔 체크인", nextTransport: null },
-          { time: "15:30", title: "솔 광장", vendor: "현장결제", cost: 35000, memo: "마요르 광장 산책 및 타파스·하몽 식사", nextTransport: null },
-          { time: "19:00", title: "초콜라테리아 산 히네스", vendor: "현장결제", cost: 15000, memo: "마드리드 명물 전통 츄러스 & 핫초코", nextTransport: null }
-        ]
-      },
-      "1/19": {
-        dayBadge: "DAY 13", title: "1월 19일 (화)", subtitle: "🇪🇸 마드리드 왕궁 & 프라도 미술관 핵심 투어 (2/2박)",
-        blocks: [
-          { time: "10:00", title: "마드리드 왕궁", vendor: "공식홈페이지", cost: 45000, memo: "유럽 최대 규모 왕궁 내부 관람", nextTransport: null },
-          { time: "15:00", title: "프라도 미술관", vendor: "공식홈페이지", cost: 45000, memo: "벨라스케스 · 고야 등 스페인 왕실 컬렉션 관람", nextTransport: null }
-        ]
-      },
-      "1/20": {
-        dayBadge: "DAY 14", title: "1월 20일 (수)", subtitle: "🇪🇸 마드리드 ➔ 바르셀로나 이동 & 가우디 투어 (1/2박)",
-        blocks: [
-          { time: "08:30", title: "마드리드 아토차역", vendor: "", cost: 0, memo: "바르셀로나 산츠역행 고속열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "마드리드➔바르셀로나 고속열차 (2인)", cost: 88000 } },
-          { time: "13:30", title: "구엘 공원", vendor: "마이리얼트립", cost: 110000, memo: "가우디 핵심 반일투어 (까사 바트요 · 까사 밀라)", nextTransport: null },
-          { time: "19:00", title: "고딕 지구", vendor: "현장결제", cost: 40000, memo: "바르셀로나 골목 야경 산책 및 타파스", nextTransport: null }
-        ]
-      },
-      "1/21": {
-        dayBadge: "DAY 15", title: "1월 21일 (목)", subtitle: "🇪🇸 바르셀로나 사그라다 파밀리아 & 지중해 해변 (2/2박)",
-        blocks: [
-          { time: "10:00", title: "보케리아 시장", vendor: "현장결제", cost: 30000, memo: "람블라스 거리 산책 및 과일·하몽 간식", nextTransport: null },
-          { time: "12:30", title: "바르셀로네타 해변", vendor: "현장결제", cost: 55000, memo: "지중해 해변 산책 및 해산물 빠에야 런치", nextTransport: null },
-          { time: "15:30", title: "사그라다 파밀리아", vendor: "공식홈페이지", cost: 110000, memo: "오후 서쪽 스테인드글라스 황금 채광 시간대 입장", nextTransport: null }
-        ]
-      },
-      "1/22": {
-        dayBadge: "DAY 16", title: "1월 22일 (금)", subtitle: "🇪🇸 바르셀로나 ➔ 🇫🇷 프랑스 리옹 이동 & 구시가지 산책 (1/2박)",
-        blocks: [
-          { time: "08:20", title: "바르셀로나 산츠역", vendor: "", cost: 0, memo: "프랑스 리옹 파르디외역행 직통 고속열차(AVE/TGV) 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "바르셀로나➔리옹 고속열차 (2인)", cost: 190000 } },
-          { time: "13:20", title: "리옹 파르디외역", vendor: "", cost: 0, memo: "호텔 체크인 및 짐 보관", nextTransport: null },
-          { time: "15:30", title: "벨쿠르 광장 & 비외 리옹", vendor: "현장결제", cost: 55000, memo: "유네스코 구시가지 산책 및 리옹 전통 부숑(Bouchon) 디너", nextTransport: null }
-        ]
-      },
-      "1/23": {
-        dayBadge: "DAY 17", title: "1월 23일 (토)", subtitle: "🇫🇷 리옹 푸르비에르 대성당 & 폴 보퀴즈 미식 시장 투어 (2/2박)",
-        blocks: [
-          { time: "10:00", title: "푸르비에르 노트르담 대성당", vendor: "현장결제", cost: 12000, memo: "푸니쿨라 탑승 후 리옹 시내 파노라마 전망 감상", nextTransport: null },
-          { time: "13:00", title: "레 알 드 리옹 폴 보퀴즈", vendor: "현장결제", cost: 60000, memo: "프랑스 미식의 수도 리옹을 대표하는 실내 미식 마켓 투어", nextTransport: null },
-          { time: "16:30", title: "비외 리옹", vendor: "현장결제", cost: 20000, memo: "비밀 통로 트라불(Traboules) 탐방 및 손강 산책", nextTransport: null }
-        ]
-      },
-      "1/24": {
-        dayBadge: "DAY 18", title: "1월 24일 (일)", subtitle: "🇫🇷 리옹 출발 ➔ 🇨🇭 제네바 경유 스위스 인터라켄 도착 (1/2박)",
-        blocks: [
-          { time: "08:30", title: "리옹 파르디외역", vendor: "", cost: 0, memo: "제네바 경유 인터라켄 동역행 TER+SBB 열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "리옹➔제네바➔인터라켄 열차 (2인)", cost: 210000 } },
-          { time: "13:30", title: "인터라켄 동역", vendor: "", cost: 0, memo: "호텔 체크인 후 그린델발트 이동", nextTransport: null },
-          { time: "15:00", title: "그린델발트", vendor: "현장결제", cost: 45000, memo: "아이거 북벽 설산 마을 산책 및 스위스 퐁듀 디너", nextTransport: null }
-        ]
-      },
-      "1/25": {
-        dayBadge: "DAY 19", title: "1월 25일 (월)", subtitle: "🇨🇭 인터라켄 ➔ 융프라우요흐 등정 & 피르스트 (2/2박)",
-        blocks: [
-          { time: "08:30", title: "융프라우요흐", vendor: "동신항운", cost: 420000, memo: "아이거 익스프레스 곤돌라 & 정상 전망대 (신라면 무료쿠폰)", nextTransport: null },
-          { time: "14:00", title: "그린델발트 피르스트", vendor: "동신항운", cost: 130000, memo: "피르스트 클리프 워크 & 라우터브루넨 폭포 마을", nextTransport: null }
-        ]
-      },
-      "1/26": {
-        dayBadge: "DAY 20", title: "1월 26일 (화)", subtitle: "🇨🇭 인터라켄 ➔ 루체른 호수 투어 ➔ 취리히 체크인 (1박)",
-        blocks: [
-          { time: "09:30", title: "인터라켄 동역", vendor: "", cost: 0, memo: "루체른행 골든패스 파노라마 열차 탑승", nextTransport: { mode: "기차", icon: "🚄", label: "스위스 세이버 데이 패스 (2인)", cost: 164000 } },
-          { time: "11:30", title: "루체른 카펠교", vendor: "현장결제", cost: 20000, memo: "루체른역 코인락커 짐보관 후 카펠교 & 빈사의 사자상", nextTransport: null },
-          { time: "16:30", title: "취리히 중앙역", vendor: "현장결제", cost: 40000, memo: "취리히 호텔 체크인 및 린덴호프 언덕 산책", nextTransport: null }
-        ]
-      },
-      "1/27": {
-        dayBadge: "DAY 21 출국", title: "1월 27일 (수)", subtitle: "🇨🇭 취리히 공항 출발 ➔ 🇰🇷 인천행 귀국편 탑승",
-        blocks: [
-          { time: "13:30", title: "취리히 공항", vendor: "", cost: 0, memo: "면세품 택스리펀 후 인천행 귀국편 탑승 (기내 1박)", nextTransport: { mode: "항공", icon: "✈️", label: "취리히➔인천 귀국 항공권 (2인)", cost: 1340000 } }
-        ]
-      },
-      "1/28": {
-        dayBadge: "DAY 22 귀국", title: "1월 28일 (목)", subtitle: "🇰🇷 인천국제공항 무사 도착!",
-        blocks: [
-          { time: "08:30", title: "인천국제공항", vendor: "현장결제", cost: 34000, memo: "공항 리무진 버스 탑승 및 귀가", nextTransport: null }
-        ]
-      }
-    };
-
-    const DEFAULT_BASE_EXPENSES_P2 = [
-      { period: "1/7~1/10",  title: "🇺🇸 뉴욕 타임스퀘어 시티즌M (3박)", vendor: "아고다", cost: 750000 },
-      { period: "1/10~1/14", title: "🏛️ 워싱턴 힐튼 컨벤션 호텔 (4박)", vendor: "학회지원", cost: 0 },
-      { period: "1/14~1/16", title: "🎢 올랜도 카바나베이 리조트 (2박)", vendor: "유니버설", cost: 260000 },
-      { period: "1/16~1/17", title: "🌴 마이애미 사우스비치 호텔 (1박)", vendor: "부킹닷컴", cost: 150000 },
-      { period: "1/17~1/18", title: "✈️ 마이애미➔마드리드 에어유로파 (기내 1박)", vendor: "비용세이브", cost: 0 },
-      { period: "1/18~1/20", title: "🇪🇸 마드리드 아토차 NH호텔 (2박)", vendor: "아고다", cost: 360000 },
-      { period: "1/20~1/22", title: "🇪🇸 바르셀로나 H10 카탈루냐 (2박)", vendor: "아고다", cost: 500000 },
-      { period: "1/22~1/24", title: "🇫🇷 리옹 파르디외 메큐어 호텔 (2박)", vendor: "아고다", cost: 380000 },
-      { period: "1/24~1/26", title: "🇨🇭 인터라켄 린다우어 호텔 (2박)", vendor: "부킹닷컴", cost: 680000 },
-      { period: "1/26~1/27", title: "🇨🇭 취리히 중앙역 몬타나 호텔 (1박)", vendor: "트립닷컴", cost: 250000 }
-    ];
-
     const PLAN_CONFIGS = {
       1: {
-        name: "1안 (유럽➔미국)",
-        durationBadge: "24박 25일",
-        calTitle: "📅 2026.12 ~ 2027.01 전체 여정 (1안: 유럽 ➔ 미국)",
-        defaultDay: "12/29",
-        mapTitle: "🗺️ 1안 세계일주 루트 맵 (유럽 ➔ 미국)",
+        durationBadge: "21박 23일",
+        defaultDay: "12/28",
+        mapTitle: "🗺️ 세계일주 이동 루트 맵",
         events: DEFAULT_CALENDAR_EVENTS,
         schedules: DEFAULT_SCHEDULES,
         base: DEFAULT_BASE_EXPENSES,
         stops: [
-          { num: "1",  name: "🇰🇷 인천",              coords: [37.46, 126.44], color: "#1e293b", key: "12/29" },
-          { num: "2",  name: "🇦🇪 아부다비·두바이",   coords: [24.45, 54.37],  color: "#64748b", key: "12/29" },
-          { num: "3",  name: "🇵🇹 리스본",            coords: [38.72, -9.13],  color: "#059669", key: "12/30" },
-          { num: "4",  name: "🇵🇹 포르투",            coords: [41.15, -8.62],  color: "#059669", key: "1/1" },
-          { num: "5",  name: "🇪🇸 마드리드",          coords: [40.41, -3.70],  color: "#ea580c", key: "1/3" },
-          { num: "6",  name: "🇪🇸 바르셀로나",        coords: [41.38, 2.17],   color: "#ea580c", key: "1/4" },
-          { num: "7",  name: "🇨🇭 인터라켄",          coords: [46.68, 7.86],   color: "#dc2626", key: "1/6" },
-          { num: "8",  name: "🇨🇭 루체른·취리히",     coords: [47.37, 8.54],   color: "#dc2626", key: "1/8" },
-          { num: "9",  name: "🏛️ 워싱턴 D.C. (5박)", coords: [38.90, -77.03], color: "#2563eb", key: "1/9" },
-          { num: "10", name: "🇺🇸 뉴욕 (3박)",        coords: [40.71, -74.00], color: "#2563eb", key: "1/14" },
-          { num: "11", name: "🌴 마이애미 (2박)",    coords: [25.76, -80.19], color: "#eab308", key: "1/17" },
-          { num: "12", name: "🎢 올랜도 (3박)",      coords: [28.53, -81.37], color: "#eab308", key: "1/19" }
+          { num: "1",  name: "🇰🇷 인천 (12/28 출국)",    coords: [37.46, 126.44], color: "#1e293b", key: "12/28" },
+          { num: "2",  name: "🇦🇪 아부다비·두바이",      coords: [24.45, 54.37],  color: "#64748b", key: "12/28" },
+          { num: "3",  name: "🇵🇹 리스본 (1박)",          coords: [38.72, -9.13],  color: "#059669", key: "12/29" },
+          { num: "4",  name: "🇪🇸 세비야 (2박)",          coords: [37.38, -5.98],  color: "#e11d48", key: "12/30" },
+          { num: "5",  name: "🇪🇸 마드리드 (1박)",        coords: [40.41, -3.70],  color: "#ea580c", key: "1/1" },
+          { num: "6",  name: "🇪🇸 바르셀로나 (3박)",      coords: [41.38, 2.17],   color: "#ea580c", key: "1/2" },
+          { num: "7",  name: "🇨🇭 인터라켄 (2박)",        coords: [46.68, 7.86],   color: "#dc2626", key: "1/5" },
+          { num: "8",  name: "🇨🇭 취리히 (1박)",          coords: [47.37, 8.54],   color: "#dc2626", key: "1/7" },
+          { num: "9",  name: "🇺🇸 뉴욕 (4박)",            coords: [40.71, -74.00], color: "#2563eb", key: "1/8" },
+          { num: "10", name: "🏛️ 워싱턴 D.C. (2박)",     coords: [38.90, -77.03], color: "#2563eb", key: "1/12" },
+          { num: "11", name: "🎢 올랜도 (2박)",          coords: [28.53, -81.37], color: "#eab308", key: "1/14" },
+          { num: "12", name: "🌴 마이애미 (2박)",        coords: [25.76, -80.19], color: "#eab308", key: "1/16" },
+          { num: "13", name: "🌉 샌프란시스코 (경유)",   coords: [37.77, -122.41], color: "#0d9488", key: "1/18" }
         ],
-        mainLine: [[37.46, 126.44], [24.45, 54.37], [38.72, -9.13], [41.15, -8.62], [40.41, -3.70], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [38.90, -77.03], [40.71, -74.00], [25.76, -80.19], [28.53, -81.37]],
-        viewCenter: [32.0, -5.0],
-        viewZoom: 2
-      },
-      2: {
-        name: "2안 (미국➔유럽)",
-        durationBadge: "20박 22일",
-        calTitle: "📅 2027.01 전체 여정 (2안: 1/7 뉴욕·워싱턴·플로리다 ➔ 스페인·리옹·스위스)",
-        defaultDay: "1/7",
-        mapTitle: "🗺️ 2안 세계일주 루트 맵 (미국 ➔ 유럽)",
-        events: DEFAULT_CALENDAR_EVENTS_P2,
-        schedules: DEFAULT_SCHEDULES_P2,
-        base: DEFAULT_BASE_EXPENSES_P2,
-        stops: [
-          { num: "1",  name: "🇰🇷 인천 출국 (YP131)",   coords: [37.46, 126.44], color: "#1e293b", key: "1/7" },
-          { num: "2",  name: "🇺🇸 뉴욕 (3박)",          coords: [40.71, -74.00], color: "#2563eb", key: "1/7" },
-          { num: "3",  name: "🏛️ 워싱턴 D.C. (4박)",   coords: [38.90, -77.03], color: "#2563eb", key: "1/10" },
-          { num: "4",  name: "🎢 올랜도 (2박)",        coords: [28.53, -81.37], color: "#eab308", key: "1/14" },
-          { num: "5",  name: "🌴 마이애미 (1박)",      coords: [25.76, -80.19], color: "#eab308", key: "1/16" },
-          { num: "6",  name: "🇪🇸 마드리드 (2박)",      coords: [40.41, -3.70],  color: "#ea580c", key: "1/18" },
-          { num: "7",  name: "🇪🇸 바르셀로나 (2박)",    coords: [41.38, 2.17],   color: "#ea580c", key: "1/20" },
-          { num: "8",  name: "🇫🇷 리옹 (2박)",          coords: [45.76, 4.83],   color: "#4f46e5", key: "1/22" },
-          { num: "9",  name: "🇨🇭 인터라켄 (2박)",      coords: [46.68, 7.86],   color: "#dc2626", key: "1/24" },
-          { num: "10", name: "🇨🇭 루체른·취리히 (1박)", coords: [47.37, 8.54],   color: "#dc2626", key: "1/26" }
-        ],
-        mainLine: [[37.46, 126.44], [40.71, -74.00], [38.90, -77.03], [28.53, -81.37], [25.76, -80.19], [40.41, -3.70], [41.38, 2.17], [45.76, 4.83], [46.68, 7.86], [47.37, 8.54]],
-        viewCenter: [36.0, -20.0],
+        mainLine: [[37.46, 126.44], [24.45, 54.37], [38.72, -9.13], [37.38, -5.98], [40.41, -3.70], [41.38, 2.17], [46.68, 7.86], [47.37, 8.54], [40.71, -74.00], [38.90, -77.03], [28.53, -81.37], [25.76, -80.19], [37.77, -122.41]],
+        viewCenter: [32.0, -25.0],
         viewZoom: 2
       }
     };
@@ -1439,7 +1226,7 @@
     /* =========================================================================
        2. 전역 상태 및 유틸리티 함수 (State & Helpers)
        ========================================================================= */
-    let currentPlan = Number(localStorage.getItem('wt_master_active_plan')) || 1;
+    const currentPlan = 1;
     let currentMainTab = "planner";
     let calendarEvents = [];
     let schedules = {};
@@ -1448,7 +1235,7 @@
     let customBriefStore = {};
     let dayNotesStore = {};
 
-    let currentDayKey = "12/29";
+    let currentDayKey = "12/28";
     let isCalendarEditMode = false;
     let mapDisplayMode = "overview";
 
@@ -1566,31 +1353,15 @@
       }
     }
 
-    function getStorageKeys(planId) {
-      if (planId === 2) {
-        return {
-          ev: 'wt_master_v4_p2_events',
-          sc: 'wt_master_v4_p2_sched',
-          bs: 'wt_master_v4_p2_base'
-        };
-      }
-      return {
-        ev: 'wt_master_v2_events',
-        sc: 'wt_master_v3_sched',
-        bs: 'wt_master_v2_base'
-      };
-    }
-
     function loadPlanData(planId) {
       const cfg = PLAN_CONFIGS[planId] || PLAN_CONFIGS[1];
-      const keys = getStorageKeys(planId);
       try {
-        const localEv = localStorage.getItem(keys.ev);
-        const localSc = localStorage.getItem(keys.sc);
-        const localBs = localStorage.getItem(keys.bs);
-        const localPk = localStorage.getItem('wt_master_v2_pack');
-        const localBr = localStorage.getItem('wt_master_v2_brief');
-        const localNt = localStorage.getItem('wt_master_v2_notes');
+        const localEv = localStorage.getItem('wt_master_v21_events');
+        const localSc = localStorage.getItem('wt_master_v21_sched');
+        const localBs = localStorage.getItem('wt_master_v21_base');
+        const localPk = localStorage.getItem('wt_master_v21_pack');
+        const localBr = localStorage.getItem('wt_master_v21_brief');
+        const localNt = localStorage.getItem('wt_master_v21_notes');
 
         calendarEvents = localEv ? JSON.parse(localEv) : JSON.parse(JSON.stringify(cfg.events));
         schedules = localSc ? JSON.parse(localSc) : JSON.parse(JSON.stringify(cfg.schedules));
@@ -1611,34 +1382,15 @@
     }
 
     function saveLocalBackup() {
-      const keys = getStorageKeys(currentPlan);
       try {
-        localStorage.setItem('wt_master_active_plan', String(currentPlan));
-        localStorage.setItem(keys.ev, JSON.stringify(calendarEvents));
-        localStorage.setItem(keys.sc, JSON.stringify(schedules));
-        localStorage.setItem(keys.bs, JSON.stringify(baseExpenses));
-        localStorage.setItem('wt_master_v2_pack', JSON.stringify(packingItems));
-        localStorage.setItem('wt_master_v2_brief', JSON.stringify(customBriefStore));
-        localStorage.setItem('wt_master_v2_notes', JSON.stringify(dayNotesStore));
+        localStorage.setItem('wt_master_v21_events', JSON.stringify(calendarEvents));
+        localStorage.setItem('wt_master_v21_sched', JSON.stringify(schedules));
+        localStorage.setItem('wt_master_v21_base', JSON.stringify(baseExpenses));
+        localStorage.setItem('wt_master_v21_pack', JSON.stringify(packingItems));
+        localStorage.setItem('wt_master_v21_brief', JSON.stringify(customBriefStore));
+        localStorage.setItem('wt_master_v21_notes', JSON.stringify(dayNotesStore));
       } catch (e) {
         // Ignore storage quota errors
-      }
-    }
-
-    function switchPlan(planId) {
-      if (planId !== 1 && planId !== 2) return;
-      saveLocalBackup();
-      currentPlan = planId;
-      localStorage.setItem('wt_master_active_plan', String(currentPlan));
-      mapDisplayMode = "overview";
-      loadPlanData(currentPlan);
-      updateHeaderUI();
-      refreshAllViewsAfterSync();
-      if (currentMainTab === 'planner' && typeof renderMap === 'function') {
-        setTimeout(() => {
-          map.invalidateSize();
-          renderMap();
-        }, 40);
       }
     }
 
@@ -1671,22 +1423,8 @@
        3. 상단 네비게이션 및 예산 합산 (Navigation & Budget Totals)
        ========================================================================= */
     function updateHeaderUI() {
-      const cfg = PLAN_CONFIGS[currentPlan] || PLAN_CONFIGS[1];
+      const cfg = PLAN_CONFIGS[1];
       document.getElementById('header-duration-badge').innerText = cfg.durationBadge;
-      const calTitleEl = document.getElementById('calendar-section-title');
-      if (calTitleEl) calTitleEl.innerText = cfg.calTitle;
-
-      const btn1 = document.getElementById('plan-btn-1');
-      const btn2 = document.getElementById('plan-btn-2');
-      if (btn1 && btn2) {
-        if (currentPlan === 1) {
-          btn1.className = "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap bg-blue-600 text-white shadow-2xs";
-          btn2.className = "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900";
-        } else {
-          btn1.className = "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap text-slate-600 hover:text-slate-900";
-          btn2.className = "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition whitespace-nowrap bg-blue-600 text-white shadow-2xs";
-        }
-      }
     }
 
     function isOnsiteExpenseBlock(b) {
@@ -1757,79 +1495,68 @@
         }
       });
 
-      if (minIdx > maxIdx) { minIdx = 2; maxIdx = 22; }
+      if (minIdx > maxIdx) { minIdx = 1; maxIdx = 24; }
 
-      // PC 2줄 뷰 기준: 1안은 1/9(토) 기준 분할, 2안(1/7~1/28)은 1/17(일, 마이애미➔마드리드 출국일) 기준으로 균등 2줄 분할
-      const splitKey = currentPlan === 2 ? "1/17" : "1/9";
-      const splitDayIdx = ALL_CALENDAR_DAYS.findIndex(d => d.key === splitKey);
-      let startSlice = Math.max(0, minIdx - 1);
-      if (startSlice > splitDayIdx) startSlice = Math.max(0, splitDayIdx - 7);
+      // 1열: 아부다비 · 유럽 여정 (12/28 ~ 1/8 취리히 출발), 2열: 미국 여정 (1/8 뉴욕 도착 ~ 1/20 인천 귀국)
+      const dec28Idx = ALL_CALENDAR_DAYS.findIndex(d => d.key === "12/28");
+      const jan8Idx = ALL_CALENDAR_DAYS.findIndex(d => d.key === "1/8");
+      const jan20Idx = ALL_CALENDAR_DAYS.findIndex(d => d.key === "1/20");
 
-      const row1Count = (splitDayIdx - startSlice) + 1;
-      const neededRow2Count = Math.max(1, (maxIdx + 1) - splitDayIdx);
-      const halfCols = Math.max(row1Count, neededRow2Count);
+      const startSlice = Math.min(minIdx, dec28Idx !== -1 ? dec28Idx : minIdx);
+      const endSlice = Math.max(maxIdx, jan20Idx !== -1 ? jan20Idx : maxIdx);
 
-      startSlice = Math.max(0, splitDayIdx - halfCols + 1);
-      const actualRow1Days = ALL_CALENDAR_DAYS.slice(startSlice, splitDayIdx + 1);
-      const actualRow2Days = ALL_CALENDAR_DAYS.slice(splitDayIdx + 1, splitDayIdx + 1 + actualRow1Days.length);
+      const actualRow1Days = ALL_CALENDAR_DAYS.slice(startSlice, jan8Idx + 1);
+      const actualRow2Days = ALL_CALENDAR_DAYS.slice(jan8Idx, endSlice + 1);
+      const allContinuousDays = ALL_CALENDAR_DAYS.slice(startSlice, endSlice + 1);
 
-      const allStripDays = [...actualRow1Days, ...actualRow2Days];
       const isMobileView = window.innerWidth < 1024;
-      const rowChunks = isMobileView ? [allStripDays] : [actualRow1Days, actualRow2Days];
-      const row1Len = actualRow1Days.length;
-
-      const globalEvents = [];
-      calendarEvents.forEach((ev, evIdx) => {
-        const sIdx = allStripDays.findIndex(d => d.key === ev.start);
-        const eIdx = allStripDays.findIndex(d => d.key === ev.end);
-        if (sIdx === -1 && eIdx === -1) return;
-
-        const actualStart = Math.min(sIdx === -1 ? 0 : sIdx, eIdx === -1 ? allStripDays.length - 1 : eIdx);
-        const actualEnd = Math.max(sIdx === -1 ? 0 : sIdx, eIdx === -1 ? allStripDays.length - 1 : eIdx);
-
-        let gStart = actualStart + parseHourFraction(ev.inTime, 0.35);
-        let gEnd = actualEnd + parseHourFraction(ev.outTime, 0.45);
-        if (gEnd <= gStart + 0.18) gEnd = gStart + 0.55;
-
-        const transText = ev.transLabel || '';
-        const iconMatch = transText.match(/(✈️🚄|✈️|🚄|🚌|🚕|🚶)/);
-        const depMatch = transText.match(/(\d{1,2}:\d{2})\s*➔/);
-
-        globalEvents.push({
-          evIdx,
-          title: ev.title,
-          cls: ev.cls,
-          clickKey: ev.start,
-          inTime: ev.inTime || '',
-          outTime: ev.outTime || '',
-          prevDepTime: depMatch ? depMatch[1] : '',
-          transIcon: iconMatch ? iconMatch[0] : '✈️',
-          gStart,
-          gEnd
-        });
-      });
+      const rowChunks = isMobileView ? [allContinuousDays] : [actualRow1Days, actualRow2Days];
 
       const rowsHtml = rowChunks.map((rowDays, rIdx) => {
-        const rowStartOffset = rIdx === 0 ? 0 : row1Len;
-        const rowEndOffset = rowStartOffset + rowDays.length;
         const cols = rowDays.length;
-        // 모바일에서는 칸당 너비를 96px로 넓혀 도시 막대와 교통 시간 캡슐이 제자리에 정확히 배치되도록 개선
         const minRowPx = cols * (isMobileView ? 96 : 72);
 
         const rowBars = [];
-        globalEvents.forEach(gev => {
-          if (gev.gEnd <= rowStartOffset || gev.gStart >= rowEndOffset) return;
+        calendarEvents.forEach((ev, evIdx) => {
+          // PC 2줄 모드일 때 1열에는 유럽(아부다비~취리히), 2열에는 미국(뉴욕~샌프란)만 깔끔하게 분리 표시
+          if (!isMobileView) {
+            const isUsaEvent = /🇺🇸|🏛️|🎢|🌴|🌉|뉴욕|워싱턴|올랜도|마이애미|샌프란/.test(ev.title || '');
+            if (rIdx === 0 && isUsaEvent) return;
+            if (rIdx === 1 && !isUsaEvent) return;
+          }
 
-          const clippedStart = Math.max(gev.gStart, rowStartOffset) - rowStartOffset;
-          const clippedEnd = Math.min(gev.gEnd, rowEndOffset) - rowStartOffset;
-          const isRealStart = gev.gStart >= rowStartOffset;
-          const isRealEnd = gev.gEnd <= rowEndOffset;
+          const sIdx = rowDays.findIndex(d => d.key === ev.start);
+          const eIdx = rowDays.findIndex(d => d.key === ev.end);
+          if (sIdx === -1 && eIdx === -1) return;
+
+          const isRealStart = sIdx !== -1;
+          const isRealEnd = eIdx !== -1;
+
+          const startCol = isRealStart ? sIdx : 0;
+          const endCol = isRealEnd ? eIdx : cols - 1;
+          const actualStart = Math.min(startCol, endCol);
+          const actualEnd = Math.max(startCol, endCol);
+
+          let clippedStart = actualStart + (isRealStart ? parseHourFraction(ev.inTime, 0.35) : 0);
+          let clippedEnd = actualEnd + (isRealEnd ? parseHourFraction(ev.outTime, 0.45) : 1);
+          if (clippedEnd <= clippedStart + 0.18) clippedEnd = clippedStart + 0.55;
 
           const adjStart = clippedStart + (isRealStart ? 0.04 : 0);
           const adjEnd = Math.max(adjStart + 0.15, clippedEnd - (isRealEnd ? 0.04 : 0));
 
+          const transText = ev.transLabel || '';
+          const iconMatch = transText.match(/(✈️🚄|✈️|🚄|🚌|🚕|🚶)/);
+          const depMatch = transText.match(/(\d{1,2}:\d{2})\s*➔/);
+
           rowBars.push({
-            ...gev,
+            evIdx,
+            title: ev.title,
+            cls: ev.cls,
+            clickKey: ev.start,
+            inTime: ev.inTime || '',
+            outTime: ev.outTime || '',
+            prevDepTime: depMatch ? depMatch[1] : '',
+            transIcon: iconMatch ? iconMatch[0] : '✈️',
             clippedStart,
             clippedEnd,
             isRealStart,
@@ -1893,7 +1620,6 @@
             }
           });
 
-          // 픽셀 기반으로 인접한 캡슐이 겹칠 때만 살짝 밀어주어 모바일(28일 전체 줄)에서도 도시 막대와 교통 캡슐 위치가 어긋나지 않도록 보정
           const minGapPct = (84 / minRowPx) * 100;
           for (let i = 1; i < jList.length; i++) {
             const diff = jList[i].anchorPct - jList[i - 1].anchorPct;
@@ -1912,18 +1638,9 @@
           return jList;
         });
 
-        let weekBadgeLabel = '전체 여정 (좌우 스크롤 · 터치)';
-        if (!isMobileView) {
-          if (currentPlan === 2) {
-            weekBadgeLabel = rIdx === 0
-              ? '1주차 · 미국 동부 & 플로리다 여정 (1/7 뉴욕 ➔ 워싱턴 ➔ 올랜도 · 마이애미)'
-              : '2주차 · 유럽 일주 (1/18 마드리드 ➔ 바르셀로나 ➔ 리옹 ➔ 스위스 ➔ 1/28 귀국)';
-          } else {
-            weekBadgeLabel = rIdx === 0
-              ? '1주차 · 유럽 여정 (12/29 ~ 1/9)'
-              : '2주차 · 미국 여정 (1/10 ~ 1/23)';
-          }
-        }
+        const weekBadgeLabel = isMobileView
+          ? '전체 여정 (좌우 스크롤 · 터치)'
+          : (rIdx === 0 ? '🇪🇺 1열 · 아부다비 & 유럽 여정 (12/28 ~ 1/8)' : '🇺🇸 2열 · 미국 여정 & 샌프란 경유 귀국 (1/8 ~ 1/20)');
 
         return `
           <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-2.5 sm:p-3">
@@ -1938,7 +1655,7 @@
                     const isSelected = d.key === currentDayKey;
                     const isSun = d.w === '일';
                     const isSat = d.w === '토';
-                    const globalIdx = startSlice + rowStartOffset + idx;
+                    const globalIdx = ALL_CALENDAR_DAYS.findIndex(ad => ad.key === d.key);
                     const isOutsideTrip = globalIdx < minIdx || globalIdx > maxIdx;
 
                     let wColor = "text-slate-400";
@@ -1946,16 +1663,16 @@
                     else if (isSat) wColor = "text-blue-500";
 
                     let numColor = "text-slate-800";
-                    if (isOutsideTrip || (d.muted && currentPlan === 1 && !d.key.startsWith('2/'))) numColor = "text-slate-300";
+                    if (isOutsideTrip || d.muted) numColor = "text-slate-300";
                     else if (d.isRed || isSun) numColor = "text-rose-500";
                     else if (d.isBlue || isSat) numColor = "text-blue-500";
 
-                    const monthPrefix = ((rIdx === 0 && idx === 0) || d.key === '1/1' || d.key === '2/1')
+                    const monthPrefix = (idx === 0 || d.key === '1/1')
                       ? `<span class="text-[11px] font-extrabold text-slate-400">${d.key.split('/')[0]}.</span>`
                       : '';
 
                     return `
-                      <div id="cal-col-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100 transition ${idx > 0 ? 'border-l border-slate-200/60' : ''} ${isSelected ? 'bg-slate-100' : ''}">
+                      <div id="cal-col-${rIdx}-${d.key.replace('/', '-')}" onclick="selectDate('${d.key}')" class="cursor-pointer flex items-center justify-center py-0.5 rounded-lg hover:bg-slate-100 transition ${idx > 0 ? 'border-l border-slate-200/60' : ''} ${isSelected ? 'bg-slate-100' : ''}">
                         <span class="day-num-btn text-xs sm:text-sm font-extrabold ${numColor} ${isSelected ? 'active-day' : ''}">
                           ${monthPrefix}${d.label}<span class="text-[11px] font-bold ${wColor} ml-0.5">(${d.w})</span>
                         </span>
@@ -2323,9 +2040,9 @@
       let hotelName = "숙소 정보 미등록 (클릭하여 입력)";
       let hotelVendor = "가계부 연동";
 
-      if (hasNightBus && dayKey === "1/2" && currentPlan === 1) {
-        hotelName = "🚌 알사(Alsa) 야간버스 이동 (숙박 세이브)";
-        hotelVendor = "야간이동";
+      if (hasNightBus && dayKey === "12/30" && currentPlan === 1) {
+        hotelName = "🚌 리스본➔세비야 야간버스 이동 (숙박 세이브)";
+        hotelVendor = "야간이동 · ₩0";
       } else if (matchedHotels.length > 0) {
         hotelName = matchedHotels.map((h, idx) => {
           const hFlagMatch = (h.title || '').match(/(?:\uD83C[\uDDE6-\uDDFF]){2}/);
@@ -2633,7 +2350,7 @@
             <div class="text-sm font-extrabold text-slate-900 truncate pl-0.5">${item.title}</div>
           </div>
           <div class="text-right shrink-0 ml-1">
-            <b class="text-sm font-extrabold ${Number(item.cost) > 0 ? 'text-slate-900' : 'text-slate-400'}">${Number(item.cost) > 0 ? formatKRW(item.cost) : '세이브'}</b>
+            <b class="text-sm font-extrabold ${Number(item.cost) > 0 ? 'text-slate-900' : 'text-slate-400'}">${Number(item.cost) > 0 ? formatKRW(item.cost) : '₩0'}</b>
           </div>
         </div>
       `).join('');
@@ -2908,8 +2625,25 @@
     }
 
     function confirmResetData() {
-      const keys = getStorageKeys(currentPlan);
-      [keys.ev, keys.sc, keys.bs].forEach(k => localStorage.removeItem(k));
+      ['wt_master_v2_events', 'wt_master_v2_sched', 'wt_master_v3_sched', 'wt_master_v2_base', 'wt_master_v2_pack', 'wt_master_v2_brief', 'wt_master_v2_notes',
+       'wt_master_v4_events', 'wt_master_v4_sched', 'wt_master_v4_base', 'wt_master_v4_pack', 'wt_master_v4_brief', 'wt_master_v4_notes',
+       'wt_master_v5_events', 'wt_master_v5_sched', 'wt_master_v5_base', 'wt_master_v5_pack', 'wt_master_v5_brief', 'wt_master_v5_notes',
+       'wt_master_v6_events', 'wt_master_v6_sched', 'wt_master_v6_base', 'wt_master_v6_pack', 'wt_master_v6_brief', 'wt_master_v6_notes',
+       'wt_master_v7_events', 'wt_master_v7_sched', 'wt_master_v7_base', 'wt_master_v7_pack', 'wt_master_v7_brief', 'wt_master_v7_notes',
+       'wt_master_v8_events', 'wt_master_v8_sched', 'wt_master_v8_base', 'wt_master_v8_pack', 'wt_master_v8_brief', 'wt_master_v8_notes',
+       'wt_master_v9_events', 'wt_master_v9_sched', 'wt_master_v9_base', 'wt_master_v9_pack', 'wt_master_v9_brief', 'wt_master_v9_notes',
+       'wt_master_v10_events', 'wt_master_v10_sched', 'wt_master_v10_base', 'wt_master_v10_pack', 'wt_master_v10_brief', 'wt_master_v10_notes',
+       'wt_master_v11_events', 'wt_master_v11_sched', 'wt_master_v11_base', 'wt_master_v11_pack', 'wt_master_v11_brief', 'wt_master_v11_notes',
+       'wt_master_v12_events', 'wt_master_v12_sched', 'wt_master_v12_base', 'wt_master_v12_pack', 'wt_master_v12_brief', 'wt_master_v12_notes',
+       'wt_master_v13_events', 'wt_master_v13_sched', 'wt_master_v13_base', 'wt_master_v13_pack', 'wt_master_v13_brief', 'wt_master_v13_notes',
+       'wt_master_v14_events', 'wt_master_v14_sched', 'wt_master_v14_base', 'wt_master_v14_pack', 'wt_master_v14_brief', 'wt_master_v14_notes',
+       'wt_master_v15_events', 'wt_master_v15_sched', 'wt_master_v15_base', 'wt_master_v15_pack', 'wt_master_v15_brief', 'wt_master_v15_notes',
+       'wt_master_v16_events', 'wt_master_v16_sched', 'wt_master_v16_base', 'wt_master_v16_pack', 'wt_master_v16_brief', 'wt_master_v16_notes',
+       'wt_master_v17_events', 'wt_master_v17_sched', 'wt_master_v17_base', 'wt_master_v17_pack', 'wt_master_v17_brief', 'wt_master_v17_notes',
+       'wt_master_v18_events', 'wt_master_v18_sched', 'wt_master_v18_base', 'wt_master_v18_pack', 'wt_master_v18_brief', 'wt_master_v18_notes',
+       'wt_master_v19_events', 'wt_master_v19_sched', 'wt_master_v19_base', 'wt_master_v19_pack', 'wt_master_v19_brief', 'wt_master_v19_notes',
+       'wt_master_v20_events', 'wt_master_v20_sched', 'wt_master_v20_base', 'wt_master_v20_pack', 'wt_master_v20_brief', 'wt_master_v20_notes',
+       'wt_master_v21_events', 'wt_master_v21_sched', 'wt_master_v21_base', 'wt_master_v21_pack', 'wt_master_v21_brief', 'wt_master_v21_notes'].forEach(k => localStorage.removeItem(k));
       mapDisplayMode = "overview";
       loadPlanData(currentPlan);
       closeModal('reset-modal');
@@ -3066,17 +2800,11 @@
         L.polyline(cfg.mainLine, { color: '#2563eb', weight: 3 }).addTo(mapLayerGroup);
         safeFlyTo(cfg.viewCenter, cfg.viewZoom);
 
-        legendEl.innerHTML = currentPlan === 2
-          ? `
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 뉴욕 · 워싱턴 (7박)</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 올랜도 · 마이애미 (3박)</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-orange-500 inline-block rounded"></span> 마드리드 · 바르셀로나 · 리옹 · 스위스</span>
-          `
-          : `
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-emerald-600 inline-block rounded"></span> 유럽 구간</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 워싱턴 · 뉴욕</span>
-            <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 마이애미 · 올랜도</span>
-          `;
+        legendEl.innerHTML = `
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-emerald-600 inline-block rounded"></span> 유럽 (포르투갈·스페인·스위스)</span>
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-blue-600 inline-block rounded"></span> 뉴욕 · 워싱턴</span>
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-3 h-1 bg-amber-500 inline-block rounded"></span> 플로리다 · 샌프란시스코</span>
+        `;
       }
     }
 
@@ -3091,20 +2819,12 @@
        7-2. 데이터 백업 · 클립보드 공유 · 커스텀 클라우드 설정 함수
        ========================================================================= */
     function getExportPayloadString() {
-      saveLocalBackup();
       return JSON.stringify({
-        version: 3,
+        version: 2,
         exportedAt: new Date().toISOString(),
-        currentPlan,
         calendarEvents,
         schedules,
         baseExpenses,
-        p1_events: localStorage.getItem('wt_master_v2_events'),
-        p1_sched: localStorage.getItem('wt_master_v3_sched'),
-        p1_base: localStorage.getItem('wt_master_v2_base'),
-        p2_events: localStorage.getItem('wt_master_v4_p2_events'),
-        p2_sched: localStorage.getItem('wt_master_v4_p2_sched'),
-        p2_base: localStorage.getItem('wt_master_v4_p2_base'),
         packingItems,
         customBriefStore,
         dayNotesStore
@@ -3157,16 +2877,6 @@
         showSyncMsg('⚠️ 올바른 플래너 데이터 형식이 아닙니다.', true);
         return;
       }
-      if (parsed.p1_events) localStorage.setItem('wt_master_v2_events', parsed.p1_events);
-      if (parsed.p1_sched) localStorage.setItem('wt_master_v3_sched', parsed.p1_sched);
-      if (parsed.p1_base) localStorage.setItem('wt_master_v2_base', parsed.p1_base);
-      if (parsed.p2_events) localStorage.setItem('wt_master_v4_p2_events', parsed.p2_events);
-      if (parsed.p2_sched) localStorage.setItem('wt_master_v4_p2_sched', parsed.p2_sched);
-      if (parsed.p2_base) localStorage.setItem('wt_master_v4_p2_base', parsed.p2_base);
-
-      if (parsed.currentPlan === 1 || parsed.currentPlan === 2) {
-        currentPlan = parsed.currentPlan;
-      }
       calendarEvents = parsed.calendarEvents;
       schedules = parsed.schedules;
       if (parsed.baseExpenses) baseExpenses = parsed.baseExpenses;
@@ -3174,7 +2884,6 @@
       if (parsed.customBriefStore) customBriefStore = parsed.customBriefStore;
       if (parsed.dayNotesStore) dayNotesStore = parsed.dayNotesStore;
 
-      updateHeaderUI();
       refreshAllViewsAfterSync();
       if (typeof window.pushStateToCloud === 'function') {
         window.pushStateToCloud();
@@ -3325,7 +3034,7 @@
     let isSavingToCloud = false;
 
     function getMasterDocRef() {
-      return doc(db, 'artifacts', appId, 'public', 'data', 'planner_state', 'master_v1');
+      return doc(db, 'artifacts', appId, 'public', 'data', 'planner_state', 'master_v21');
     }
 
     window.pushStateToCloud = async function () {
@@ -3343,16 +3052,9 @@
           writeId,
           updatedAt: Date.now(),
           updatedBy: currentUser.uid,
-          activePlan: currentPlan,
           calendarEventsJson: JSON.stringify(calendarEvents),
           schedulesJson: JSON.stringify(schedules),
           baseExpensesJson: JSON.stringify(baseExpenses),
-          p1EventsJson: localStorage.getItem('wt_master_v2_events') || '',
-          p1SchedJson: localStorage.getItem('wt_master_v3_sched') || '',
-          p1BaseJson: localStorage.getItem('wt_master_v2_base') || '',
-          p2EventsJson: localStorage.getItem('wt_master_v4_p2_events') || '',
-          p2SchedJson: localStorage.getItem('wt_master_v4_p2_sched') || '',
-          p2BaseJson: localStorage.getItem('wt_master_v4_p2_base') || '',
           packingItemsJson: JSON.stringify(packingItems),
           customBriefJson: JSON.stringify(customBriefStore),
           dayNotesJson: JSON.stringify(dayNotesStore)
@@ -3383,19 +3085,13 @@
         if (data.writeId === lastKnownWriteId) return;
         lastKnownWriteId = data.writeId;
 
-        if (data.p1EventsJson) localStorage.setItem('wt_master_v2_events', data.p1EventsJson);
-        if (data.p1SchedJson) localStorage.setItem('wt_master_v3_sched', data.p1SchedJson);
-        if (data.p1BaseJson) localStorage.setItem('wt_master_v2_base', data.p1BaseJson);
-        if (data.p2EventsJson) localStorage.setItem('wt_master_v4_p2_events', data.p2EventsJson);
-        if (data.p2SchedJson) localStorage.setItem('wt_master_v4_p2_sched', data.p2SchedJson);
-        if (data.p2BaseJson) localStorage.setItem('wt_master_v4_p2_base', data.p2BaseJson);
-
+        if (data.calendarEventsJson) calendarEvents = JSON.parse(data.calendarEventsJson);
+        if (data.schedulesJson) schedules = JSON.parse(data.schedulesJson);
+        if (data.baseExpensesJson) baseExpenses = JSON.parse(data.baseExpensesJson);
         if (data.packingItemsJson) packingItems = JSON.parse(data.packingItemsJson);
         if (data.customBriefJson) customBriefStore = JSON.parse(data.customBriefJson);
         if (data.dayNotesJson) dayNotesStore = JSON.parse(data.dayNotesJson);
 
-        loadPlanData(currentPlan);
-        updateHeaderUI();
         refreshAllViewsAfterSync();
         setCloudStatusBadge('online', '☁️ 실시간 동기화됨');
       } catch (err) {
@@ -3415,7 +3111,6 @@
         const firebaseConfig = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
-        // iFrame/프록시 환경에서 WebChannel 내부 Assertion 오류(ca9/b815)가 발생하지 않도록 Long-Polling 강제 활성화
         db = initializeFirestore(app, {
           experimentalForceLongPolling: true
         });
@@ -3436,7 +3131,6 @@
         await pullStateFromCloud(true);
         setCloudStatusBadge('online', '☁️ 실시간 동기화됨');
 
-        // 스트림 크래시 없이 다른 기기의 변경사항을 주기적으로 안전하게 동기화
         setInterval(() => {
           if (!document.hidden) pullStateFromCloud(false);
         }, 6000);

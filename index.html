@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -429,9 +430,12 @@
        ========================================== -->
   <!-- 1. 일정(장소) 모달 -->
   <div id="place-modal" onclick="if(event.target === this) closeModal('place-modal')" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-3.5 text-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-3.5 text-xs">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
-        <h3 id="place-modal-header" class="text-sm font-extrabold text-slate-900">📍 일정 상세 정보</h3>
+        <div class="flex items-center gap-1.5">
+          <h3 id="place-modal-header" class="text-sm font-extrabold text-slate-900">📍 일정 상세 정보</h3>
+          <span id="pm-city-hint-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">구글 지도 연동</span>
+        </div>
         <button onclick="closeModal('place-modal')" class="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
       </div>
       <div class="space-y-3">
@@ -439,9 +443,38 @@
           <label class="block font-bold text-slate-600 mb-1">시간 선택 (시간순 자동 정렬)</label>
           <input id="pm-time" type="time" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-extrabold text-slate-900 bg-slate-50 focus:bg-white focus:outline-blue-500">
         </div>
-        <div>
-          <label class="block font-bold text-slate-600 mb-1">관광지 / 장소 이름</label>
-          <input id="pm-title" type="text" class="w-full border border-slate-200 rounded-xl px-3 py-2 font-extrabold text-slate-900 focus:outline-blue-500" placeholder="예: 사그라다 파밀리아">
+        <div id="pm-autocomplete-wrap" class="relative">
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-slate-600">관광지 / 장소 이름</label>
+            <span class="text-[11px] font-semibold text-blue-600 flex items-center gap-1">
+              <span>🗺️</span><span>구글 지도 한국어 자동완성</span>
+            </span>
+          </div>
+          <div class="relative flex items-center">
+            <input id="pm-title" type="text" autocomplete="off"
+                   oninput="onPlaceTitleInput(this.value)"
+                   onfocus="onPlaceTitleFocus()"
+                   onkeydown="onPlaceTitleKeydown(event)"
+                   class="w-full border border-slate-200 rounded-xl pl-3 pr-20 py-2.5 text-xs sm:text-sm font-extrabold text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                   placeholder="장소·맛집 검색 (예: 사그라다 파밀리아, 조스 피자)">
+            <div class="absolute right-1.5 flex items-center gap-1">
+              <span id="pm-search-spinner" class="hidden w-4 h-4 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></span>
+              <button type="button" id="pm-clear-btn" onclick="clearPlaceTitleInput()" class="hidden w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-[10px] font-extrabold items-center justify-center transition" title="지우기">✕</button>
+              <button type="button" onclick="triggerImmediatePlaceSearch()" class="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold text-[11px] transition whitespace-nowrap" title="구글 지도 한국어 명칭 검색">검색</button>
+            </div>
+          </div>
+
+          <!-- 구글 지도 한국어 자동완성 드롭다운 -->
+          <div id="pm-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto custom-scroll divide-y divide-slate-100"></div>
+
+          <!-- 선택된 구글 지도 장소 상태 표시 바 -->
+          <div id="pm-gmaps-status" class="hidden mt-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50/90 border border-emerald-200/90 items-center justify-between gap-2 text-[11px]">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-emerald-600 font-extrabold shrink-0">✓ 구글지도 연동</span>
+              <span id="pm-gmaps-addr" class="text-emerald-900 font-semibold truncate"></span>
+            </div>
+            <a id="pm-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-extrabold shrink-0 whitespace-nowrap">지도 보기 ↗</a>
+          </div>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2.5">
@@ -2726,18 +2759,597 @@
       schedules[currentDayKey].blocks.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
     }
 
+    /* =========================================================================
+       6-1. 구글 지도 한국어(hl=ko) 장소 자동완성 & 좌표 연동 엔진
+       ========================================================================= */
+    const GOOGLE_MAPS_KO_PRESETS = [
+      // 아부다비 · 두바이
+      { city: "아부다비", koName: "자이드 국제공항", localName: "Zayed International Airport (AUH)", category: "공항", address: "아부다비, 아랍에미리트", lat: 24.4539, lng: 54.3773 },
+      { city: "아부다비", koName: "셰이크 자이드 그랜드 모스크", localName: "Sheikh Zayed Grand Mosque", category: "관광명소", address: "아부다비, 아랍에미리트", lat: 24.4128, lng: 54.4750 },
+      { city: "아부다비", koName: "루브르 아부다비", localName: "Louvre Abu Dhabi", category: "미술관", address: "Saadiyat, 아부다비", lat: 24.5337, lng: 54.3981 },
+      { city: "아부다비", koName: "카스르 알 와탄", localName: "Qasr Al Watan", category: "관광명소", address: "아부다비 대통령궁", lat: 24.4617, lng: 54.3173 },
+      { city: "두바이", koName: "두바이 몰", localName: "Dubai Mall", category: "쇼핑몰", address: "Downtown Dubai, 두바이", lat: 25.1975, lng: 55.2796 },
+      { city: "두바이", koName: "부르즈 할리파", localName: "Burj Khalifa", category: "전망대·랜드마크", address: "Downtown Dubai, 두바이", lat: 25.1972, lng: 55.2744 },
+      { city: "두바이", koName: "두바이 분수", localName: "The Dubai Fountain", category: "관광명소", address: "Downtown Dubai, 두바이", lat: 25.1952, lng: 55.2752 },
+
+      // 리스본 · 신트라
+      { city: "리스본", koName: "움베르투 델가두 국제공항", localName: "Humberto Delgado Airport (LIS)", category: "공항", address: "리스본, 포르투갈", lat: 38.7756, lng: -9.1354 },
+      { city: "리스본", koName: "제로니무스 수도원", localName: "Mosteiro dos Jerónimos", category: "역사적 명소", address: "Belém, 리스본", lat: 38.6979, lng: -9.2067 },
+      { city: "리스본", koName: "벨렝탑", localName: "Torre de Belém", category: "역사적 명소", address: "Belém, 리스본", lat: 38.6916, lng: -9.2160 },
+      { city: "리스본", koName: "파스테이스 드 벨렝", localName: "Pastéis de Belém", category: "베이커리·카페", address: "R. de Belém 84, 리스본", lat: 38.6975, lng: -9.2032 },
+      { city: "리스본", koName: "발견기념비", localName: "Padrão dos Descobrimentos", category: "기념비", address: "Belém, 리스본", lat: 38.6936, lng: -9.2057 },
+      { city: "리스본", koName: "산타 주스타 리프트", localName: "Elevador de Santa Justa", category: "관광명소", address: "Baixa, 리스본", lat: 38.7121, lng: -9.1394 },
+      { city: "리스본", koName: "코메르시우 광장", localName: "Praça do Comércio", category: "광장", address: "Baixa, 리스본", lat: 38.7075, lng: -9.1364 },
+      { city: "리스본", koName: "호시우 광장", localName: "Praça Dom Pedro IV (Rossio)", category: "광장", address: "Baixa, 리스본", lat: 38.7138, lng: -9.1394 },
+      { city: "리스본", koName: "포르타스 두 솔 전망대", localName: "Miradouro das Portas do Sol", category: "전망대", address: "Alfama, 리스본", lat: 38.7118, lng: -9.1303 },
+      { city: "리스본", koName: "상 조르즈 성", localName: "Castelo de São Jorge", category: "성·명소", address: "리스본, 포르투갈", lat: 38.7139, lng: -9.1335 },
+      { city: "리스본", koName: "타임 아웃 마켓 리스보아", localName: "Time Out Market Lisboa", category: "푸드코트·마켓", address: "Cais do Sodré, 리스본", lat: 38.7070, lng: -9.1459 },
+      { city: "리스본", koName: "리스본 오리엔트 역", localName: "Gare do Oriente", category: "기차·버스터미널", address: "Parque das Nações, 리스본", lat: 38.7678, lng: -9.0991 },
+      { city: "리스본", koName: "페나 국립 왕궁", localName: "Palácio Nacional da Pena", category: "성·궁전", address: "신트라, 포르투갈", lat: 38.7876, lng: -9.3906 },
+      { city: "리스본", koName: "헤갈레이라 별장", localName: "Quinta da Regaleira", category: "관광명소", address: "신트라, 포르투갈", lat: 38.7963, lng: -9.3960 },
+      { city: "리스본", koName: "호카곶", localName: "Cabo da Roca", category: "자연명소", address: "신트라, 포르투갈", lat: 38.7804, lng: -9.4989 },
+
+      // 세비야 · 마드리드 · 바르셀로나
+      { city: "세비야", koName: "세비야 플라사 데 아르마스 버스터미널", localName: "Estación de Autobuses Plaza de Armas", category: "버스터미널", address: "세비야, 스페인", lat: 37.3925, lng: -6.0031 },
+      { city: "세비야", koName: "스페인 광장", localName: "Plaza de España", category: "광장·명소", address: "세비야, 스페인", lat: 37.3772, lng: -5.9869 },
+      { city: "세비야", koName: "세비야 대성당", localName: "Catedral de Sevilla", category: "대성당", address: "Casco Antiguo, 세비야", lat: 37.3858, lng: -5.9931 },
+      { city: "세비야", koName: "히랄다", localName: "La Giralda", category: "역사적 명소", address: "세비야, 스페인", lat: 37.3862, lng: -5.9926 },
+      { city: "세비야", koName: "세비야 알카사르", localName: "Real Alcázar de Sevilla", category: "궁전", address: "Casco Antiguo, 세비야", lat: 37.3831, lng: -5.9902 },
+      { city: "세비야", koName: "메트로폴 파라솔", localName: "Setas de Sevilla (Metropol Parasol)", category: "전망대·명소", address: "세비야, 스페인", lat: 37.3933, lng: -5.9917 },
+      { city: "세비야", koName: "세비야 산타 후스타 역", localName: "Sevilla-Santa Justa", category: "기차역", address: "세비야, 스페인", lat: 37.3919, lng: -5.9754 },
+      { city: "마드리드", koName: "마드리드 푸에르타 데 아토차 역", localName: "Madrid Puerta de Atocha", category: "기차역", address: "마드리드, 스페인", lat: 40.4065, lng: -3.6896 },
+      { city: "마드리드", koName: "푸에르타 델 솔", localName: "Puerta del Sol", category: "광장", address: "Centro, 마드리드", lat: 40.4169, lng: -3.7035 },
+      { city: "마드리드", koName: "마요르 광장", localName: "Plaza Mayor", category: "광장", address: "Centro, 마드리드", lat: 40.4155, lng: -3.7074 },
+      { city: "마드리드", koName: "마드리드 왕궁", localName: "Palacio Real de Madrid", category: "왕궁", address: "Centro, 마드리드", lat: 40.4180, lng: -3.7143 },
+      { city: "마드리드", koName: "초콜라테리아 산 히네스", localName: "Chocolatería San Ginés", category: "디저트·카페", address: "Pasadizo de San Ginés 5, 마드리드", lat: 40.4168, lng: -3.7069 },
+      { city: "마드리드", koName: "프라도 미술관", localName: "Museo Nacional del Prado", category: "미술관", address: "마드리드, 스페인", lat: 40.4138, lng: -3.6921 },
+      { city: "마드리드", koName: "산 미겔 시장", localName: "Mercado de San Miguel", category: "전통시장", address: "마드리드, 스페인", lat: 40.4154, lng: -3.7090 },
+      { city: "바르셀로나", koName: "바르셀로나 산츠 역", localName: "Barcelona-Sants", category: "기차역", address: "Sants-Montjuïc, 바르셀로나", lat: 41.3791, lng: 2.1401 },
+      { city: "바르셀로나", koName: "사그라다 파밀리아", localName: "Basílica de la Sagrada Família", category: "성당·명소", address: "Eixample, 바르셀로나", lat: 41.4036, lng: 2.1744 },
+      { city: "바르셀로나", koName: "구엘 공원", localName: "Park Güell", category: "공원·명소", address: "Gràcia, 바르셀로나", lat: 41.4145, lng: 2.1527 },
+      { city: "바르셀로나", koName: "카사 바트요", localName: "Casa Batlló", category: "건축물·명소", address: "Passeig de Gràcia 43, 바르셀로나", lat: 41.3917, lng: 2.1649 },
+      { city: "바르셀로나", koName: "카사 밀라", localName: "Casa Milà (La Pedrera)", category: "건축물·명소", address: "Passeig de Gràcia 92, 바르셀로나", lat: 41.3954, lng: 2.1620 },
+      { city: "바르셀로나", koName: "보케리아 시장", localName: "Mercat de la Boqueria", category: "시장", address: "La Rambla 91, 바르셀로나", lat: 41.3817, lng: 2.1715 },
+      { city: "바르셀로나", koName: "고딕 지구", localName: "Barri Gòtic", category: "역사지구", address: "Ciutat Vella, 바르셀로나", lat: 41.3833, lng: 2.1761 },
+      { city: "바르셀로나", koName: "바르셀로네타 해변", localName: "Platja de la Barceloneta", category: "해변", address: "바르셀로나, 스페인", lat: 41.3784, lng: 2.1925 },
+      { city: "바르셀로나", koName: "몬주익 성", localName: "Castell de Montjuïc", category: "성·전망대", address: "Montjuïc, 바르셀로나", lat: 41.3630, lng: 2.1651 },
+      { city: "바르셀로나", koName: "바르셀로나 엘프라트 공항", localName: "Josep Tarradellas Barcelona-El Prat Airport (BCN)", category: "공항", address: "바르셀로나, 스페인", lat: 41.2974, lng: 2.0833 },
+
+      // 스위스 (제네바 · 인터라켄 · 취리히)
+      { city: "인터라켄", koName: "제네바 국제공항", localName: "Genève Aéroport (GVA)", category: "공항", address: "제네바, 스위스", lat: 46.2381, lng: 6.1090 },
+      { city: "인터라켄", koName: "인터라켄 동역", localName: "Interlaken Ost", category: "기차역", address: "인터라켄, 스위스", lat: 46.6908, lng: 7.8690 },
+      { city: "인터라켄", koName: "인터라켄 서역", localName: "Interlaken West", category: "기차역", address: "인터라켄, 스위스", lat: 46.6842, lng: 7.8515 },
+      { city: "인터라켄", koName: "하더 쿨름", localName: "Harder Kulm", category: "전망대", address: "인터라켄, 스위스", lat: 46.6977, lng: 7.8546 },
+      { city: "인터라켄", koName: "융프라우요흐", localName: "Jungfraujoch - Top of Europe", category: "산봉우리·전망대", address: "피셔탈, 스위스", lat: 46.5475, lng: 7.9851 },
+      { city: "인터라켄", koName: "그린델발트 피르스트", localName: "Grindelwald-First", category: "전망대·케이블카", address: "그린델발트, 스위스", lat: 46.6588, lng: 8.0532 },
+      { city: "인터라켄", koName: "라우터브루넨", localName: "Lauterbrunnen", category: "마을·명소", address: "라우터브루넨, 스위스", lat: 46.5935, lng: 7.9091 },
+      { city: "인터라켄", koName: "슈타우프바흐 폭포", localName: "Staubbachfall", category: "폭포", address: "라우터브루넨, 스위스", lat: 46.5896, lng: 7.9056 },
+      { city: "취리히", koName: "취리히 중앙역", localName: "Zürich HB", category: "기차역", address: "취리히, 스위스", lat: 47.3779, lng: 8.5403 },
+      { city: "취리히", koName: "린덴호프", localName: "Lindenhof", category: "전망대·공원", address: "Altstadt, 취리히", lat: 47.3730, lng: 8.5406 },
+      { city: "취리히", koName: "반호프슈트라세", localName: "Bahnhofstrasse", category: "쇼핑거리", address: "취리히, 스위스", lat: 47.3717, lng: 8.5386 },
+      { city: "취리히", koName: "그로스뮌스터", localName: "Grossmünster", category: "교회·명소", address: "취리히, 스위스", lat: 47.3701, lng: 8.5441 },
+      { city: "취리히", koName: "취리히 공항", localName: "Flughafen Zürich (ZRH)", category: "공항", address: "취리히, 스위스", lat: 47.4582, lng: 8.5555 },
+
+      // 뉴욕 · 워싱턴 D.C. · 올랜도 · 샌프란시스코
+      { city: "뉴욕", koName: "존 F. 케네디 국제공항", localName: "John F. Kennedy International Airport (JFK)", category: "공항", address: "Queens, 뉴욕", lat: 40.6413, lng: -73.7781 },
+      { city: "뉴욕", koName: "타임스 스퀘어", localName: "Times Square", category: "광장·명소", address: "Manhattan, 뉴욕", lat: 40.7580, lng: -73.9855 },
+      { city: "뉴욕", koName: "센트럴 파크", localName: "Central Park", category: "공원", address: "Manhattan, 뉴욕", lat: 40.7812, lng: -73.9665 },
+      { city: "뉴욕", koName: "메트로폴리탄 미술관", localName: "The Metropolitan Museum of Art", category: "미술관", address: "1000 5th Ave, 뉴욕", lat: 40.7794, lng: -73.9632 },
+      { city: "뉴욕", koName: "뉴욕 현대미술관 (MoMA)", localName: "The Museum of Modern Art", category: "미술관", address: "11 W 53rd St, 뉴욕", lat: 40.7614, lng: -73.9776 },
+      { city: "뉴욕", koName: "써밋 원 밴더빌트", localName: "SUMMIT One Vanderbilt", category: "전망대", address: "45 E 42nd St, 뉴욕", lat: 40.7528, lng: -73.9788 },
+      { city: "뉴욕", koName: "탑 오브 더 락", localName: "Top of the Rock", category: "전망대", address: "30 Rockefeller Plaza, 뉴욕", lat: 40.7593, lng: -73.9794 },
+      { city: "뉴욕", koName: "자유의 여신상", localName: "Statue of Liberty", category: "국립기념물", address: "Liberty Island, 뉴욕", lat: 40.6892, lng: -74.0445 },
+      { city: "뉴욕", koName: "월 스트리트 황소상", localName: "Charging Bull", category: "관광명소", address: "Bowling Green, 뉴욕", lat: 40.7056, lng: -74.0134 },
+      { city: "뉴욕", koName: "브루클린 브리지", localName: "Brooklyn Bridge", category: "교량·명소", address: "뉴욕", lat: 40.7061, lng: -73.9969 },
+      { city: "뉴욕", koName: "덤보 맨해튼 브리지 뷰", localName: "DUMBO - Manhattan Bridge View", category: "포토존", address: "Brooklyn, 뉴욕", lat: 40.7033, lng: -73.9896 },
+      { city: "뉴욕", koName: "첼시 마켓", localName: "Chelsea Market", category: "마켓·미식", address: "75 9th Ave, 뉴욕", lat: 40.7424, lng: -74.0061 },
+      { city: "뉴욕", koName: "하이라인", localName: "The High Line", category: "공원", address: "Manhattan, 뉴욕", lat: 40.7480, lng: -74.0048 },
+      { city: "뉴욕", koName: "펜실베이니아 역 (펜 스테이션)", localName: "Moynihan Train Hall at Penn Station", category: "기차역", address: "Manhattan, 뉴욕", lat: 40.7506, lng: -73.9935 },
+      { city: "워싱턴", koName: "워싱턴 유니언 역", localName: "Union Station", category: "기차역", address: "50 Massachusetts Ave NE, 워싱턴 D.C.", lat: 38.8974, lng: -77.0063 },
+      { city: "워싱턴", koName: "백악관", localName: "The White House", category: "역사적 명소", address: "1600 Pennsylvania Ave NW, 워싱턴 D.C.", lat: 38.8977, lng: -77.0365 },
+      { city: "워싱턴", koName: "링컨 기념관", localName: "Lincoln Memorial", category: "기념관", address: "2 Lincoln Memorial Cir NW, 워싱턴 D.C.", lat: 38.8893, lng: -77.0502 },
+      { city: "워싱턴", koName: "워싱턴 기념탑", localName: "Washington Monument", category: "기념탑", address: "2 15th St NW, 워싱턴 D.C.", lat: 38.8895, lng: -77.0353 },
+      { city: "워싱턴", koName: "미국 국회의사당", localName: "United States Capitol", category: "랜드마크", address: "워싱턴 D.C.", lat: 38.8899, lng: -77.0091 },
+      { city: "워싱턴", koName: "스미소니언 국립 자연사 박물관", localName: "Smithsonian National Museum of Natural History", category: "박물관", address: "10th St. & Constitution Ave. NW, 워싱턴 D.C.", lat: 38.8913, lng: -77.0261 },
+      { city: "워싱턴", koName: "국립 항공우주 박물관", localName: "Smithsonian National Air and Space Museum", category: "박물관", address: "600 Independence Ave SW, 워싱턴 D.C.", lat: 38.8882, lng: -77.0199 },
+      { city: "워싱턴", koName: "로널드 레이건 워싱턴 내셔널 공항", localName: "Ronald Reagan Washington National Airport (DCA)", category: "공항", address: "Arlington, 워싱턴 D.C.", lat: 38.8512, lng: -77.0402 },
+      { city: "올랜도", koName: "올랜도 국제공항", localName: "Orlando International Airport (MCO)", category: "공항", address: "올랜도, 플로리다", lat: 28.4312, lng: -81.3081 },
+      { city: "올랜도", koName: "디즈니 매직 킹덤", localName: "Magic Kingdom Park", category: "테마파크", address: "Walt Disney World, 올랜도", lat: 28.4177, lng: -81.5812 },
+      { city: "올랜도", koName: "디즈니 스프링스", localName: "Disney Springs", category: "쇼핑·다이닝", address: "Lake Buena Vista, 올랜도", lat: 28.3703, lng: -81.5194 },
+      { city: "올랜도", koName: "유니버설 스튜디오 플로리다", localName: "Universal Studios Florida", category: "테마파크", address: "6000 Universal Blvd, 올랜도", lat: 28.4750, lng: -81.4664 },
+      { city: "올랜도", koName: "유니버설 아일랜드 오브 어드벤처", localName: "Universal Islands of Adventure", category: "테마파크", address: "올랜도, 플로리다", lat: 28.4722, lng: -81.4702 },
+      { city: "올랜도", koName: "유니버설 에픽 유니버스", localName: "Universal Epic Universe", category: "테마파크", address: "올랜도, 플로리다", lat: 28.4407, lng: -81.4479 },
+      { city: "올랜도", koName: "올랜도 바인랜드 프리미엄 아울렛", localName: "Orlando Vineland Premium Outlets", category: "아울렛", address: "8200 Vineland Ave, 올랜도", lat: 28.3853, lng: -81.4919 },
+      { city: "샌프란시스코", koName: "샌프란시스코 국제공항", localName: "San Francisco International Airport (SFO)", category: "공항", address: "샌프란시스코, 캘리포니아", lat: 37.6213, lng: -122.3790 },
+      { city: "샌프란시스코", koName: "금문교", localName: "Golden Gate Bridge", category: "교량·명소", address: "샌프란시스코, 캘리포니아", lat: 37.8199, lng: -122.4783 },
+      { city: "샌프란시스코", koName: "피어 39", localName: "PIER 39", category: "관광명소", address: "Fisherman's Wharf, 샌프란시스코", lat: 37.8087, lng: -122.4098 },
+      { city: "샌프란시스코", koName: "피셔맨스 워프", localName: "Fisherman's Wharf", category: "해안명소", address: "샌프란시스코, 캘리포니아", lat: 37.8080, lng: -122.4177 },
+      { city: "샌프란시스코", koName: "롬바드 꽃길", localName: "Lombard Street", category: "관광명소", address: "Russian Hill, 샌프란시스코", lat: 37.8021, lng: -122.4187 },
+      { city: "샌프란시스코", koName: "유니언 스퀘어", localName: "Union Square", category: "광장·쇼핑", address: "Downtown, 샌프란시스코", lat: 37.7879, lng: -122.4075 },
+      { city: "샌프란시스코", koName: "샌프란시스코 페리 빌딩", localName: "Ferry Building", category: "마켓·명소", address: "1 Ferry Building, 샌프란시스코", lat: 37.7955, lng: -122.3937 },
+      { city: "샌프란시스코", koName: "인앤아웃 버거 피셔맨즈 워프점", localName: "In-N-Out Burger", category: "햄버거·맛집", address: "333 Jefferson St, 샌프란시스코", lat: 37.8077, lng: -122.4185 },
+      { city: "인천", koName: "인천국제공항 제1여객터미널", localName: "Incheon International Airport Terminal 1", category: "공항", address: "인천광역시 중구", lat: 37.4492, lng: 126.4510 }
+    ];
+
+    let selectedAutocompletePlace = null;
+    let currentAutocompleteResults = [];
+    let highlightedAutocompleteIdx = -1;
+    let placeAutocompleteTimer = null;
+    let placeSearchSeq = 0;
+    const placeAutocompleteCache = new Map();
+
+    function getCurrentDayCityContext() {
+      const sub = (schedules[currentDayKey]?.subtitle || '') + ' ' + (computeDynamicBriefing(currentDayKey)?.city || '');
+      const cityMap = [
+        { kw: "아부다비", label: "아부다비·두바이", queryHint: "아부다비 두바이 UAE" },
+        { kw: "두바이", label: "두바이", queryHint: "두바이 UAE" },
+        { kw: "리스본", label: "리스본", queryHint: "리스본 신트라 포르투갈" },
+        { kw: "마드리드", label: "세비야·마드리드·바르셀로나", queryHint: "마드리드 세비야 바르셀로나 스페인" },
+        { kw: "세비야", label: "세비야", queryHint: "세비야 스페인" },
+        { kw: "바르셀로나", label: "바르셀로나", queryHint: "바르셀로나 스페인" },
+        { kw: "인터라켄", label: "인터라켄·융프라우", queryHint: "인터라켄 그린델발트 스위스" },
+        { kw: "취리히", label: "취리히", queryHint: "취리히 스위스" },
+        { kw: "뉴욕", label: "뉴욕", queryHint: "뉴욕 맨해튼 미국" },
+        { kw: "워싱턴", label: "워싱턴 D.C.", queryHint: "워싱턴 D.C. 미국" },
+        { kw: "올랜도", label: "올랜도", queryHint: "올랜도 플로리다 미국" },
+        { kw: "샌프란", label: "샌프란시스코", queryHint: "샌프란시스코 미국" },
+        { kw: "인천", label: "인천·서울", queryHint: "인천 서울 대한민국" }
+      ];
+      for (const c of cityMap) {
+        if (sub.includes(c.kw)) return c;
+      }
+      return { kw: "", label: "전 세계", queryHint: "" };
+    }
+
+    function buildGoogleMapsKoreanUrl(koName, localName, lat, lng) {
+      const q = localName ? `${koName} ${localName}` : koName;
+      if (q && q.trim()) {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.trim())}&hl=ko`;
+      }
+      return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&hl=ko`;
+    }
+
+    function updatePlaceGmapsStatusUI(placeObj) {
+      const bar = document.getElementById('pm-gmaps-status');
+      const addrEl = document.getElementById('pm-gmaps-addr');
+      const linkEl = document.getElementById('pm-gmaps-link');
+      if (!bar || !addrEl || !linkEl) return;
+
+      if (placeObj && Number.isFinite(Number(placeObj.lat)) && Number.isFinite(Number(placeObj.lng))) {
+        bar.classList.remove('hidden');
+        bar.classList.add('flex');
+        addrEl.innerText = placeObj.address
+          ? `${placeObj.koName} · ${placeObj.address}`
+          : `${placeObj.koName} (${Number(placeObj.lat).toFixed(4)}, ${Number(placeObj.lng).toFixed(4)})`;
+        linkEl.href = buildGoogleMapsKoreanUrl(placeObj.koName, placeObj.localName, placeObj.lat, placeObj.lng);
+      } else {
+        bar.classList.add('hidden');
+        bar.classList.remove('flex');
+      }
+    }
+
+    function closePlaceAutocomplete() {
+      const listEl = document.getElementById('pm-autocomplete-list');
+      if (listEl) listEl.classList.add('hidden');
+      highlightedAutocompleteIdx = -1;
+    }
+
+    function togglePlaceSearchSpinner(show) {
+      const sp = document.getElementById('pm-search-spinner');
+      if (!sp) return;
+      sp.classList.toggle('hidden', !show);
+    }
+
+    function updateClearBtnVisibility() {
+      const val = document.getElementById('pm-title')?.value || '';
+      const btn = document.getElementById('pm-clear-btn');
+      if (!btn) return;
+      if (val.length > 0) {
+        btn.classList.remove('hidden');
+        btn.classList.add('inline-flex');
+      } else {
+        btn.classList.add('hidden');
+        btn.classList.remove('inline-flex');
+      }
+    }
+
+    function clearPlaceTitleInput() {
+      const input = document.getElementById('pm-title');
+      if (!input) return;
+      input.value = '';
+      selectedAutocompletePlace = null;
+      updateClearBtnVisibility();
+      updatePlaceGmapsStatusUI(null);
+      onPlaceTitleFocus();
+      input.focus();
+    }
+
+    function filterLocalPresetPlaces(query, cityCtx) {
+      const q = (query || '').trim().toLowerCase();
+      const qNoSpace = q.replace(/\s+/g, '');
+
+      const scored = [];
+      GOOGLE_MAPS_KO_PRESETS.forEach(item => {
+        const ko = item.koName.toLowerCase();
+        const koNoSpace = ko.replace(/\s+/g, '');
+        const loc = (item.localName || '').toLowerCase();
+        const addr = (item.address || '').toLowerCase();
+        const cityMatch = cityCtx.kw && (item.city.includes(cityCtx.kw) || cityCtx.label.includes(item.city));
+
+        if (!q) {
+          if (cityMatch) scored.push({ item, score: 100 });
+          return;
+        }
+
+        let score = 0;
+        if (ko === q || koNoSpace === qNoSpace) score += 200;
+        else if (ko.startsWith(q) || koNoSpace.startsWith(qNoSpace)) score += 140;
+        else if (ko.includes(q) || koNoSpace.includes(qNoSpace)) score += 100;
+        else if (loc.includes(q)) score += 85;
+        else if (addr.includes(q) || item.city.includes(q)) score += 55;
+
+        if (score > 0 && cityMatch) score += 50;
+        if (score > 0) scored.push({ item, score });
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      return scored.slice(0, 6).map(s => ({ ...s.item, source: 'preset' }));
+    }
+
+    async function fetchNominatimKoreanPlaces(query, cityCtx) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=ko&namedetails=1&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`;
+        const res = await fetch(url, { headers: { 'Accept-Language': 'ko,en;q=0.8' } });
+        if (!res.ok) return [];
+        const arr = await res.json();
+        if (!Array.isArray(arr)) return [];
+
+        return arr.map(r => {
+          const koTag = r.namedetails?.['name:ko'] || r.namedetails?.['name:ko-KP'] || '';
+          const primaryName = (koTag || r.name || (r.display_name || '').split(',')[0] || '').trim();
+          const origName = (r.namedetails?.name && r.namedetails.name !== primaryName) ? r.namedetails.name : '';
+          const cityPart = r.address?.city || r.address?.town || r.address?.state || '';
+          const countryPart = r.address?.country || '';
+          const addrText = [cityPart, countryPart].filter(Boolean).join(', ');
+          return {
+            koName: primaryName,
+            localName: origName,
+            category: r.type ? '지도 장소' : '장소',
+            address: addrText || (r.display_name || '').split(',').slice(1, 3).join(',').trim(),
+            lat: Number(r.lat),
+            lng: Number(r.lon),
+            hasExplicitKo: Boolean(koTag),
+            source: 'nominatim'
+          };
+        }).filter(p => p.koName && Number.isFinite(p.lat) && Number.isFinite(p.lng));
+      } catch (_) {
+        return [];
+      }
+    }
+
+    async function fetchGeminiGoogleMapsPlaces(query, cityCtx) {
+      const cacheKey = `${cityCtx.label}::${query.trim().toLowerCase()}`;
+      if (placeAutocompleteCache.has(cacheKey)) {
+        return placeAutocompleteCache.get(cacheKey);
+      }
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const systemPrompt = [
+        "당신은 Google 지도(Google Maps 한국어판, hl=ko) 장소 검색 자동완성 엔진입니다.",
+        "사용자의 검색어와 현재 여행 도시 문맥을 바탕으로 실제 Google 지도에 등록된 정확한 장소 최대 5곳을 반환하세요.",
+        "반드시 지켜야 할 규칙:",
+        "1. koName에는 반드시 Google 지도 한국어 화면(hl=ko)에서 표시되는 정확한 한국어 공식 장소명만 넣으세요 (예: '사그라다 파밀리아', '파스테이스 드 벨렝', '써밋 원 밴더빌트', '조스 피자 브로드웨이점'). 한국어 공식 표기가 없는 해외 로컬 매장은 구글 지도 한국어 음차 표기를 사용하세요.",
+        "2. localName에는 현지어/영문 공식 명칭을 넣으세요.",
+        "3. lat, lng에는 실제 Google 지도 위도·경도 좌표를 소수점 4자리 이상 정확히 넣으세요.",
+        "4. 사용자가 특정 다른 도시를 명시하지 않았다면 현재 여행 도시 문맥 주변 장소를 최우선 추천하세요."
+      ].join("\n");
+
+      const userQuery = `검색어: "${query}"\n현재 일정 여행 도시 문맥: ${cityCtx.label} (${cityCtx.queryHint})`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                koName: { type: "STRING" },
+                localName: { type: "STRING" },
+                category: { type: "STRING" },
+                address: { type: "STRING" },
+                lat: { type: "NUMBER" },
+                lng: { type: "NUMBER" }
+              },
+              propertyOrdering: ["koName", "localName", "category", "address", "lat", "lng"]
+            }
+          }
+        }
+      };
+
+      const delays = [800, 1600, 3200];
+      for (let attempt = 0; attempt <= delays.length; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const result = await response.json();
+          const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!jsonText) return [];
+          const parsed = JSON.parse(jsonText);
+          if (!Array.isArray(parsed)) return [];
+          const cleaned = parsed
+            .filter(p => p && p.koName && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)))
+            .map(p => ({
+              koName: String(p.koName).trim(),
+              localName: String(p.localName || '').trim(),
+              category: String(p.category || '장소').trim(),
+              address: String(p.address || '').trim(),
+              lat: Number(p.lat),
+              lng: Number(p.lng),
+              source: 'gmaps_ai'
+            }));
+          placeAutocompleteCache.set(cacheKey, cleaned);
+          return cleaned;
+        } catch (_) {
+          if (attempt < delays.length) {
+            await new Promise(r => setTimeout(r, delays[attempt]));
+          }
+        }
+      }
+      return [];
+    }
+
+    function mergePlaceSuggestions(primaryList, secondaryList) {
+      const merged = [];
+      const seen = new Set();
+      [...primaryList, ...secondaryList].forEach(item => {
+        if (!item || !item.koName) return;
+        const normKey = item.koName.replace(/\s+/g, '').toLowerCase();
+        // 좌표가 거의 같은 동일 장소 중복 제거
+        const nearDup = merged.some(m =>
+          m.koName.replace(/\s+/g, '').toLowerCase() === normKey ||
+          (Math.abs(m.lat - item.lat) < 0.002 && Math.abs(m.lng - item.lng) < 0.002)
+        );
+        if (!seen.has(normKey) && !nearDup) {
+          seen.add(normKey);
+          merged.push(item);
+        }
+      });
+      return merged.slice(0, 7);
+    }
+
+    function escapeHtmlStr(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderPlaceAutocompleteDropdown(items, headerLabel = '') {
+      const listEl = document.getElementById('pm-autocomplete-list');
+      if (!listEl) return;
+
+      currentAutocompleteResults = items || [];
+      if (currentAutocompleteResults.length === 0) {
+        listEl.classList.add('hidden');
+        highlightedAutocompleteIdx = -1;
+        return;
+      }
+
+      if (highlightedAutocompleteIdx < 0 || highlightedAutocompleteIdx >= currentAutocompleteResults.length) {
+        highlightedAutocompleteIdx = 0;
+      }
+
+      const headerHtml = headerLabel
+        ? `<div class="px-3 py-1.5 bg-slate-50 text-[10px] font-extrabold text-slate-500 flex items-center justify-between sticky top-0 z-10 border-b border-slate-100">
+             <span>${escapeHtmlStr(headerLabel)}</span>
+             <span class="text-slate-400 font-semibold">클릭 또는 Enter 선택</span>
+           </div>`
+        : '';
+
+      const rowsHtml = currentAutocompleteResults.map((p, idx) => {
+        const isActive = idx === highlightedAutocompleteIdx;
+        return `
+          <button type="button"
+                  onclick="selectAutocompletePlace(${idx})"
+                  onmouseenter="highlightAutocompleteRow(${idx})"
+                  data-ac-row="${idx}"
+                  class="w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition ${isActive ? 'bg-blue-50/90' : 'bg-white hover:bg-slate-50'}">
+            <span class="mt-0.5 w-6 h-6 rounded-full bg-red-50 text-red-500 border border-red-100 flex items-center justify-center shrink-0 text-xs">📍</span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs sm:text-[13px] font-extrabold text-slate-900">${escapeHtmlStr(p.koName)}</span>
+                ${p.category ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">${escapeHtmlStr(p.category)}</span>` : ''}
+              </div>
+              <div class="text-[11px] text-slate-500 truncate mt-0.5">
+                ${p.localName ? `<span class="font-semibold text-slate-600">${escapeHtmlStr(p.localName)}</span>` : ''}
+                ${p.localName && p.address ? ' · ' : ''}
+                ${p.address ? `<span>${escapeHtmlStr(p.address)}</span>` : ''}
+              </div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      listEl.innerHTML = headerHtml + rowsHtml;
+      listEl.classList.remove('hidden');
+    }
+
+    function highlightAutocompleteRow(idx) {
+      highlightedAutocompleteIdx = idx;
+      const listEl = document.getElementById('pm-autocomplete-list');
+      if (!listEl) return;
+      listEl.querySelectorAll('[data-ac-row]').forEach((btn, bIdx) => {
+        if (bIdx === idx) {
+          btn.classList.add('bg-blue-50/90');
+          btn.classList.remove('bg-white');
+        } else {
+          btn.classList.remove('bg-blue-50/90');
+          btn.classList.add('bg-white');
+        }
+      });
+    }
+
+    function selectAutocompletePlace(idx) {
+      const chosen = currentAutocompleteResults[idx];
+      if (!chosen) return;
+
+      selectedAutocompletePlace = { ...chosen };
+      const input = document.getElementById('pm-title');
+      if (input) input.value = chosen.koName;
+
+      updateClearBtnVisibility();
+      updatePlaceGmapsStatusUI(selectedAutocompletePlace);
+      closePlaceAutocomplete();
+    }
+
+    function onPlaceTitleFocus() {
+      updateClearBtnVisibility();
+      const val = (document.getElementById('pm-title')?.value || '').trim();
+      const cityCtx = getCurrentDayCityContext();
+      if (!val) {
+        const presets = filterLocalPresetPlaces('', cityCtx);
+        if (presets.length > 0) {
+          renderPlaceAutocompleteDropdown(presets, `🗺️ ${cityCtx.label} 주요 구글 지도 명소 (한국어)`);
+        }
+      } else if (currentAutocompleteResults.length > 0 && !selectedAutocompletePlace) {
+        renderPlaceAutocompleteDropdown(currentAutocompleteResults, `🗺️ 구글 지도 한국어 검색 결과`);
+      }
+    }
+
+    function onPlaceTitleInput(rawVal) {
+      updateClearBtnVisibility();
+      selectedAutocompletePlace = null;
+      updatePlaceGmapsStatusUI(null);
+
+      const query = (rawVal || '').trim();
+      const cityCtx = getCurrentDayCityContext();
+      clearTimeout(placeAutocompleteTimer);
+
+      if (!query) {
+        togglePlaceSearchSpinner(false);
+        const presets = filterLocalPresetPlaces('', cityCtx);
+        renderPlaceAutocompleteDropdown(presets, `🗺️ ${cityCtx.label} 주요 구글 지도 명소 (한국어)`);
+        return;
+      }
+
+      // 1단계: 즉시 프리셋 매칭 표시 (0ms)
+      const instantPresets = filterLocalPresetPlaces(query, cityCtx);
+      if (instantPresets.length > 0) {
+        renderPlaceAutocompleteDropdown(instantPresets, `🗺️ 구글 지도 한국어 자동완성 검색 중...`);
+      }
+
+      // 2단계: 구글 지도 한국어 공식 명칭 AI + Nominatim 병렬 검색 (320ms 디바운스)
+      const mySeq = ++placeSearchSeq;
+      togglePlaceSearchSpinner(true);
+      placeAutocompleteTimer = setTimeout(() => {
+        runGoogleMapsKoreanSearch(query, cityCtx, instantPresets, mySeq);
+      }, 320);
+    }
+
+    async function runGoogleMapsKoreanSearch(query, cityCtx, instantPresets, seqToken) {
+      const [aiPlaces, osmPlaces] = await Promise.all([
+        fetchGeminiGoogleMapsPlaces(query, cityCtx),
+        fetchNominatimKoreanPlaces(query, cityCtx)
+      ]);
+
+      if (seqToken !== placeSearchSeq) return;
+      togglePlaceSearchSpinner(false);
+
+      // 구글 지도 한국어 공식명(aiPlaces)과 프리셋을 최우선 배치하고, 한국어 태그가 있는 OSM 결과를 보조로 병합
+      const koOsm = osmPlaces.filter(p => p.hasExplicitKo);
+      const restOsm = osmPlaces.filter(p => !p.hasExplicitKo);
+      const combined = mergePlaceSuggestions([...aiPlaces, ...instantPresets], [...koOsm, ...restOsm]);
+
+      if (combined.length > 0) {
+        renderPlaceAutocompleteDropdown(combined, `🗺️ 구글 지도 한국어 공식 명칭 (${cityCtx.label} 우선)`);
+      } else {
+        const listEl = document.getElementById('pm-autocomplete-list');
+        if (listEl) {
+          listEl.innerHTML = `<div class="px-3.5 py-3 text-xs text-slate-400 text-center">일치하는 구글 지도 장소를 찾지 못했습니다. 직접 입력 후 저장하실 수 있습니다.</div>`;
+          listEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    function triggerImmediatePlaceSearch() {
+      const query = (document.getElementById('pm-title')?.value || '').trim();
+      const cityCtx = getCurrentDayCityContext();
+      if (!query) {
+        onPlaceTitleFocus();
+        return;
+      }
+      clearTimeout(placeAutocompleteTimer);
+      const instantPresets = filterLocalPresetPlaces(query, cityCtx);
+      const mySeq = ++placeSearchSeq;
+      togglePlaceSearchSpinner(true);
+      runGoogleMapsKoreanSearch(query, cityCtx, instantPresets, mySeq);
+    }
+
+    function onPlaceTitleKeydown(e) {
+      const listEl = document.getElementById('pm-autocomplete-list');
+      const isOpen = listEl && !listEl.classList.contains('hidden') && currentAutocompleteResults.length > 0;
+
+      if (e.key === 'ArrowDown' && isOpen) {
+        e.preventDefault();
+        const next = (highlightedAutocompleteIdx + 1) % currentAutocompleteResults.length;
+        highlightAutocompleteRow(next);
+        listEl.querySelector(`[data-ac-row="${next}"]`)?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp' && isOpen) {
+        e.preventDefault();
+        const prev = (highlightedAutocompleteIdx - 1 + currentAutocompleteResults.length) % currentAutocompleteResults.length;
+        highlightAutocompleteRow(prev);
+        listEl.querySelector(`[data-ac-row="${prev}"]`)?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter' && isOpen) {
+        e.preventDefault();
+        selectAutocompletePlace(highlightedAutocompleteIdx >= 0 ? highlightedAutocompleteIdx : 0);
+      } else if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePlaceAutocomplete();
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('pm-autocomplete-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        closePlaceAutocomplete();
+      }
+    });
+
     function openPlaceModal(idx) {
       editingPlaceIdx = idx;
       const isNew = idx === null;
+      const cityCtx = getCurrentDayCityContext();
       document.getElementById('place-modal-header').innerText = isNew ? '➕ 새 일정 추가' : '📍 일정 상세 수정';
+      const hintBadge = document.getElementById('pm-city-hint-badge');
+      if (hintBadge) hintBadge.innerText = `📍 ${cityCtx.label}`;
       document.getElementById('pm-delete-btn').style.display = isNew ? 'none' : 'inline-block';
 
+      clearTimeout(placeAutocompleteTimer);
+      placeSearchSeq++;
+      togglePlaceSearchSpinner(false);
+      currentAutocompleteResults = [];
+      closePlaceAutocomplete();
+
       if (isNew) {
+        selectedAutocompletePlace = null;
         document.getElementById('pm-time').value = '12:00';
         document.getElementById('pm-title').value = '';
         document.getElementById('pm-vendor').value = '';
         document.getElementById('pm-cost').value = '';
         document.getElementById('pm-memo').value = '';
+        updatePlaceGmapsStatusUI(null);
       } else {
         const b = schedules[currentDayKey].blocks[idx];
         let formattedTime = b.time || '12:00';
@@ -2747,30 +3359,79 @@
         document.getElementById('pm-vendor').value = b.vendor || '';
         document.getElementById('pm-cost').value = b.cost || 0;
         document.getElementById('pm-memo').value = b.memo || '';
+
+        if (Array.isArray(b.coords) && b.coords.length === 2) {
+          selectedAutocompletePlace = {
+            koName: b.title || '',
+            localName: b.gmapsLocalName || '',
+            address: b.gmapsAddress || '',
+            lat: Number(b.coords[0]),
+            lng: Number(b.coords[1])
+          };
+          updatePlaceGmapsStatusUI(selectedAutocompletePlace);
+        } else {
+          selectedAutocompletePlace = null;
+          updatePlaceGmapsStatusUI(null);
+        }
       }
+      updateClearBtnVisibility();
       openModal('place-modal');
     }
 
     function savePlaceModal() {
       const time = document.getElementById('pm-time').value || '12:00';
-      const title = document.getElementById('pm-title').value.trim() || '새 장소';
+      let title = document.getElementById('pm-title').value.trim() || '새 장소';
       const vendor = document.getElementById('pm-vendor').value.trim();
       const cost = Number(document.getElementById('pm-cost').value) || 0;
       const memo = document.getElementById('pm-memo').value.trim();
       const daySub = schedules[currentDayKey]?.subtitle || '';
 
+      // 드롭다운을 클릭하지 않고 바로 저장을 눌렀더라도 검색 결과 1순위가 입력어와 일치하면 구글 지도 한국어 공식명 & 좌표를 자동 매칭
+      if (!selectedAutocompletePlace && currentAutocompleteResults.length > 0) {
+        const normInput = title.replace(/\s+/g, '').toLowerCase();
+        const exactHit = currentAutocompleteResults.find(r =>
+          r.koName.replace(/\s+/g, '').toLowerCase() === normInput ||
+          (r.localName && r.localName.replace(/\s+/g, '').toLowerCase() === normInput)
+        ) || (currentAutocompleteResults.length === 1 ? currentAutocompleteResults[0] : null);
+        if (exactHit) {
+          selectedAutocompletePlace = exactHit;
+          title = exactHit.koName;
+        }
+      }
+
       if (editingPlaceIdx === null) {
-        const coords = inferCoordsForBlock(title, daySub, schedules[currentDayKey].blocks.length);
-        schedules[currentDayKey].blocks.push({ time, title, vendor, cost, memo, coords, nextTransport: null });
+        const coords = selectedAutocompletePlace
+          ? [Number(selectedAutocompletePlace.lat), Number(selectedAutocompletePlace.lng)]
+          : inferCoordsForBlock(title, daySub, schedules[currentDayKey].blocks.length);
+        schedules[currentDayKey].blocks.push({
+          time,
+          title: selectedAutocompletePlace ? selectedAutocompletePlace.koName : title,
+          vendor,
+          cost,
+          memo,
+          coords,
+          gmapsLocalName: selectedAutocompletePlace?.localName || '',
+          gmapsAddress: selectedAutocompletePlace?.address || '',
+          nextTransport: null
+        });
       } else {
         const b = schedules[currentDayKey].blocks[editingPlaceIdx];
         const titleChanged = b.title !== title;
-        b.time = time; b.title = title; b.vendor = vendor; b.cost = cost; b.memo = memo;
-        if (titleChanged || !b.coords) {
+        b.time = time;
+        b.title = selectedAutocompletePlace ? selectedAutocompletePlace.koName : title;
+        b.vendor = vendor;
+        b.cost = cost;
+        b.memo = memo;
+        if (selectedAutocompletePlace) {
+          b.coords = [Number(selectedAutocompletePlace.lat), Number(selectedAutocompletePlace.lng)];
+          b.gmapsLocalName = selectedAutocompletePlace.localName || '';
+          b.gmapsAddress = selectedAutocompletePlace.address || '';
+        } else if (titleChanged || !b.coords) {
           b.coords = inferCoordsForBlock(title, daySub, editingPlaceIdx);
         }
       }
 
+      closePlaceAutocomplete();
       sortCurrentDayBlocks();
       saveAll();
       renderTimeline();
@@ -3303,12 +3964,14 @@
           dayCoords.push(coords);
 
           const markerColor = idx === 0 ? "#0f172a" : (idx === blocks.length - 1 ? "#2563eb" : "#059669");
+          const gmapsHref = buildGoogleMapsKoreanUrl(b.title, b.gmapsLocalName || '', coords[0], coords[1]);
           const marker = L.marker(coords, { icon: createNumIcon(String(idx + 1), markerColor) })
             .addTo(mapLayerGroup)
             .bindPopup(`
-              <div class="text-xs space-y-0.5">
+              <div class="text-xs space-y-1">
                 <div class="font-extrabold text-slate-900">${idx + 1}. ${b.title}</div>
                 <div class="text-[11px] text-slate-500">⏰ ${b.time || ''}${b.vendor ? ' · ' + b.vendor : ''}</div>
+                <a href="${gmapsHref}" target="_blank" rel="noopener noreferrer" class="inline-block text-[11px] font-bold text-blue-600 hover:underline">🗺️ 구글 지도에서 열기 ↗</a>
               </div>
             `);
           if (idx === 0) marker.openPopup();
@@ -3811,3 +4474,4 @@
   </script>
 </body>
 </html>
+```

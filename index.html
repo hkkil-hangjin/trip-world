@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+<!-- 2026-2027 세계일주 마스터 플래너 -->
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -139,15 +139,15 @@
   <!-- ==========================================
        메인 본문
        ========================================== -->
-  <main class="layout-container flex-1 min-h-0 py-3.5 lg:py-4 flex flex-col">
+  <main class="layout-container flex-1 py-3.5 lg:py-4 flex flex-col">
 
     <!-- ==========================================
          [탭 1] 일정 · 지도 뷰
          ========================================== -->
-    <div id="view-planner" class="flex flex-col gap-3.5 flex-1 min-h-0">
+    <div id="view-planner" class="flex flex-col gap-3.5">
 
       <!-- 1. 상단 전체 폭: 주차별 화이트 카드로 분리된 달력 뷰 -->
-      <section id="calendar-section" class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3 sm:p-4 flex flex-col shrink-0 min-w-0">
+      <section id="calendar-section" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3 sm:p-4 flex flex-col shrink-0 min-w-0">
         <div class="flex flex-wrap justify-between items-center mb-2.5 gap-2">
           <div class="flex items-center gap-2 min-w-0">
             <h2 id="calendar-section-title" class="text-sm sm:text-base font-extrabold text-slate-900 truncate">📅 2026.12 ~ 2027.01 전체 여정</h2>
@@ -170,10 +170,10 @@
       </section>
 
       <!-- 2. 하단 영역: 모바일에서는 [1] 타임라인 일정 뷰 ➔ [2] 지도 뷰 ➔ [3] 브리핑 순서, PC에서는 [좌 5] 지도 + [중 4] 일정 + [우 3] 브리핑 -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 flex-1 min-h-0">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
 
         <!-- [PC 좌측 5/12 · 모바일 2번째] 이동 루트 및 당일 코스 지도 뷰 -->
-        <section class="order-2 lg:order-1 lg:col-span-5 bg-white p-3.5 sm:p-4 rounded-2xl shadow-2xs border border-slate-200/80 flex flex-col min-h-0 min-w-0">
+        <section class="order-2 lg:order-1 lg:col-span-5 bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col min-w-0">
           <div class="flex flex-wrap justify-between items-center gap-2 mb-2.5 shrink-0">
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
@@ -188,7 +188,7 @@
               <button onclick="focusMap('usa')" class="px-2.5 py-1.5 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-bold hover:bg-slate-200 whitespace-nowrap transition">🇺🇸 미국</button>
             </div>
           </div>
-          <div class="flex-1 min-h-0 relative">
+          <div class="w-full relative">
             <div id="map" class="border border-slate-200/80"></div>
           </div>
           <div id="map-legend-bar" class="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2 shrink-0">
@@ -199,7 +199,7 @@
         </section>
 
         <!-- [PC 중앙 4/12 · 모바일 1번째(최상단)] 타임라인 일정 뷰 -->
-        <section class="order-1 lg:order-2 lg:col-span-4 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col min-h-0 min-w-0">
+        <section class="order-1 lg:order-2 lg:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 sm:p-4 flex flex-col min-w-0">
           <!-- 선택된 날짜 헤더 -->
           <div class="flex justify-between items-start gap-2 pb-2.5 border-b border-slate-100 shrink-0">
             <div class="min-w-0">
@@ -223,7 +223,7 @@
           </div>
 
           <!-- 타임라인 블록 리스트 -->
-          <div id="timeline-list" class="flex-1 lg:max-h-[440px] overflow-y-auto custom-scroll pr-1 py-1"></div>
+          <div id="timeline-list" class="max-h-[420px] lg:max-h-[460px] overflow-y-auto custom-scroll pr-1 py-1"></div>
 
           <div class="text-xs text-slate-400 text-center mt-2.5 pt-2 border-t border-slate-100 shrink-0">
             💡 <b>일정 카드</b> 터치 시 상세 수정 · 시간순 자동 정렬
@@ -231,7 +231,7 @@
         </section>
 
         <!-- [PC 우측 3/12 · 모바일 3번째] 당일 시티 브리핑 & 스마트 툴 -->
-        <section class="order-3 lg:col-span-3 bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 sm:p-4 flex flex-col justify-between min-w-0 space-y-3">
+        <section class="order-3 lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 sm:p-4 flex flex-col justify-between min-w-0 space-y-3">
           <div class="space-y-3">
             <!-- 헤더 -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 gap-1">
@@ -312,7 +312,7 @@
     </div>
 
     <!-- [탭 2] 가계부 (교통비 / 숙박비 / 투어·티켓 / 식비·현장지출 4열 박스 뷰) -->
-    <div id="view-budget" class="hidden flex-col gap-3.5 flex-1 min-h-0">
+    <div id="view-budget" class="hidden flex-col gap-3.5">
       <!-- 상단 총예산 & 4대 지출 요약 바 -->
       <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 shrink-0">
         <div class="col-span-2 lg:col-span-1 bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xs flex flex-col justify-between">
@@ -341,10 +341,10 @@
       </div>
 
       <!-- 하단 4열 네모 상자: [1] 교통비 / [2] 숙박비 / [3] 투어·티켓 / [4] 식비·현장지출 (여행 순서대로 정렬) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 flex-1 min-h-0">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 items-start">
 
         <!-- 상자 1: 교통비 -->
-        <section class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col min-h-0">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 flex flex-col">
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
@@ -354,11 +354,11 @@
               <p class="text-xs text-slate-400 mt-0.5">항공 · 고속열차 · 시내교통 (클릭 시 수정)</p>
             </div>
           </div>
-          <div id="budget-transport-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-transport-list" class="max-h-[380px] lg:max-h-[520px] space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 2: 숙박비 -->
-        <section class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col min-h-0">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 flex flex-col">
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
@@ -369,11 +369,11 @@
             </div>
             <button onclick="openBaseModal(null)" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="base-expense-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="base-expense-list" class="max-h-[380px] lg:max-h-[520px] space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 3: 투어·티켓 (사전예매) -->
-        <section class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col min-h-0">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 flex flex-col">
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
@@ -384,11 +384,11 @@
             </div>
             <button onclick="openPlaceModalForBudget('클룩')" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="budget-tour-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-tour-list" class="max-h-[380px] lg:max-h-[520px] space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
         <!-- 상자 4: 식비·현장지출 -->
-        <section class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-3.5 flex flex-col min-h-0">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3.5 flex flex-col">
           <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100 gap-2 shrink-0">
             <div>
               <div class="flex items-center gap-1.5">
@@ -399,14 +399,14 @@
             </div>
             <button onclick="openPlaceModalForBudget('현장결제')" class="text-xs font-bold px-2.5 py-1.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition shrink-0">+ 추가</button>
           </div>
-          <div id="budget-onsite-list" class="flex-1 lg:max-h-[520px] min-h-0 space-y-2 overflow-y-auto custom-scroll pr-1"></div>
+          <div id="budget-onsite-list" class="max-h-[380px] lg:max-h-[520px] space-y-2 overflow-y-auto custom-scroll pr-1"></div>
         </section>
 
       </div>
     </div>
 
     <!-- [탭 3] 준비물 체크리스트 뷰 -->
-    <div id="view-packing" class="hidden flex-col gap-4 flex-1 min-h-0">
+    <div id="view-packing" class="hidden flex-col gap-4">
       <div class="bg-white rounded-2xl shadow-2xs border border-slate-200/80 p-4 flex flex-wrap justify-between items-center gap-3 shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-lg">🎒</div>
@@ -420,7 +420,7 @@
         </div>
       </div>
 
-      <div id="packing-categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-1 min-h-0 overflow-y-auto custom-scroll"></div>
+      <div id="packing-categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start"></div>
     </div>
 
   </main>
@@ -4474,4 +4474,4 @@
   </script>
 </body>
 </html>
-```
+<!-- End of Planner -->
